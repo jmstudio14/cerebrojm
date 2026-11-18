@@ -5,8 +5,8 @@
 
 | ID | Estado | Nota |
 |---|---|---|
-| AUD-003, AUD-004, AUD-006, FEAT-002 | **Implementado en PR** (pendiente de fusión) | ADR-0001 aceptado; rama `ccr-5fb79795-l1vohy` |
-| AUD-005 | **En curso**: opción B (repositorio nuevo) | Requiere que el usuario renombre y cree el repositorio en GitHub |
+| AUD-003, AUD-004, AUD-006, FEAT-002 | **Hecho** (2026-11-18) | ADR-0001 aceptado y fusionado en `main` (copia cifrada y zona personal fuera de Git) |
+| AUD-005 | **Parcial: riesgo aceptado** | Repo nuevo `cerebrojm` limpio y verificado (todas sus referencias). El repo antiguo `cerebrojm-antiguo` (privado, con el historial previo) no se ha borrado por decisión del usuario; riesgo bajo mientras siga siendo privado |
 
 ## Prioridades
 
