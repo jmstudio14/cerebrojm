@@ -111,4 +111,4 @@ LIMIT 5
 ```
 
 ---
-Atajos: [[_sistema/plantillas/Proyecto|Plantilla de proyecto]] · [[_sistema/plantillas/Revisión semanal|Revisión semanal]] · Calendario completo: paleta de comandos → *Full Calendar: Open Calendar*
+Atajos: [[Guía rápida]] · [[_Índice de proyectos|Índice de proyectos]] · [[04 Revisiones/2026-11-18|Primera revisión]] · [[_sistema/plantillas/Proyecto|Plantilla de proyecto]] · [[_sistema/plantillas/Revisión semanal|Revisión semanal]] · Calendario completo: paleta de comandos → *Full Calendar: Open Calendar*

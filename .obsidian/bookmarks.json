@@ -1,5 +1,28 @@
 {
   "items": [
-    { "type": "file", "ctime": 1763456400000, "path": "00 Panel.md", "title": "Panel" }
+    {
+      "type": "file",
+      "ctime": 1763456400000,
+      "path": "00 Panel.md",
+      "title": "Panel"
+    },
+    {
+      "type": "file",
+      "ctime": 1763456400001,
+      "path": "Guía rápida.md",
+      "title": "Guía rápida"
+    },
+    {
+      "type": "file",
+      "ctime": 1763456400002,
+      "path": "01 Proyectos/_Índice de proyectos.md",
+      "title": "Proyectos"
+    },
+    {
+      "type": "file",
+      "ctime": 1763456400003,
+      "path": "02 Notas/Bandeja de entrada.md",
+      "title": "Bandeja de entrada"
+    }
   ]
 }

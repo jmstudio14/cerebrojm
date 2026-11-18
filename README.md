@@ -76,6 +76,7 @@ Las tareas `- [ ]` bajo el encabezado **Próximas tareas** de proyectos activos 
 
 ```
 00 Panel.md              Dashboard principal
+Guía rápida.md           Rutina diaria/semanal y señales de alarma
 01 Proyectos/            Una nota por proyecto
 02 Notas/                Notas sueltas e ideas (bandeja de entrada)
 03 Diario/               Notas diarias (AAAA-MM-DD)
@@ -84,6 +85,8 @@ _sistema/plantillas/     Plantillas
 _sistema/scripts/        agenda.js (lector iCal + fechas límite)
 .obsidian/               Configuración y plugins (Dataview, Obsidian Git, Full Calendar)
 ```
+
+Cada carpeta tiene una nota `_Índice …` con sus consultas.
 
 ## Sincronización: qué tener en cuenta
 - Obsidian Git hace *pull* al abrir y *commit + push* cada 10 minutos. Si editas desde otro sitio (GitHub web, Claude Code), los cambios llegan en el siguiente pull.
