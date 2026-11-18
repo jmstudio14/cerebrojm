@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" role="img" aria-label="Esquema ilustrativo del Panel: resumen por estado, proyectos activos con progreso, alertas y agenda">
+  <defs>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#06b6d4"/></linearGradient>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+      .h { font-size: 15px; font-weight: 700; fill: #e6edf3; }
+      .t { font-size: 13px; fill: #c9d1d9; }
+      .m { font-size: 12px; fill: #8b949e; }
+      .card { fill: #161b22; stroke: #30363d; }
+    </style>
+  </defs>
+  <rect width="1000" height="560" rx="14" fill="#0d1117"/>
+  <!-- barra de ventana -->
+  <rect width="1000" height="38" rx="14" fill="#161b22"/>
+  <rect y="24" width="1000" height="14" fill="#161b22"/>
+  <circle cx="22" cy="19" r="6" fill="#f85149"/><circle cx="42" cy="19" r="6" fill="#d29922"/><circle cx="62" cy="19" r="6" fill="#3fb950"/>
+  <text x="500" y="24" text-anchor="middle" class="m">00 Panel.md — Obsidian</text>
+  <text x="976" y="24" text-anchor="end" class="m" font-style="italic">esquema ilustrativo</text>
+
+  <!-- título y resumen -->
+  <text x="32" y="80" font-size="24" font-weight="700" fill="#f0f6fc">🧠 Panel</text>
+  <rect x="32" y="92" width="44" height="4" rx="2" fill="url(#acc)"/>
+  <g transform="translate(32,112)">
+    <rect width="110" height="54" rx="8" class="card"/><text x="14" y="25" font-size="20" font-weight="700" fill="#3fb950">3</text><text x="14" y="43" class="m">activos</text>
+    <rect x="120" width="110" height="54" rx="8" class="card"/><text x="134" y="25" font-size="20" font-weight="700" fill="#f85149">1</text><text x="134" y="43" class="m">bloqueado</text>
+    <rect x="240" width="110" height="54" rx="8" class="card"/><text x="254" y="25" font-size="20" font-weight="700" fill="#d29922">4</text><text x="254" y="43" class="m">pausados</text>
+    <rect x="360" width="110" height="54" rx="8" class="card"/><text x="374" y="25" font-size="20" font-weight="700" fill="#a78bfa">2</text><text x="374" y="43" class="m">ideas</text>
+    <rect x="480" width="110" height="54" rx="8" class="card"/><text x="494" y="25" font-size="20" font-weight="700" fill="#8b949e">5</text><text x="494" y="43" class="m">completados</text>
+  </g>
+
+  <!-- activos -->
+  <rect x="32" y="186" width="600" height="190" rx="10" class="card"/>
+  <text x="52" y="214" class="h">🚀 Activos</text>
+  <text x="52" y="240" class="m">PROYECTO</text><text x="260" y="240" class="m">PROGRESO</text><text x="440" y="240" class="m">PRÓXIMA ACCIÓN</text>
+  <line x1="52" y1="250" x2="612" y2="250" stroke="#30363d"/>
+  <g class="t">
+    <text x="52" y="278" fill="#a78bfa">Proyecto A</text>
+    <rect x="260" y="268" width="150" height="9" rx="4.5" fill="#30363d"/><rect x="260" y="268" width="105" height="9" rx="4.5" fill="url(#acc)"/>
+    <text x="440" y="278">Publicar versión 1.0</text>
+    <text x="52" y="316" fill="#a78bfa">Proyecto B</text>
+    <rect x="260" y="306" width="150" height="9" rx="4.5" fill="#30363d"/><rect x="260" y="306" width="60" height="9" rx="4.5" fill="url(#acc)"/>
+    <text x="440" y="316">Escribir tests e2e</text>
+    <text x="52" y="354" fill="#a78bfa">Proyecto C</text>
+    <rect x="260" y="344" width="150" height="9" rx="4.5" fill="#30363d"/><rect x="260" y="344" width="22" height="9" rx="4.5" fill="url(#acc)"/>
+    <text x="440" y="354">Definir alcance</text>
+  </g>
+
+  <!-- alertas -->
+  <rect x="32" y="392" width="600" height="140" rx="10" class="card"/>
+  <text x="52" y="420" class="h">⚠️ Necesitan atención</text>
+  <g class="t">
+    <rect x="52" y="436" width="560" height="26" rx="6" fill="#f85149" fill-opacity="0.12"/>
+    <text x="64" y="454">⏰ vencido · Proyecto D · límite 2026-11-10</text>
+    <rect x="52" y="468" width="560" height="26" rx="6" fill="#d29922" fill-opacity="0.12"/>
+    <text x="64" y="486">💤 estancado (+14 días) · Proyecto E</text>
+    <rect x="52" y="500" width="560" height="26" rx="6" fill="#a78bfa" fill-opacity="0.12"/>
+    <text x="64" y="518">❓ sin próxima acción · Proyecto F</text>
+  </g>
+
+  <!-- agenda -->
+  <rect x="652" y="112" width="316" height="420" rx="10" class="card"/>
+  <text x="672" y="140" class="h">📅 Agenda · 7 días</text>
+  <g class="t">
+    <text x="672" y="174" font-weight="700" fill="#e6edf3">Hoy</text>
+    <rect x="672" y="184" width="3" height="40" rx="1.5" fill="#06b6d4"/>
+    <text x="684" y="199">09:00–09:30 · Standup</text>
+    <text x="684" y="218" class="m">Google Calendar</text>
+    <rect x="672" y="232" width="3" height="40" rx="1.5" fill="#06b6d4"/>
+    <text x="684" y="247">17:00–18:30 · Clase DAM</text>
+    <text x="684" y="266" class="m">Google Calendar</text>
+    <text x="672" y="306" font-weight="700" fill="#e6edf3">Mañana</text>
+    <rect x="672" y="316" width="3" height="40" rx="1.5" fill="#7c3aed"/>
+    <text x="684" y="331">🎯 Fecha límite · Proyecto A</text>
+    <text x="684" y="350" class="m">Nota del proyecto</text>
+    <text x="672" y="390" font-weight="700" fill="#e6edf3">Viernes 20 nov</text>
+    <rect x="672" y="400" width="3" height="40" rx="1.5" fill="#06b6d4"/>
+    <text x="684" y="415">Todo el día · Entrega práctica</text>
+    <text x="684" y="434" class="m">Google Calendar</text>
+  </g>
+  <text x="672" y="510" class="m">Datos de ejemplo</text>
+</svg>

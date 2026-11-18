@@ -25,6 +25,7 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 - [ ] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
 - [ ] Primera revisión: dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar`
 - [ ] Usarlo 2 semanas: nota diaria cuando aporte y revisión semanal sin falta
+- [ ] Sustituir el esquema del Panel del README (`_sistema/assets/panel-esquema.svg`) por una captura real
 
 **Terminado si:** hay 2 revisiones semanales hechas, ningún proyecto tiene la etiqueta `revisar` y el Panel refleja lo que de verdad estás haciendo.
 
@@ -64,3 +65,4 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema.
 
 ## Registro de cambios del sistema
 - 2026-11-18: Fase 0 completada (PR #1).
+- 2026-11-18: README rediseñado con banner, diagramas y esquema del Panel.
