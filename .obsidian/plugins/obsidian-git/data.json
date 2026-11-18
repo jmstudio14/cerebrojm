@@ -1,0 +1,15 @@
+{
+  "commitMessage": "vault: {{hostname}} {{date}}",
+  "autoCommitMessage": "vault: {{hostname}} {{date}}",
+  "commitDateFormat": "YYYY-MM-DD HH:mm",
+  "autoSaveInterval": 10,
+  "autoPushInterval": 0,
+  "autoPullInterval": 10,
+  "autoPullOnBoot": true,
+  "disablePush": false,
+  "pullBeforePush": true,
+  "syncMethod": "merge",
+  "disablePopups": false,
+  "showStatusBar": true,
+  "differentIntervalCommitAndPush": false
+}
