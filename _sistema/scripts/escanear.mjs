@@ -31,6 +31,8 @@ const HOY = arg("--hoy") || new Date().toISOString().slice(0, 10);
 const CONFIG = path.join(VAULT, "_sistema", "config", "escaner.local.json");
 const DIR_PROY = path.join(VAULT, "01 Proyectos");
 const DIR_HERR = path.join(VAULT, "05 Herramientas");
+const BANDEJA = path.join(VAULT, "02 Notas", "Bandeja de entrada.md");
+const BANDEJA_INICIAL = "---\ntipo: nota\n---\n\n# Bandeja de entrada\n\nNotas rápidas que aún no tienen sitio. Vaciar en la revisión semanal.\n";
 const IGNORAR_POR_DEFECTO = ["node_modules", "$RECYCLE.BIN", "System Volume Information"];
 
 const INICIO = "<!-- escaner:inicio -->";
@@ -376,6 +378,8 @@ async function main() {
   const ignorados = new Set([...IGNORAR_POR_DEFECTO, ...ignorar].map((s) => s.toLowerCase()));
   fs.mkdirSync(DIR_PROY, { recursive: true });
   fs.mkdirSync(DIR_HERR, { recursive: true });
+  // La bandeja es personal y no está en Git (ADR-0001): en un clon nuevo hay que crearla.
+  if (!existe(BANDEJA)) { fs.mkdirSync(path.dirname(BANDEJA), { recursive: true }); fs.writeFileSync(BANDEJA, BANDEJA_INICIAL, "utf8"); }
   const vaultReal = fs.realpathSync(VAULT);
 
   const proyectos = [];

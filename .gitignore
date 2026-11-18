@@ -13,9 +13,19 @@
 Thumbs.db
 desktop.ini
 
-# --- Tus datos: los genera el escáner en tu PC y NO se suben al repo ---
+# --- Zona personal (ADR-0001): tus datos NO se suben al repo ---
+# Se protegen con respaldar.bat (copia cifrada local). Solo se versionan índices y .gitkeep.
 01 Proyectos/*
 !01 Proyectos/_Índice de proyectos.md
+02 Notas/*
+!02 Notas/_Índice de notas.md
+03 Diario/*
+!03 Diario/_Índice del diario.md
+!03 Diario/.gitkeep
+04 Revisiones/*
+!04 Revisiones/_Índice de revisiones.md
+!04 Revisiones/.gitkeep
 05 Herramientas/*
 !05 Herramientas/_Índice de herramientas.md
+_sistema/adjuntos/
 _sistema/config/*.local.json

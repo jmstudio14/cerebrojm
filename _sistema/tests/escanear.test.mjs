@@ -118,4 +118,13 @@ test("una carpeta que desaparece se avisa pero su nota no se borra", () => {
   assert.ok(fs.existsSync(path.join(vault, "01 Proyectos", "script-py.md")));
 });
 
+test("crea la Bandeja de entrada si falta (ya no está en Git) y no la toca si existe", () => {
+  const bandeja = path.join(vault, "02 Notas", "Bandeja de entrada.md");
+  assert.ok(fs.existsSync(bandeja), "el primer escaneo la creó");
+  assert.match(fs.readFileSync(bandeja, "utf8"), /^---\ntipo: nota\n---/);
+  fs.writeFileSync(bandeja, "---\ntipo: nota\n---\n- mi idea\n");
+  escanear();
+  assert.match(fs.readFileSync(bandeja, "utf8"), /mi idea/);
+});
+
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

@@ -16,5 +16,9 @@ jobs:
         run: node --test _sistema/tests/agenda.test.js
       - name: Tests del escáner de proyectos
         run: node --test _sistema/tests/escanear.test.mjs
+      - name: Tests de la copia de seguridad cifrada
+        run: node --test _sistema/tests/respaldo.test.mjs
+      - name: Coherencia de .gitignore con la política de datos
+        run: node --test _sistema/tests/coherencia.test.mjs
       - name: Frontmatter de las notas del repo
         run: node _sistema/tests/validar-vault.mjs
