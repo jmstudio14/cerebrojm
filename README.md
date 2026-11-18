@@ -251,9 +251,10 @@ cerebrojm/
 |:---:|:---:|---|
 | **0** | ✅ Hecha | Vault, Panel, agenda, plantillas y proyectos importados |
 | **1** | 🔄 En curso | Adopción: 2 semanas de uso real y máximo 3-4 proyectos activos |
-| **2** | ⏳ | Estado de los repos actualizado automáticamente desde GitHub |
-| **3** | ⏳ | Proyectos personales y creativos |
-| **4** | ⏳ | Captura desde el móvil (opcional) |
+| **2** | ⏳ | App de escritorio minimalista y profesional (Tauri + React), con sistema de diseño propio |
+| **3** | ⏳ | Estado de los repos actualizado automáticamente desde GitHub |
+| **4** | ⏳ | Proyectos personales y creativos |
+| **5** | ⏳ | Captura desde el móvil (opcional) |
 
 Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se empieza una fase hasta cerrar la anterior.
 
