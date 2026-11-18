@@ -96,9 +96,9 @@ Detecta las skills, agentes y servidores MCP que usan tus proyectos (`skills-loc
 > **Este repo es solo el cerebro.** No contiene ningún dato de tus proyectos: las notas de `01 Proyectos/` y `05 Herramientas/` las genera el escáner en tu PC y están excluidas de Git.
 
 <div align="center">
-  <img src="_sistema/assets/panel-esquema.svg" alt="Esquema ilustrativo del Panel con resumen, proyectos activos, alertas y agenda" width="92%">
+  <img src="_sistema/assets/panel.png" alt="Captura del Panel con resumen, agenda y proyectos activos (nombres difuminados)" width="92%">
   <br>
-  <sub><i>Esquema ilustrativo del Panel con datos de ejemplo.</i></sub>
+  <sub><i>Captura real del Panel; los nombres de proyecto y sus acciones están difuminados.</i></sub>
 </div>
 
 ---
@@ -233,6 +233,17 @@ Para recuperar: **`restaurar.bat`** restaura la copia más reciente **sin pisar*
 
 La rutina completa y el significado de cada alerta están en **[Guía rápida](Guía%20rápida.md)**.
 
+### 🤖 Con Claude Code
+Abre Claude Code en la carpeta del vault. El subagente `gestor-proyectos` (`.claude/agents/`) solo edita `01 Proyectos/`, `04 Revisiones/` y `05 Herramientas/`, y estos comandos (`.claude/commands/`) hacen el trabajo repetitivo:
+
+| Comando | Qué hace |
+|---|---|
+| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Solo escribe `ultimo_push`. |
+| `/revision` | Crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla, con los datos del día. No sobrescribe y no marca el checklist. |
+| `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs abiertos y una propuesta de siguiente paso. Solo lectura. |
+
+Ninguno hace commit ni push.
+
 ---
 
 ## 🧬 Modelo de datos
@@ -289,10 +300,12 @@ cerebrojm/
 │   ├── plantillas/           Proyecto · Nota diaria · Revisión semanal · Nota · Herramienta
 │   ├── scripts/agenda.js     Lector iCal + fechas límite
 │   ├── scripts/escanear.mjs  Escáner de proyectos y herramientas
+│   ├── scripts/estado.mjs    Resumen de estado y alertas (solo lectura)
 │   ├── config/               Configuración local del escáner (*.local.json fuera de Git)
 │   ├── tests/                Tests de la agenda y del escáner, validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema
 │   └── assets/               Imágenes del README
+├── .claude/                  Subagente gestor-proyectos y comandos /estado, /revision y /proyecto
 └── .obsidian/                Configuración y plugins incluidos
 ```
 
