@@ -1,4 +1,5 @@
 // Valida el frontmatter de las notas de proyecto contra los valores que espera el Panel.
+// También valida las fichas de 05 Herramientas.
 // Uso: node _sistema/tests/validar-vault.mjs [carpeta]   (sale con código 1 si hay errores)
 import fs from "node:fs";
 import path from "node:path";
@@ -44,8 +45,28 @@ for (const nombre of fs.readdirSync(carpeta).filter((f) => f.endsWith(".md")).so
   }
 }
 
+// ---------- Herramientas ----------
+const HERR = "05 Herramientas";
+const PERM_H = { clase: ["skill", "agente", "plugin", "mcp"], uso: ["", "frecuente", "ocasional", "probando", "descartada"] };
+let herramientas = 0;
+if (fs.existsSync(HERR)) {
+  for (const nombre of fs.readdirSync(HERR).filter((f) => f.endsWith(".md")).sort()) {
+    const fm = frontmatter(fs.readFileSync(path.join(HERR, nombre), "utf8"));
+    const err = (msg) => errores.push(`${HERR}/${nombre}: ${msg}`);
+    if (!fm) { err("sin frontmatter"); continue; }
+    if (fm.tipo !== "herramienta") continue;
+    herramientas++;
+    for (const [k, vals] of Object.entries(PERM_H)) {
+      if (!(k in fm)) err(`falta el campo \`${k}\``);
+      else if (!vals.includes(fm[k])) err(`\`${k}: ${fm[k]}\` no es válido (${vals.filter(Boolean).join(", ")})`);
+    }
+    if (fm.valoracion && !/^[1-5]$/.test(fm.valoracion)) err(`\`valoracion: ${fm.valoracion}\` debe ser 1-5 o vacío`);
+    if (fm.origen && !/^https?:\/\//.test(fm.origen)) err(`\`origen\` debe ser una URL http(s)`);
+  }
+}
+
 if (errores.length) {
   console.error(`✗ ${errores.length} error(es) en ${proyectos} proyecto(s):\n` + errores.map((e) => "  - " + e).join("\n"));
   process.exit(1);
 }
-console.log(`✓ ${proyectos} proyectos válidos`);
+console.log(`✓ ${proyectos} proyectos y ${herramientas} herramientas válidos`);

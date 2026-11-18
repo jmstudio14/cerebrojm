@@ -237,8 +237,9 @@ cerebrojm/
 ├── 02 Notas/                 Ideas y bandeja de entrada (+ índice)
 ├── 03 Diario/                Notas diarias AAAA-MM-DD (+ índice)
 ├── 04 Revisiones/            Revisiones semanales (+ índice)
+├── 05 Herramientas/          Skills, agentes, plugins y MCP que uso (+ índice)
 ├── _sistema/
-│   ├── plantillas/           Proyecto · Nota diaria · Revisión semanal · Nota
+│   ├── plantillas/           Proyecto · Nota diaria · Revisión semanal · Nota · Herramienta
 │   ├── scripts/agenda.js     Lector iCal + fechas límite
 │   ├── tests/                Tests de la agenda y validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema
