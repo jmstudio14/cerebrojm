@@ -58,7 +58,7 @@ Tus eventos de los próximos 7 días junto a las fechas límite de los proyectos
 <td valign="top">
 
 ### 🔄 Sincronización con GitHub
-Obsidian Git hace *pull* al abrir y *commit + push* cada 10 minutos. Historial completo y copia de seguridad sin pensar en ello.
+Obsidian Git hace *pull* al abrir y *commit + push* cada 10 minutos, **solo del sistema** (Panel, plantillas, scripts). Tus notas se protegen con una copia cifrada local (`respaldar.bat`).
 
 </td>
 </tr>
@@ -206,6 +206,19 @@ Requiere [Node.js](https://nodejs.org) 18 o superior. Doble clic en **`escanear.
 node _sistema/scripts/escanear.mjs --carpetas "C:\Programacion"   # alternativa desde terminal
 ```
 
+### 6 · Copias de seguridad
+
+Tus notas (proyectos, notas, diario, revisiones, herramientas y adjuntos) **no se suben a GitHub**. Protégelas con una copia cifrada:
+
+1. Doble clic en **`respaldar.bat`**. La primera vez pregunta en qué carpeta guardar las copias: mejor un disco externo o una carpeta de la nube, porque van cifradas.
+2. Elige una contraseña. **No se guarda en ningún sitio: si la olvidas, la copia no se puede recuperar.**
+3. Se crea `cerebrojm-AAAA-MM-DD_hhmmss.cjmbak` (AES-256-GCM) y se conservan las 10 últimas.
+
+Para recuperar: **`restaurar.bat`** restaura la copia más reciente **sin pisar** archivos que hayas modificado después (añade `--forzar` para sobrescribirlos). El Diagnóstico (`_sistema/Diagnóstico.md`) te avisa si la última copia tiene más de 14 días.
+
+> [!TIP]
+> Hazlo cada semana al terminar la revisión semanal, y siempre antes de cambiar de PC.
+
 ---
 
 ## 🗓️ Uso diario
@@ -266,6 +279,7 @@ cerebrojm/
 ├── Guía rápida.md            Rutina diaria/semanal y señales de alarma
 ├── ROADMAP.md                Evolución del propio sistema
 ├── escanear.bat              Carga o actualiza tus proyectos y herramientas
+├── respaldar.bat · restaurar.bat   Copia cifrada de tus datos personales
 ├── 01 Proyectos/             Una nota por proyecto, generada en tu PC (+ índice)
 ├── 02 Notas/                 Ideas y bandeja de entrada (+ índice)
 ├── 03 Diario/                Notas diarias AAAA-MM-DD (+ índice)
@@ -302,10 +316,11 @@ Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se e
 
 ## 🔒 Privacidad
 
-- **Tus proyectos no salen de tu PC**: `01 Proyectos/`, `05 Herramientas/` y la configuración del escáner están en `.gitignore`. Contrapartida: no tienen copia en GitHub. Si cambias de equipo, vuelve a escanear; solo perderías lo escrito a mano (estado, próximas acciones, registro).
+- **Tus datos no salen de tu PC** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat`.
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
-- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal y el escáner (con proyectos ficticios) y valida las notas del repo.
+- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal, el escáner y la copia de seguridad (con datos ficticios), comprueba que la zona personal sigue fuera de Git y valida las notas del repo.
+- Los commits automáticos no incluyen el nombre de tu equipo.
 - Si Obsidian Git detecta un conflicto, te avisa: abre el archivo, quédate con la versión buena y haz *Commit-and-sync*.
 
 ---

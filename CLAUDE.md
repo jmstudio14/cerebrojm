@@ -3,7 +3,7 @@
 Este repositorio es un vault de Obsidian ("cerebro digital") sincronizado con GitHub mediante el plugin Obsidian Git. Idioma: español.
 
 ## Reglas
-- **Este repo es solo el sistema.** Nunca subas datos de los proyectos del usuario (notas de `01 Proyectos/` y `05 Herramientas/`, rutas, resúmenes, código o configuración de otros repos). Esas notas las genera `_sistema/scripts/escanear.mjs` en el PC del usuario y están en `.gitignore`. Los ejemplos de la documentación deben ser genéricos.
+- **Este repo es solo el sistema** (ADR-0001). Nunca subas datos del usuario: notas de `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, adjuntos, rutas, resúmenes, código o configuración de otros repos. Esa zona personal está en `.gitignore` (lo comprueba `_sistema/tests/coherencia.test.mjs`) y se protege con `respaldar.bat`. Los ejemplos de la documentación deben ser genéricos.
 - Cada proyecto es una nota en `01 Proyectos/` (creada por el escáner o a mano) con el frontmatter de `_sistema/plantillas/Proyecto.md`. Respeta exactamente los nombres de campos y los valores permitidos (ver `README.md`); el Panel depende de ellos.
 - Al modificar un proyecto, actualiza `ultima_revision` a la fecha de hoy y añade una línea al `## Registro`.
 - Las tareas de un proyecto van como `- [ ]` bajo `## Próximas tareas`.

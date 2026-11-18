@@ -51,7 +51,16 @@ ok("Escáner configurado", cfg?.carpetas?.length ? true : null, cfg?.carpetas?.l
 const ultimoEscaneo = dv.pages('"01 Proyectos"').where((p) => p.escaneado).array().map((p) => String(p.escaneado).slice(0, 10)).sort().pop();
 if (ultimoEscaneo) ok("Último escaneo", true, ultimoEscaneo);
 
-// 6. Proyectos
+// 6. Copia de seguridad (ADR-0001: tus notas no están en GitHub)
+let resp = null;
+try { resp = JSON.parse(await app.vault.adapter.read("_sistema/config/respaldo.local.json")); } catch (e) {}
+if (!resp?.ultimo) ok("Copia de seguridad", null, "nunca: ejecuta respaldar.bat");
+else {
+  const dias = Math.floor((Date.now() - Date.parse(resp.ultimo)) / 86400000);
+  ok("Copia de seguridad", dias <= 14, `hace ${dias} días${dias > 14 ? " — ejecuta respaldar.bat" : ""}`);
+}
+
+// 7. Proyectos
 const PERM = {
   categoria: ["codigo", "personal", "creativo"],
   estado: ["idea", "activo", "pausado", "bloqueado", "completado", "archivado"],
