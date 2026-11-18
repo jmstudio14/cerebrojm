@@ -18,15 +18,16 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 - [x] Panel: estados, alertas (vencidos, bloqueados, estancados, sin próxima acción), tareas y agenda
 - [x] Google Calendar en solo lectura: Full Calendar y `agenda.js` (la URL iCal fuera de Git)
 - [x] Plantillas: proyecto, nota diaria, revisión semanal y nota
-- [x] 15 proyectos importados de GitHub (estado deducido, etiqueta `revisar`)
-- [x] Índices por carpeta, [[Guía rápida]] y primera revisión
+- [x] Escáner de proyectos y herramientas (`escanear.bat`): los datos se generan en el PC y no se suben al repo
+- [x] Índices por carpeta, [[Guía rápida]], [[Diagnóstico]], tests y CI
 
 ## 🔄 Fase 1: Adopción (ahora)
 - [ ] Clonar en el PC Windows (fuera de OneDrive) y abrir como vault
+- [ ] Instalar Node.js si no lo tienes y ejecutar `escanear.bat` con tus carpetas de proyectos
 - [ ] Activar los plugins y abrir [[Diagnóstico]]: todo en ✅ (en especial `requestUrl` y la descarga del calendario)
 - [ ] Comprobar que el Panel y los índices se ven sin errores
 - [ ] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
-- [ ] Primera revisión: dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar` (hasta entonces salen en *Necesitan atención*, es intencionado)
+- [ ] Primera revisión (nota nueva en `04 Revisiones/` con la plantilla): dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar` (hasta entonces salen en *Necesitan atención*, es intencionado)
 - [ ] Usarlo 2 semanas: nota diaria cuando aporte y revisión semanal sin falta
 - [ ] Sustituir el esquema del Panel del README (`_sistema/assets/panel-esquema.svg`) por una captura real
 
@@ -47,7 +48,7 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 - [ ] Lista de tareas repetitivas que delegarías, sacada de la Fase 1.
 
 ### Principios no negociables
-- **Las reglas de cada repo mandan.** El agente lee y obedece el `CLAUDE.md` del repo en el que trabaja, aunque contradiga sus propias costumbres. Ejemplos reales: [proyecto privado] prohíbe `git push` sin permiso; [proyecto privado] no deja avanzar de fase si fallan los tests obligatorios; [proyecto privado] exige actualizar su ROADMAP; [proyecto privado] no tiene tests.
+- **Las reglas de cada repo mandan.** El agente lee y obedece el `CLAUDE.md` del repo en el que trabaja, aunque contradiga sus propias costumbres. Ejemplos típicos: un repo que prohíbe `git push` sin permiso, otro que no deja avanzar de fase si fallan los tests obligatorios, otro que exige actualizar su ROADMAP o uno sin tests.
 - **Rama y PR, siempre.** Nunca fusiona, nunca hace push a `main` ni reescribe historial. Tú decides qué entra.
 - **Plan antes que código.** Toda fase empieza en modo plan y espera tu aprobación.
 - **Sin verificación no hay fase terminada.** Ejecuta los tests y el lint del repo. Si el repo no tiene, lo dice y propone cómo verificar antes de seguir.
@@ -55,6 +56,7 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 - **El vault es la memoria.** Cada acción deja rastro en la nota del proyecto: `## Registro`, `progreso`, `proxima_accion` y enlace al PR.
 
 ### 2a · Gestión desde el vault (sin tocar otros repos)
+- [ ] Reutilizar `_sistema/scripts/escanear.mjs` como fuente de datos del agente (ya conoce carpetas, repos, ROADMAP, CLAUDE.md y tests de cada proyecto).
 - [ ] Subagente `.claude/agents/gestor-proyectos.md`: lee el vault y edita solo `01 Proyectos/`, `04 Revisiones/` y `05 Herramientas/`.
 - [ ] `/estado`: resumen por estado con vencidos, bloqueados, estancados y sin próxima acción. Actualiza `ultimo_push` consultando GitHub y lista los PRs abiertos pendientes de revisión.
 - [ ] `/revision`: crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla con datos reales.
@@ -83,7 +85,7 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 
 **Riesgos:**
 - Repos con pocos tests: un cambio "correcto" puede romper algo sin aviso. Por eso el plan va primero y todo pasa por PR.
-- Coste en repos grandes (por ejemplo, [proyecto privado] con 58 skills y un ETL extenso): acotar el contexto a la fase.
+- Coste en repos grandes (muchas skills, ETL o monorepos): acotar el contexto a la fase.
 - Escrituras en el vault mientras Obsidian Git sincroniza: `git pull` antes y commits pequeños.
 - Delegar el criterio: el agente propone y ejecuta, pero las decisiones de producto son tuyas.
 
@@ -102,7 +104,7 @@ App de escritorio para Windows, **minimalista, profesional y cuidada al detalle*
 - **Minimalismo con criterio**: cada elemento justifica su sitio; la jerarquía la marcan la tipografía, el espacio y un único color de acento, no los adornos.
 
 ### Stack
-- **Tauri 2 + React + TypeScript (estricto) + Vite**. Es el mismo stack que [proyecto privado], así que se reutiliza la experiencia y el tooling.
+- **Tauri 2 + React + TypeScript (estricto) + Vite**. Stack conocido y maduro para apps de escritorio ligeras.
 - Parser de frontmatter YAML y Markdown en TypeScript; el lector iCal se porta desde `_sistema/scripts/agenda.js` a un módulo TypeScript con tests (recurrencias, EXDATE, zonas horarias).
 - La URL iCal se lee del mismo `data.json` local de Full Calendar: **sigue sin subirse a Git**.
 - Repositorio propio (propuesta: `cerebrojm-app`); el vault solo lo enlaza. *Se decide al empezar la fase.*
@@ -193,3 +195,4 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: quitada la licencia MIT (vault privado, todos los derechos reservados).
 - 2026-11-18: catálogo de herramientas (`05 Herramientas/`, 21 fichas generadas desde los repos, plantilla, índice y validación en CI). Excepción a la congelación pedida por el usuario: es contenido nuevo y no toca el Panel ni la agenda.
 - 2026-11-18: añadida la Fase 2 (agente de proyectos con Claude Code); la app de escritorio pasa a Fase 3 y el resto se renumera (4 repos automático, 5 personales, 6 móvil).
+- 2026-11-18: **el repo pasa a ser solo el cerebro**: se eliminan del repo las notas de proyectos y herramientas, que ahora genera `escanear.bat` en el PC (excluidas de Git); tests del escáner en la CI; documentación con ejemplos genéricos.

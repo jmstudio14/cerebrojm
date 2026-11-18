@@ -14,5 +14,7 @@ jobs:
           node-version: 22
       - name: Tests de la agenda (iCal)
         run: node --test _sistema/tests/agenda.test.js
-      - name: Frontmatter de los proyectos
+      - name: Tests del escáner de proyectos
+        run: node --test _sistema/tests/escanear.test.mjs
+      - name: Frontmatter de las notas del repo
         run: node _sistema/tests/validar-vault.mjs

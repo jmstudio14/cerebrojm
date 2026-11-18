@@ -12,3 +12,10 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# --- Tus datos: los genera el escáner en tu PC y NO se suben al repo ---
+01 Proyectos/*
+!01 Proyectos/_Índice de proyectos.md
+05 Herramientas/*
+!05 Herramientas/_Índice de herramientas.md
+_sistema/config/*.local.json

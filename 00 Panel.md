@@ -15,6 +15,7 @@ dv.paragraph(
   `**${n("idea")}** ideas · **${n("completado")}** completados` +
   (vencidos ? ` · ⚠️ **${vencidos} vencidos**` : "")
 );
+if (!ps.length) dv.paragraph("> [!info] Aún no hay proyectos\n> Ejecuta **`escanear.bat`** (en la carpeta del vault) para cargar tus proyectos desde tus carpetas. Ver [[Guía rápida]].");
 if (n("activo") > 5) dv.paragraph("> [!warning] Tienes más de 5 proyectos activos. Probablemente alguno debería estar `pausado`.");
 ```
 
@@ -111,4 +112,4 @@ LIMIT 5
 ```
 
 ---
-Atajos: [[Guía rápida]] · [[_Índice de proyectos|Índice de proyectos]] · [[04 Revisiones/2026-11-18|Primera revisión]] · [[_sistema/plantillas/Proyecto|Plantilla de proyecto]] · [[_sistema/plantillas/Revisión semanal|Revisión semanal]] · Calendario completo: paleta de comandos → *Full Calendar: Open Calendar*
+Atajos: [[Guía rápida]] · [[_Índice de proyectos|Índice de proyectos]] · [[_Índice de herramientas|Herramientas]] · [[_sistema/plantillas/Proyecto|Plantilla de proyecto]] · [[_sistema/plantillas/Revisión semanal|Revisión semanal]] · Calendario completo: paleta de comandos → *Full Calendar: Open Calendar*

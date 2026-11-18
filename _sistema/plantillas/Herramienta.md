@@ -13,7 +13,7 @@ etiquetas: []
 
 > **clase**: `skill` · `agente` · `plugin` · `mcp`
 > **uso**: `frecuente` · `ocasional` · `probando` · `descartada`
-> **valoracion**: 1-5 · **uso_en**: enlaces a proyectos, p. ej. `["[[[proyecto privado]]]"]`
+> **valoracion**: 1-5 · **uso_en**: enlaces a proyectos, p. ej. `["[[Mi proyecto]]"]`
 
 ## Qué es
 Una o dos frases: qué hace y cuándo la uso.

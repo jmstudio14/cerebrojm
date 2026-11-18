@@ -6,6 +6,9 @@ tipo: guia
 
 Volver al [[00 Panel|Panel]]. Instalación y detalles: `README.md`. Evolución del sistema: [[ROADMAP]]. ¿Algo falla? [[Diagnóstico]].
 
+## Cargar o actualizar tus proyectos
+Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qué carpetas contienen tus proyectos (cada subcarpeta = un proyecto). Crea o actualiza las notas de `01 Proyectos/` y `05 Herramientas/` **sin pisar lo que escribes a mano** y sin subir nada a GitHub. Repítelo cuando crees un proyecto nuevo o antes de la revisión semanal.
+
 ## Rutina
 | Cuándo | Qué | Dónde |
 |---|---|---|
@@ -14,7 +17,7 @@ Volver al [[00 Panel|Panel]]. Instalación y detalles: `README.md`. Evolución d
 | Cada semana (30 min) | Revisión semanal: vaciar la bandeja, revisar los estancados y limitar los activos | Nota nueva en `04 Revisiones/` con la plantilla **Revisión semanal** |
 
 ## Dónde va cada cosa
-- **Proyecto** (tiene un final): `01 Proyectos/`, plantilla **Proyecto**. Ver [[_Índice de proyectos]].
+- **Proyecto** (tiene un final): lo crea el escáner; si no está en una carpeta escaneada, nota en `01 Proyectos/` con la plantilla **Proyecto**. Ver [[_Índice de proyectos]].
 - **Idea o nota suelta**: [[Bandeja de entrada]] o una nota en `02 Notas/`. Ver [[_Índice de notas]].
 - **Día a día**: `03 Diario/`. Ver [[_Índice del diario]].
 - **Revisiones**: `04 Revisiones/`. Ver [[_Índice de revisiones]].

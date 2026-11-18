@@ -76,7 +76,24 @@ Proyecto, nota diaria (con la agenda del día), revisión semanal y nota. Todo c
 
 </td>
 </tr>
+<tr>
+<td valign="top">
+
+### 🔍 Escáner de proyectos
+`escanear.bat` recorre tus carpetas y crea una nota por proyecto: repositorio, último cambio, stack, descripción del README y si tiene ROADMAP, CLAUDE.md o tests. Al volver a escanear **nunca pisa lo que escribes a mano**.
+
+</td>
+<td valign="top">
+
+### 🧰 Catálogo de herramientas
+Detecta las skills, agentes y servidores MCP que usan tus proyectos (`skills-lock.json`, `.claude/`, `.mcp.json`) y crea una ficha por cada una, con su origen y los proyectos que la usan.
+
+</td>
+</tr>
 </table>
+
+> [!NOTE]
+> **Este repo es solo el cerebro.** No contiene ningún dato de tus proyectos: las notas de `01 Proyectos/` y `05 Herramientas/` las genera el escáner en tu PC y están excluidas de Git.
 
 <div align="center">
   <img src="_sistema/assets/panel-esquema.svg" alt="Esquema ilustrativo del Panel con resumen, proyectos activos, alertas y agenda" width="92%">
@@ -90,6 +107,7 @@ Proyecto, nota diaria (con la agenda del día), revisión semanal y nota. Todo c
 
 ```mermaid
 flowchart LR
+    CARP["💻 Tus carpetas<br/>de proyectos"] -- "escanear.bat" --> PR
     GC["📅 Google Calendar"] -- "iCal secreto<br/>(solo en local)" --> FC["Full Calendar"]
     FC --> AG["agenda.js"]
     PR["📁 01 Proyectos<br/>frontmatter YAML"] --> DV["Dataview"]
@@ -101,11 +119,13 @@ flowchart LR
     style PANEL fill:#7c3aed,color:#fff,stroke:#5b21b6
     style GH fill:#24292f,color:#fff
     style GC fill:#4285f4,color:#fff
+    style CARP fill:#0ea5e9,color:#fff
 ```
 
 | Pieza | Papel |
 |---|---|
-| **Notas de proyecto** | Cada proyecto es un `.md` con frontmatter: estado, prioridad, progreso, fechas y próxima acción. Son la fuente de verdad. |
+| **Escáner** | `escanear.mjs` lee tus carpetas (Git, README, package.json, skills, MCP) y crea o actualiza las notas. Solo toca sus campos automáticos y su bloque `escaner`. |
+| **Notas de proyecto** | Cada proyecto es un `.md` con frontmatter: estado, prioridad, progreso, fechas y próxima acción. Son la fuente de verdad y viven solo en tu PC. |
 | **Dataview** | Consulta esas notas como si fueran una base de datos y genera las tablas del Panel. |
 | **`agenda.js`** | Lee el calendario iCal, expande los eventos recurrentes y mezcla eventos y fechas límite. |
 | **Obsidian Git** | Mantiene el vault y GitHub sincronizados en segundo plano. |
@@ -174,6 +194,18 @@ Los plugins (Dataview, Obsidian Git y Full Calendar) **vienen incluidos** en `.o
 > [!TIP]
 > La URL se guarda en `.obsidian/plugins/obsidian-full-calendar/data.json`, que está en `.gitignore`. Si alguna vez se filtra, en Google pulsa **Restablecer** la dirección secreta. Google actualiza este enlace con retraso (de minutos a horas).
 
+### 5 · Cargar tus proyectos
+
+Requiere [Node.js](https://nodejs.org) 18 o superior. Doble clic en **`escanear.bat`** (en la carpeta del vault):
+
+1. La primera vez pregunta qué **carpetas madre** contienen tus proyectos, por ejemplo `C:\Programacion;D:\Creativo`. Cada subcarpeta cuenta como un proyecto. Se guarda en `_sistema/config/escaner.local.json`, que no se sube a Git (ver `escaner.ejemplo.json`).
+2. Crea una nota por proyecto en `01 Proyectos/` y una ficha por herramienta en `05 Herramientas/`, con la etiqueta `revisar`.
+3. Vuelve a ejecutarlo cuando quieras actualizar: refresca repositorio, último cambio y el bloque automático, y **respeta** estado, prioridad, progreso, próxima acción y todo tu texto. Si una carpeta desaparece, avisa pero no borra la nota.
+
+```powershell
+node _sistema/scripts/escanear.mjs --carpetas "C:\Programacion"   # alternativa desde terminal
+```
+
 ---
 
 ## 🗓️ Uso diario
@@ -233,15 +265,18 @@ cerebrojm/
 ├── 00 Panel.md               Dashboard principal
 ├── Guía rápida.md            Rutina diaria/semanal y señales de alarma
 ├── ROADMAP.md                Evolución del propio sistema
-├── 01 Proyectos/             Una nota por proyecto (+ índice)
+├── escanear.bat              Carga o actualiza tus proyectos y herramientas
+├── 01 Proyectos/             Una nota por proyecto, generada en tu PC (+ índice)
 ├── 02 Notas/                 Ideas y bandeja de entrada (+ índice)
 ├── 03 Diario/                Notas diarias AAAA-MM-DD (+ índice)
 ├── 04 Revisiones/            Revisiones semanales (+ índice)
-├── 05 Herramientas/          Skills, agentes, plugins y MCP que uso (+ índice)
+├── 05 Herramientas/          Skills, agentes y MCP detectados, en tu PC (+ índice)
 ├── _sistema/
 │   ├── plantillas/           Proyecto · Nota diaria · Revisión semanal · Nota · Herramienta
 │   ├── scripts/agenda.js     Lector iCal + fechas límite
-│   ├── tests/                Tests de la agenda y validador del vault (CI)
+│   ├── scripts/escanear.mjs  Escáner de proyectos y herramientas
+│   ├── config/               Configuración local del escáner (*.local.json fuera de Git)
+│   ├── tests/                Tests de la agenda y del escáner, validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema
 │   └── assets/               Imágenes del README
 └── .obsidian/                Configuración y plugins incluidos
@@ -267,9 +302,10 @@ Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se e
 
 ## 🔒 Privacidad
 
+- **Tus proyectos no salen de tu PC**: `01 Proyectos/`, `05 Herramientas/` y la configuración del escáner están en `.gitignore`. Contrapartida: no tienen copia en GitHub. Si cambias de equipo, vuelve a escanear; solo perderías lo escrito a mano (estado, próximas acciones, registro).
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
-- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal y valida el frontmatter de los proyectos.
+- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal y el escáner (con proyectos ficticios) y valida las notas del repo.
 - Si Obsidian Git detecta un conflicto, te avisa: abre el archivo, quédate con la versión buena y haz *Commit-and-sync*.
 
 ---

@@ -10,6 +10,7 @@ ultima_revision: {{date}}
 proxima_accion: ""
 repo: ""
 ruta_local: ""
+ultimo_commit:
 etiquetas: []
 ---
 

@@ -1,10 +1,11 @@
 // Valida el frontmatter de las notas de proyecto contra los valores que espera el Panel.
 // También valida las fichas de 05 Herramientas.
-// Uso: node _sistema/tests/validar-vault.mjs [carpeta]   (sale con código 1 si hay errores)
+// Uso: node _sistema/tests/validar-vault.mjs [ruta-del-vault]   (sale con código 1 si hay errores)
 import fs from "node:fs";
 import path from "node:path";
 
-const carpeta = process.argv[2] || "01 Proyectos";
+const VAULT = process.argv[2] || ".";
+const carpeta = path.join(VAULT, "01 Proyectos");
 const PERMITIDOS = {
   categoria: ["codigo", "personal", "creativo"],
   estado: ["idea", "activo", "pausado", "bloqueado", "completado", "archivado"],
@@ -26,7 +27,7 @@ function frontmatter(texto) {
 
 const errores = [];
 let proyectos = 0;
-for (const nombre of fs.readdirSync(carpeta).filter((f) => f.endsWith(".md")).sort()) {
+for (const nombre of (fs.existsSync(carpeta) ? fs.readdirSync(carpeta) : []).filter((f) => f.endsWith(".md")).sort()) {
   const fm = frontmatter(fs.readFileSync(path.join(carpeta, nombre), "utf8"));
   const err = (msg) => errores.push(`${nombre}: ${msg}`);
   if (!fm) { err("sin frontmatter"); continue; }
@@ -40,19 +41,19 @@ for (const nombre of fs.readdirSync(carpeta).filter((f) => f.endsWith(".md")).so
     const n = Number(fm.progreso);
     if (!Number.isInteger(n) || n < 0 || n > 100) err(`\`progreso: ${fm.progreso}\` debe ser un entero 0-100`);
   }
-  for (const k of ["inicio", "fecha_limite", "ultima_revision", "ultimo_push"]) {
+  for (const k of ["inicio", "fecha_limite", "ultima_revision", "ultimo_push", "ultimo_commit", "escaneado"]) {
     if (fm[k] && !FECHA.test(fm[k])) err(`\`${k}: ${fm[k]}\` debe tener formato AAAA-MM-DD`);
   }
 }
 
 // ---------- Herramientas ----------
-const HERR = "05 Herramientas";
+const HERR = path.join(VAULT, "05 Herramientas");
 const PERM_H = { clase: ["skill", "agente", "plugin", "mcp"], uso: ["", "frecuente", "ocasional", "probando", "descartada"] };
 let herramientas = 0;
 if (fs.existsSync(HERR)) {
   for (const nombre of fs.readdirSync(HERR).filter((f) => f.endsWith(".md")).sort()) {
     const fm = frontmatter(fs.readFileSync(path.join(HERR, nombre), "utf8"));
-    const err = (msg) => errores.push(`${HERR}/${nombre}: ${msg}`);
+    const err = (msg) => errores.push(`05 Herramientas/${nombre}: ${msg}`);
     if (!fm) { err("sin frontmatter"); continue; }
     if (fm.tipo !== "herramienta") continue;
     herramientas++;

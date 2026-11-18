@@ -44,7 +44,14 @@ for (const [i, f] of fuentes.entries()) {
 const gitIgnora = (await app.vault.adapter.read(".gitignore").catch(() => "")).includes("obsidian-full-calendar/data.json");
 ok("URL del calendario fuera de Git", gitIgnora, gitIgnora ? ".gitignore correcto" : "¡añade la línea a .gitignore!");
 
-// 5. Proyectos
+// 5. Escáner
+let cfg = null;
+try { cfg = JSON.parse(await app.vault.adapter.read("_sistema/config/escaner.local.json")); } catch (e) {}
+ok("Escáner configurado", cfg?.carpetas?.length ? true : null, cfg?.carpetas?.length ? cfg.carpetas.join(" · ") : "aún no: ejecuta escanear.bat");
+const ultimoEscaneo = dv.pages('"01 Proyectos"').where((p) => p.escaneado).array().map((p) => String(p.escaneado).slice(0, 10)).sort().pop();
+if (ultimoEscaneo) ok("Último escaneo", true, ultimoEscaneo);
+
+// 6. Proyectos
 const PERM = {
   categoria: ["codigo", "personal", "creativo"],
   estado: ["idea", "activo", "pausado", "bloqueado", "completado", "archivado"],
@@ -56,9 +63,9 @@ for (const p of ps) {
   for (const [k, vals] of Object.entries(PERM)) if (!vals.includes(p[k])) malos.push(`${p.file.name}: ${k} = ${p[k] ?? "(vacío)"}`);
   if (typeof p.progreso !== "number" || p.progreso < 0 || p.progreso > 100) malos.push(`${p.file.name}: progreso = ${p.progreso ?? "(vacío)"}`);
 }
-ok(`Frontmatter de ${ps.length} proyectos`, malos.length === 0, malos.length ? malos.join("<br>") : "todos válidos");
+ok(`Frontmatter de ${ps.length} proyectos`, ps.length === 0 ? null : malos.length === 0, ps.length === 0 ? "todavía no hay proyectos (escanear.bat)" : malos.length ? malos.join("<br>") : "todos válidos");
 const pendientes = ps.where((p) => (p.etiquetas || []).includes("revisar")).length;
-ok("Proyectos por confirmar (`revisar`)", pendientes === 0 ? true : null, pendientes ? `${pendientes} pendientes: [[04 Revisiones/2026-11-18|primera revisión]]` : "ninguno");
+ok("Proyectos por confirmar (`revisar`)", pendientes === 0 ? true : null, pendientes ? `${pendientes} pendientes: revísalos en la revisión semanal` : "ninguno");
 
 dv.table(["", "Comprobación", "Detalle"], filas);
 ```
