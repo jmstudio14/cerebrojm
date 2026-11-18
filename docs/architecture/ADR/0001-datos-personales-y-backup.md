@@ -1,6 +1,6 @@
 # ADR-0001 · Clasificación de datos, exclusión de Git y copia de seguridad
 
-- **Estado:** Propuesta (pendiente de aprobación)
+- **Estado:** **Aceptada** el 2026-11-18. Decisión del usuario: zona personal fuera de Git, copia cifrada local y, para AUD-005, la opción "repositorio nuevo y limpio".
 - **Fecha:** 2026-11-18
 - **Relacionado:** AUD-003, AUD-004, AUD-005, AUD-006
 
@@ -26,9 +26,7 @@
    - conserva las N últimas copias;
    - incluye `restaurar.bat`, que recupera la copia sin sobrescribir archivos más recientes sin confirmación.
 
-3. **Limpieza en GitHub (AUD-005):**
-   - borrar la rama `respaldo-pre-limpieza-2026-11-18`;
-   - pedir a GitHub Support que elimine las referencias `refs/pull/*` y las vistas en caché, **o** crear un repositorio nuevo solo con el historial limpio y archivar o borrar el actual.
+3. **Limpieza en GitHub (AUD-005):** opción elegida: **repositorio nuevo y limpio**. El usuario renombra el actual a `cerebrojm-antiguo`, crea uno vacío `cerebrojm`, se migran las ramas limpias, se verifican todas las referencias y se borra el antiguo. El proxy de Git del entorno de trabajo no permite borrar la rama de respaldo; desaparece con el repositorio antiguo.
 
 4. **Quitar `{{hostname}}`** de los mensajes de commit (AUD-006).
 
@@ -42,9 +40,7 @@
 | D. Obsidian Sync (de pago) para los datos personales | Cifrado de extremo a extremo y versiones | Coste recurrente; un servicio más |
 | E. No hacer nada | — | Pérdida de datos probable a medio plazo (AUD-003) |
 
-**Elección del cifrado:**
-- Lo que no puede faltar es que el archivo se pueda descifrar sin la herramienta: 7-Zip con AES-256, o el formato `age`.
-- No se añade ninguna dependencia npm sin un spike previo; la elección concreta queda para BL FEAT-002.
+**Elección del cifrado (implementada):** `node:crypto` con AES-256-GCM y clave derivada por scrypt, y `node:zlib`. No añade dependencias: Node ya es un requisito del escáner. Contrapartida: la copia solo la abre `restaurar.mjs`, que forma parte del propio sistema.
 
 ## Consecuencias
 

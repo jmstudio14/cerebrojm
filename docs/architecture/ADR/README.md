@@ -4,7 +4,7 @@ Cada ADR documenta una decisión con su contexto, las alternativas y sus consecu
 
 | ADR | Título | Estado | Resuelve |
 |---|---|---|---|
-| [0001](0001-datos-personales-y-backup.md) | Clasificación de datos, exclusión de Git y copia de seguridad | Propuesta | AUD-003, 004, 005, 006 |
+| [0001](0001-datos-personales-y-backup.md) | Clasificación de datos, exclusión de Git y copia de seguridad | **Aceptada** | AUD-003, 004, 005, 006 |
 | [0002](0002-motor-icalendar.md) | Motor iCalendar: parser propio frente a biblioteca | Propuesta (con spike) | AUD-010 a 018, 036 |
 | [0003](0003-interfaz-obsidian-frente-a-app.md) | Interfaz: Obsidian frente a app propia | Propuesta | Fase 3, FEAT-008, 013 |
 | [0004](0004-agente-de-proyectos.md) | Agente de proyectos con Claude Code | Propuesta | FEAT-004 |
