@@ -18,7 +18,7 @@ Un vault de Obsidian que se sincroniza solo con GitHub y te dice qué está acti
 ![Obsidian Git](https://img.shields.io/badge/Obsidian_Git-sync-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![Google Calendar](https://img.shields.io/badge/Google_Calendar-iCal-4285F4?style=for-the-badge&logo=googlecalendar&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-11-0078D4?style=for-the-badge&logo=windows11&logoColor=white)
-![Licencia](https://img.shields.io/badge/licencia-MIT-22C55E?style=for-the-badge)
+![Repo privado](https://img.shields.io/badge/repo-privado-6B7280?style=for-the-badge&logo=github&logoColor=white)
 
 [Funciones](#-funciones) ·
 [Cómo funciona](#-cómo-funciona) ·
@@ -274,7 +274,7 @@ Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se e
 
 <div align="center">
 
-Hecho con Obsidian · Distribuido bajo licencia [MIT](LICENSE)
+Hecho con Obsidian · Uso personal · Todos los derechos reservados
 
 <sub>Las notas son tuyas; este repo solo las ordena.</sub>
 
