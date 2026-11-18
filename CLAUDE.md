@@ -18,6 +18,13 @@ Este repositorio es el sistema de un vault de Obsidian («cerebro digital»), si
 - No inventes información. Si un dato no puede verificarse, márcalo como «por confirmar».
 - Usa fechas `AAAA-MM-DD` y enlaces internos `[[Nombre de nota]]` en lugar de rutas cuando escribas notas.
 
+## Buenas prácticas de cambios
+
+- Mantén el diff acotado: no aproveches la tarea para hacer refactorizaciones, cambios de dependencias ni mejoras ajenas a lo solicitado.
+- Si hay varias opciones razonables que cambian el comportamiento o el alcance, pregunta antes de decidir. Antes de borrar, sobrescribir o renombrar archivos, pide confirmación; conserva siempre los cambios preexistentes.
+- Si preparas cambios para un commit, añade solo las rutas intencionadas; evita `git add -A` y cualquier operación que pueda incluir datos personales o ignorados.
+- Al informar del resultado, indica qué verificaciones ejecutaste y sus resultados. No afirmes que algo funciona si no lo comprobaste.
+
 ## Notas de proyectos
 
 - Cada proyecto es una nota basada en `_sistema/plantillas/Proyecto.md`. Respeta los nombres de campos y valores permitidos que define la plantilla y documenta `README.md`; el Panel depende de ellos.
