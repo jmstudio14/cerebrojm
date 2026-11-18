@@ -77,6 +77,7 @@ Las tareas `- [ ]` bajo el encabezado **Próximas tareas** de proyectos activos 
 ```
 00 Panel.md              Dashboard principal
 Guía rápida.md           Rutina diaria/semanal y señales de alarma
+ROADMAP.md               Fases de evolución del propio sistema
 01 Proyectos/            Una nota por proyecto
 02 Notas/                Notas sueltas e ideas (bandeja de entrada)
 03 Diario/               Notas diarias (AAAA-MM-DD)

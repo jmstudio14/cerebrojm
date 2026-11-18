@@ -4,7 +4,7 @@ tipo: guia
 
 # Guía rápida
 
-Volver al [[00 Panel|Panel]]. Instalación y detalles: `README.md`.
+Volver al [[00 Panel|Panel]]. Instalación y detalles: `README.md`. Evolución del sistema: [[ROADMAP]].
 
 ## Rutina
 | Cuándo | Qué | Dónde |
