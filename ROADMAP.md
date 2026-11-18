@@ -9,6 +9,8 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 
 **Regla:** no se empieza una fase hasta cerrar la anterior. Nada de la Fase 2 en adelante hasta terminar la Fase 1. Un sistema que no se usa no necesita más funciones.
 
+**Congelación:** hasta cerrar la Fase 1, el sistema (Panel, plantillas, scripts, README, roadmap) **no se toca**, salvo para corregir fallos encontrados al usarlo. Las ideas nuevas se apuntan en *Ideas sin priorizar*.
+
 ---
 
 ## ✅ Fase 0: Base (hecha, 2026-11-18)
@@ -21,9 +23,10 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 
 ## 🔄 Fase 1: Adopción (ahora)
 - [ ] Clonar en el PC Windows (fuera de OneDrive) y abrir como vault
-- [ ] Activar los plugins y comprobar que el Panel y los índices se ven sin errores
+- [ ] Activar los plugins y abrir [[Diagnóstico]]: todo en ✅ (en especial `requestUrl` y la descarga del calendario)
+- [ ] Comprobar que el Panel y los índices se ven sin errores
 - [ ] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
-- [ ] Primera revisión: dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar`
+- [ ] Primera revisión: dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar` (hasta entonces salen en *Necesitan atención*, es intencionado)
 - [ ] Usarlo 2 semanas: nota diaria cuando aporte y revisión semanal sin falta
 - [ ] Sustituir el esquema del Panel del README (`_sistema/assets/panel-esquema.svg`) por una captura real
 
@@ -138,3 +141,4 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema.
 - 2026-11-18: Fase 0 completada (PR #1).
 - 2026-11-18: README rediseñado con banner, diagramas y esquema del Panel.
 - 2026-11-18: añadida la Fase 2 (interfaz de escritorio); las fases siguientes pasan a 3, 4 y 5.
+- 2026-11-18: auditoría: datos importados honestos (las alertas ya no se ocultan), `agenda.js` con `requestUrl` robusto, caché sin conexión y escape de títulos, nota [[Diagnóstico]], tests del iCal, validador de frontmatter y CI. Congelación del sistema hasta cerrar la Fase 1.
