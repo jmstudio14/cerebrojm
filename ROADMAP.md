@@ -142,3 +142,4 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema.
 - 2026-11-18: README rediseñado con banner, diagramas y esquema del Panel.
 - 2026-11-18: añadida la Fase 2 (interfaz de escritorio); las fases siguientes pasan a 3, 4 y 5.
 - 2026-11-18: auditoría: datos importados honestos (las alertas ya no se ocultan), `agenda.js` con `requestUrl` robusto, caché sin conexión y escape de títulos, nota [[Diagnóstico]], tests del iCal, validador de frontmatter y CI. Congelación del sistema hasta cerrar la Fase 1.
+- 2026-11-18: quitada la licencia MIT (vault privado, todos los derechos reservados).
