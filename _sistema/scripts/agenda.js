@@ -194,9 +194,38 @@ function ocurrencias(eventos, desde, hasta) {
   return res.sort((a, b) => a.inicio - b.inicio);
 }
 
+// ---------- Utilidades ----------
+
+// Escapa caracteres con significado en Markdown/HTML para que un título de
+// evento no pueda alterar el formato de la nota.
+function escaparMd(texto) {
+  return String(texto ?? "")
+    .replace(/[\\`*_{}\[\]()#+!|<>~=]/g, (c) => "\\" + c)
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// requestUrl de Obsidian evita el bloqueo CORS de Google. Puede estar como
+// global o solo en el módulo "obsidian"; si no aparece, se devuelve null.
+function obtenerRequestUrl() {
+  if (typeof globalThis.requestUrl === "function") return globalThis.requestUrl;
+  try {
+    const r = (typeof require === "function" ? require : globalThis.require)("obsidian").requestUrl;
+    if (typeof r === "function") return r;
+  } catch (e) { /* no disponible */ }
+  return null;
+}
+
+// Clave de caché sin guardar la URL secreta en claro.
+function claveCache(url) {
+  let h = 5381;
+  for (let i = 0; i < url.length; i++) h = ((h * 33) ^ url.charCodeAt(i)) >>> 0;
+  return "cerebrojm-ical-" + h.toString(36);
+}
+
 // ---------- Exportación para pruebas fuera de Obsidian ----------
 if (typeof module !== "undefined" && typeof dv === "undefined") {
-  module.exports = { parsearICS, ocurrencias };
+  module.exports = { parsearICS, ocurrencias, escaparMd, obtenerRequestUrl, claveCache };
 }
 
 // ---------- Render en Obsidian ----------
@@ -214,14 +243,33 @@ if (typeof dv !== "undefined") {
     } catch (e) { /* sin configurar todavía */ }
 
     const items = [];
-    const errores = [];
+    const avisos = [];
+    const req = obtenerRequestUrl();
+    if (fuentes.length && !req) {
+      avisos.push("> [!warning] `requestUrl` de Obsidian no está disponible: no se puede descargar el calendario. Abre [[Diagnóstico]].");
+    }
     for (const f of fuentes) {
+      const url = f.url.replace(/^webcal:/i, "https:");
+      const clave = claveCache(url);
+      let texto = null;
       try {
-        const url = f.url.replace(/^webcal:/i, "https:");
-        const texto = typeof requestUrl === "function" ? (await requestUrl({ url })).text : await (await fetch(url)).text();
-        for (const o of ocurrencias(parsearICS(texto), hoy, hasta)) items.push({ ...o, color: f.color, tipo: "evento" });
+        if (!req) throw new Error("requestUrl no disponible");
+        texto = (await req({ url })).text;
+        if (!/BEGIN:VCALENDAR/.test(texto)) throw new Error("la respuesta no es un calendario iCal");
+        try { localStorage.setItem(clave, JSON.stringify({ t: Date.now(), texto })); } catch (e) { /* caché llena */ }
       } catch (e) {
-        errores.push(e.message || String(e));
+        let copia = null;
+        try { copia = JSON.parse(localStorage.getItem(clave) || "null"); } catch (e2) { /* sin caché */ }
+        if (copia && copia.texto) {
+          texto = copia.texto;
+          const cuando = new Date(copia.t).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+          avisos.push(`> [!info] Sin conexión con un calendario: se muestran los datos guardados del ${cuando}.`);
+        } else {
+          avisos.push(`> [!warning] No se pudo leer un calendario: ${escaparMd(e.message || String(e))}`);
+        }
+      }
+      if (texto) {
+        for (const o of ocurrencias(parsearICS(texto), hoy, hasta)) items.push({ ...o, color: f.color, tipo: "evento" });
       }
     }
 
@@ -235,7 +283,7 @@ if (typeof dv !== "undefined") {
     if (!fuentes.length) {
       dv.paragraph("> [!info] Calendario sin conectar\n> Ajustes → Full Calendar → *Add calendar* → **iCal** y pega la *dirección secreta en formato iCal* de Google Calendar. Ver `README.md`.");
     }
-    for (const e of errores) dv.paragraph(`> [!warning] No se pudo leer un calendario: ${e}`);
+    for (const a of avisos) dv.paragraph(a);
     if (!items.length) { dv.paragraph(`*Nada en los próximos ${dias} días.*`); return; }
 
     const fmtHora = (d) => d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
@@ -264,7 +312,7 @@ if (typeof dv !== "undefined") {
             : `🎯 Fecha límite: ${it.titulo}`;
         }
         const hora = it.todoElDia ? "Todo el día" : `${fmtHora(it.inicio)}–${fmtHora(it.fin)}`;
-        return `📅 ${hora} · **${it.titulo}**${it.lugar ? ` · _${it.lugar}_` : ""}`;
+        return `📅 ${hora} · **${escaparMd(it.titulo)}**${it.lugar ? ` · _${escaparMd(it.lugar)}_` : ""}`;
       }));
     }
   })();

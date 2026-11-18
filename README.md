@@ -150,7 +150,8 @@ git pull   # comprueba que la autenticación funciona
 
 1. Obsidian → **Open folder as vault** → `C:\Users\<tú>\cerebrojm`.
 2. Pulsa **Trust author and enable plugins** (o *Ajustes → Community plugins → Turn on*).
-3. Abre **`00 Panel.md`**, que también está en Marcadores.
+3. Abre **`_sistema/Diagnóstico.md`**: comprueba plugins, calendario y proyectos. Todo debería salir en ✅.
+4. Abre **`00 Panel.md`**, que también está en Marcadores.
 
 Los plugins (Dataview, Obsidian Git y Full Calendar) **vienen incluidos** en `.obsidian/plugins/`: no hay que instalar nada.
 
@@ -239,6 +240,8 @@ cerebrojm/
 ├── _sistema/
 │   ├── plantillas/           Proyecto · Nota diaria · Revisión semanal · Nota
 │   ├── scripts/agenda.js     Lector iCal + fechas límite
+│   ├── tests/                Tests de la agenda y validador del vault (CI)
+│   ├── Diagnóstico.md        Autocomprobación del sistema
 │   └── assets/               Imágenes del README
 └── .obsidian/                Configuración y plugins incluidos
 ```
@@ -264,6 +267,7 @@ Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se e
 
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
+- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal y valida el frontmatter de los proyectos.
 - Si Obsidian Git detecta un conflicto, te avisa: abre el archivo, quédate con la versión buena y haz *Commit-and-sync*.
 
 ---
