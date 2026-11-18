@@ -1,0 +1,14 @@
+# --- Secretos: contiene la URL privada de Google Calendar ---
+.obsidian/plugins/obsidian-full-calendar/data.json
+
+# --- Estado local de Obsidian (cambia constantemente y genera conflictos) ---
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/workspaces.json
+.obsidian/cache
+.trash/
+
+# --- Sistema ---
+.DS_Store
+Thumbs.db
+desktop.ini

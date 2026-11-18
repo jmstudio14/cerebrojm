@@ -1,0 +1,11 @@
+{
+  "renderNullAs": "—",
+  "taskCompletionTracking": true,
+  "taskCompletionText": "completado",
+  "enableDataviewJs": true,
+  "enableInlineDataviewJs": false,
+  "defaultDateFormat": "dd/MM/yyyy",
+  "defaultDateTimeFormat": "dd/MM/yyyy HH:mm",
+  "refreshEnabled": true,
+  "refreshInterval": 2500
+}

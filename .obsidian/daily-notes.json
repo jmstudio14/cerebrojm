@@ -1,0 +1,6 @@
+{
+  "folder": "03 Diario",
+  "format": "YYYY-MM-DD",
+  "template": "_sistema/plantillas/Nota diaria",
+  "autorun": false
+}
