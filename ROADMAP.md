@@ -71,9 +71,9 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 **Terminado si:** en 2 repos reales el plan propuesto es correcto, identifica bien la fase y respeta las reglas de su `CLAUDE.md`.
 
 ### 2c · Implementar la fase
-- [ ] Con el plan aprobado: rama nueva, implementación paso a paso, tests y lint del propio repo, y actualización de su ROADMAP o CHANGELOG si sus reglas lo piden.
-- [ ] PR en borrador con resumen, verificación ejecutada y riesgos pendientes.
-- [ ] En el vault: actualizar `progreso`, `proxima_accion`, una línea de Registro y el enlace al PR.
+- [x] Con el plan aprobado: rama nueva, implementación paso a paso, tests y lint del propio repo, y actualización de su ROADMAP o CHANGELOG si sus reglas lo piden.
+- [x] PR en borrador con resumen, verificación ejecutada y riesgos pendientes.
+- [x] En el vault: actualizar `progreso`, `proxima_accion`, una línea de Registro y el enlace al PR.
 
 **Terminado si:** una fase real queda implementada en un repo, con su CI en verde y el PR **revisado y fusionado por ti**.
 
@@ -202,5 +202,6 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: Fase 1: primera revisión hecha. Quedan 4 proyectos activos (OSINEITOR, HARRY POTTER CARDS, Miel y calendario DAM) con una próxima acción tomada de los ROADMAP de sus repos (por confirmar); los otros 30 conservan su estado anterior y ninguno lleva `revisar`. Sustituye al paso de los 34 activos.
 - 2026-11-18: Fase 2a implementada por petición expresa con la Fase 1 abierta (condición de entrada sin cumplir): subagente `gestor-proyectos`, comandos `/estado`, `/revision` y `/proyecto`, y `estado.mjs` con test en la CI. Sus pasos están comprobados por separado; falta usarlos como comandos en Claude Code. El «Terminado si» de 2a sigue abierto hasta entonces.
 - 2026-11-18: Fase 2b implementada por petición expresa con la Fase 1 abierta: comando `/fase <proyecto>`, de solo lectura. Sus pasos de lectura están comprobados a mano sobre dos repos reales y uno sin ROADMAP; falta ejecutarlo como comando y que el usuario juzgue el plan en 2 repos. El «Terminado si» de 2b sigue abierto.
+- 2026-11-18: Fase 2c implementada por petición expresa con la Fase 1 abierta: comando `/implementar <proyecto>` y `.claude/settings.json` con reglas `deny` (merge, `pr ready`, borrar repo, push forzado, push a `main`/`master`, `reset --hard`). Probado de extremo a extremo en un repo privado de prueba (plan aprobado, rama de fase, tests, PR en borrador, nota del vault válida); las 6 órdenes bloqueadas se rechazan. La prueba halló un hueco (`HEAD:main`) y un falso positivo (órdenes encadenadas); el hueco está cerrado. El «Terminado si» de 2c sigue abierto: exige una fase real fusionada por el usuario con CI en verde. 2d no se ha tocado.
 - 2026-11-18: Fase 1: el README usa una captura real del Panel (`_sistema/assets/panel.png`, con nombres y acciones de proyecto difuminados) y se elimina `panel-esquema.svg`.
 - 2026-11-18: Fase 1: [[Diagnóstico]] en 13/13 ✅ y Panel e índices sin errores de Dataview, comprobado con Obsidian abierto por depuración remota (CDP).
