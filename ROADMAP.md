@@ -56,17 +56,17 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 - **El vault es la memoria.** Cada acción deja rastro en la nota del proyecto: `## Registro`, `progreso`, `proxima_accion` y enlace al PR.
 
 ### 2a · Gestión desde el vault (sin tocar otros repos)
-- [ ] Reutilizar `_sistema/scripts/escanear.mjs` como fuente de datos del agente (ya conoce carpetas, repos, ROADMAP, CLAUDE.md y tests de cada proyecto).
-- [ ] Subagente `.claude/agents/gestor-proyectos.md`: lee el vault y edita solo `01 Proyectos/`, `04 Revisiones/` y `05 Herramientas/`.
-- [ ] `/estado`: resumen por estado con vencidos, bloqueados, estancados y sin próxima acción. Actualiza `ultimo_push` consultando GitHub y lista los PRs abiertos pendientes de revisión.
-- [ ] `/revision`: crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla con datos reales.
-- [ ] `/proyecto <nombre>`: ficha del proyecto, últimos cambios en su repo y una propuesta de siguiente paso.
+- [x] Reutilizar `_sistema/scripts/escanear.mjs` como fuente de datos del agente (ya conoce carpetas, repos, ROADMAP, CLAUDE.md y tests de cada proyecto).
+- [x] Subagente `.claude/agents/gestor-proyectos.md`: lee el vault y edita solo `01 Proyectos/`, `04 Revisiones/` y `05 Herramientas/`.
+- [x] `/estado`: resumen por estado con vencidos, bloqueados, estancados y sin próxima acción. Actualiza `ultimo_push` consultando GitHub y lista los PRs abiertos pendientes de revisión.
+- [x] `/revision`: crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla con datos reales.
+- [x] `/proyecto <nombre>`: ficha del proyecto, últimos cambios en su repo y una propuesta de siguiente paso.
 
 **Terminado si:** `/estado` coincide con el [[00 Panel|Panel]] y `/revision` genera una nota que pasa `validar-vault.mjs`.
 
 ### 2b · Leer y planificar la fase siguiente de un repo
-- [ ] `/fase <proyecto>`: localiza el repo (campo `repo`), lee su `ROADMAP.md`, `CLAUDE.md` y su estado (tests, CI, ramas abiertas), identifica la **fase siguiente** y propone un plan con tareas, archivos afectados, riesgos y cómo se verificará.
-- [ ] No escribe código. Si el repo no tiene ROADMAP, propone uno a partir del README y del código.
+- [x] `/fase <proyecto>`: localiza el repo (campo `repo`), lee su `ROADMAP.md`, `CLAUDE.md` y su estado (tests, CI, ramas abiertas), identifica la **fase siguiente** y propone un plan con tareas, archivos afectados, riesgos y cómo se verificará.
+- [x] No escribe código. Si el repo no tiene ROADMAP, propone uno a partir del README y del código.
 
 **Terminado si:** en 2 repos reales el plan propuesto es correcto, identifica bien la fase y respeta las reglas de su `CLAUDE.md`.
 
@@ -200,5 +200,7 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: Fase 1: primer escaneo de proyectos en el PC (Node v26, `escaner.local.json` local); `validar-vault.mjs` y tests en verde.
 - 2026-11-18: Fase 1: los 34 proyectos pasan a `activo` y pierden `revisar` por decisión del usuario (incumple el máximo de 3-4 activos; sin `proxima_accion` todavía). Primera revisión abierta.
 - 2026-11-18: Fase 1: primera revisión hecha. Quedan 4 proyectos activos (OSINEITOR, HARRY POTTER CARDS, Miel y calendario DAM) con una próxima acción tomada de los ROADMAP de sus repos (por confirmar); los otros 30 conservan su estado anterior y ninguno lleva `revisar`. Sustituye al paso de los 34 activos.
+- 2026-11-18: Fase 2a implementada por petición expresa con la Fase 1 abierta (condición de entrada sin cumplir): subagente `gestor-proyectos`, comandos `/estado`, `/revision` y `/proyecto`, y `estado.mjs` con test en la CI. Sus pasos están comprobados por separado; falta usarlos como comandos en Claude Code. El «Terminado si» de 2a sigue abierto hasta entonces.
+- 2026-11-18: Fase 2b implementada por petición expresa con la Fase 1 abierta: comando `/fase <proyecto>`, de solo lectura. Sus pasos de lectura están comprobados a mano sobre dos repos reales y uno sin ROADMAP; falta ejecutarlo como comando y que el usuario juzgue el plan en 2 repos. El «Terminado si» de 2b sigue abierto.
 - 2026-11-18: Fase 1: el README usa una captura real del Panel (`_sistema/assets/panel.png`, con nombres y acciones de proyecto difuminados) y se elimina `panel-esquema.svg`.
 - 2026-11-18: Fase 1: [[Diagnóstico]] en 13/13 ✅ y Panel e índices sin errores de Dataview, comprobado con Obsidian abierto por depuración remota (CDP).

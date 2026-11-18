@@ -241,6 +241,7 @@ Abre Claude Code en la carpeta del vault. El subagente `gestor-proyectos` (`.cla
 | `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Solo escribe `ultimo_push`. |
 | `/revision` | Crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla, con los datos del día. No sobrescribe y no marca el checklist. |
 | `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs abiertos y una propuesta de siguiente paso. Solo lectura. |
+| `/fase <nombre>` | Lee el repo del proyecto (su `CLAUDE.md`, `ROADMAP.md`, tests y CI) y propone el plan de su fase siguiente. No escribe nada. |
 
 Ninguno hace commit ni push.
 
