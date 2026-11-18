@@ -1,0 +1,33 @@
+# ADR-0007 · Integración con GitHub: local y bajo demanda
+
+- **Estado:** Propuesta
+- **Fecha:** 2026-11-18
+- **Relacionado:** AUD-027, FEAT-003, `ROADMAP.md` Fase 4
+
+## Contexto
+
+La Fase 4 de `ROADMAP.md` propone una GitHub Action que actualice `ultimo_push` en las notas. Desde que las notas de proyecto están en `.gitignore` (ADR-0001), una Action **no puede verlas ni modificarlas** (AUD-027).
+
+## Decisión propuesta
+
+- El escáner, opcionalmente (`--github`), consulta GitHub desde el PC del usuario con la CLI `gh` ya autenticada:
+  - PRs abiertos;
+  - issues abiertos;
+  - último release;
+  - estado del último workflow en la rama por defecto.
+- El resultado va solo al **bloque automático** de la nota. No se crean campos que el usuario tenga que mantener.
+- Si `gh` no está instalado o no ha iniciado sesión, el escáner avisa y sigue sin datos de GitHub (degradación controlada).
+- No se guarda ningún token en el vault: la credencial la gestiona `gh` (gestor de credenciales del sistema).
+
+## Alternativas
+
+| Opción | Motivo |
+|---|---|
+| GitHub Action programada | No ve los datos locales; necesita un token con permisos sobre todos los repos |
+| API REST con un token en `escaner.local.json` | Un token en texto plano en disco. Se descarta frente a `gh` |
+| Servidor MCP de GitHub dentro de Claude Code | Válido para el **agente** (ADR-0004), no para el escáner determinista |
+
+## Consecuencias
+
+- La Fase 4 de `ROADMAP.md` debe reescribirse (ver MASTER-ROADMAP).
+- Depende de tener `gh` instalado en Windows (dependencia opcional y documentada).
