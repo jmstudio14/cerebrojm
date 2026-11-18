@@ -26,8 +26,8 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 - [x] Instalar Node.js si no lo tienes y ejecutar `escanear.bat` con tus carpetas de proyectos
 - [x] Activar los plugins y abrir [[Diagnóstico]]: todo en ✅ (en especial `requestUrl` y la descarga del calendario)
 - [x] Comprobar que el Panel y los índices se ven sin errores
-- [ ] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
-- [ ] Primera revisión (nota nueva en `04 Revisiones/` con la plantilla): dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar` (hasta entonces salen en *Necesitan atención*, es intencionado)
+- [x] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
+- [x] Primera revisión (nota nueva en `04 Revisiones/` con la plantilla): dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar` (hasta entonces salen en *Necesitan atención*, es intencionado)
 - [ ] Usarlo 2 semanas: nota diaria cuando aporte y revisión semanal sin falta
 - [ ] Sustituir el esquema del Panel del README (`_sistema/assets/panel-esquema.svg`) por una captura real
 
@@ -199,4 +199,5 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: ADR-0001 aceptado: notas, diario, revisiones y adjuntos salen de Git; copia cifrada local (`respaldar.bat` / `restaurar.bat`, AES-256-GCM, sin dependencias); el escáner crea la bandeja si falta; commits sin nombre de equipo; test de coherencia de `.gitignore` en CI.
 - 2026-11-18: Fase 1: primer escaneo de proyectos en el PC (Node v26, `escaner.local.json` local); `validar-vault.mjs` y tests en verde.
 - 2026-11-18: Fase 1: los 34 proyectos pasan a `activo` y pierden `revisar` por decisión del usuario (incumple el máximo de 3-4 activos; sin `proxima_accion` todavía). Primera revisión abierta.
+- 2026-11-18: Fase 1: primera revisión hecha. Quedan 4 proyectos activos (OSINEITOR, HARRY POTTER CARDS, Miel y calendario DAM) con una próxima acción tomada de los ROADMAP de sus repos (por confirmar); los otros 30 conservan su estado anterior y ninguno lleva `revisar`. Sustituye al paso de los 34 activos.
 - 2026-11-18: Fase 1: [[Diagnóstico]] en 13/13 ✅ y Panel e índices sin errores de Dataview, comprobado con Obsidian abierto por depuración remota (CDP).
