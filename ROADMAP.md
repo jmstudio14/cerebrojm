@@ -78,7 +78,7 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 **Terminado si:** una fase real queda implementada en un repo, con su CI en verde y el PR **revisado y fusionado por ti**.
 
 ### 2d · Seguimiento
-- [ ] Vigilar los PRs abiertos (CI y comentarios) y corregir lo que pidan las revisiones, sin fusionar nunca.
+- [x] Vigilar los PRs abiertos (CI y comentarios) y corregir lo que pidan las revisiones, sin fusionar nunca.
 - [ ] Reflejar en el vault cuándo se fusiona un PR y cuál es la siguiente fase.
 
 **Terminado si:** durante 2 semanas el agente gestiona al menos 2 fases en repos distintos sin romper nada y sin que tengas que corregir el vault a mano.
@@ -110,16 +110,16 @@ App de escritorio para Windows, **minimalista, profesional y cuidada al detalle*
 - Repositorio propio (propuesta: `cerebrojm-app`); el vault solo lo enlaza. *Se decide al empezar la fase.*
 
 ### 3a · Sistema de diseño
-- [ ] **Tokens**:
+- [x] **Tokens**:
   - espaciado en escala 4/8;
   - tipografía: Inter o Geist para la interfaz, una monoespaciada para fechas y cifras, escala modular y pesos limitados (400/500/600);
   - paleta neutra (grises fríos) con **un solo color de acento** y colores semánticos de estado (activo, bloqueado, pausado, idea, completado, archivado);
   - radios, elevación (2-3 niveles de sombra) y bordes;
   - tema claro y oscuro desde el primer día.
-- [ ] **Movimiento**: transiciones cortas (150-250 ms) con curvas definidas; respetar `prefers-reduced-motion`.
-- [ ] **Componentes** con todos sus estados (normal, hover, foco, activo, deshabilitado): tarjeta, KPI, barra de progreso, chip de estado y prioridad, tabla, columna Kanban, línea de agenda, campo de formulario, menú, diálogo, *toast* y paleta de comandos.
-- [ ] **Estados de pantalla**: vacío (con una acción sugerida), cargando (*skeletons*, no spinners), error (con causa y cómo arreglarlo).
-- [ ] **Prototipo de alta fidelidad** de todas las pantallas, en claro y oscuro, **antes de escribir código**.
+- [x] **Movimiento**: transiciones cortas (150-250 ms) con curvas definidas; respetar `prefers-reduced-motion`.
+- [x] **Componentes** con todos sus estados (normal, hover, foco, activo, deshabilitado): tarjeta, KPI, barra de progreso, chip de estado y prioridad, tabla, columna Kanban, línea de agenda, campo de formulario, menú, diálogo, *toast* y paleta de comandos.
+- [x] **Estados de pantalla**: vacío (con una acción sugerida), cargando (*skeletons*, no spinners), error (con causa y cómo arreglarlo).
+- [x] **Prototipo de alta fidelidad** de todas las pantallas, en claro y oscuro, **antes de escribir código**.
 
 **Terminado si:** tokens y componentes documentados en `docs/DESIGN.md` del repo de la app y prototipos revisados y aprobados.
 
@@ -203,5 +203,7 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: Fase 2a implementada por petición expresa con la Fase 1 abierta (condición de entrada sin cumplir): subagente `gestor-proyectos`, comandos `/estado`, `/revision` y `/proyecto`, y `estado.mjs` con test en la CI. Sus pasos están comprobados por separado; falta usarlos como comandos en Claude Code. El «Terminado si» de 2a sigue abierto hasta entonces.
 - 2026-11-18: Fase 2b implementada por petición expresa con la Fase 1 abierta: comando `/fase <proyecto>`, de solo lectura. Sus pasos de lectura están comprobados a mano sobre dos repos reales y uno sin ROADMAP; falta ejecutarlo como comando y que el usuario juzgue el plan en 2 repos. El «Terminado si» de 2b sigue abierto.
 - 2026-11-18: Fase 2c implementada por petición expresa con la Fase 1 abierta: comando `/implementar <proyecto>` y `.claude/settings.json` con reglas `deny` (merge, `pr ready`, borrar repo, push forzado, push a `main`/`master`, `reset --hard`). Probado de extremo a extremo en un repo privado de prueba (plan aprobado, rama de fase, tests, PR en borrador, nota del vault válida); las 6 órdenes bloqueadas se rechazan. La prueba halló un hueco (`HEAD:main`) y un falso positivo (órdenes encadenadas); el hueco está cerrado. El «Terminado si» de 2c sigue abierto: exige una fase real fusionada por el usuario con CI en verde. 2d no se ha tocado.
+- 2026-11-18: Fase 2d (primera mitad) implementada por petición expresa con la Fase 1 abierta: comando `/seguimiento [proyecto]`. Probado en un repo privado de prueba con CI en rojo y un comentario del propietario: corrigió en la misma rama con push normal, respondió con el prefijo `🤖 Seguimiento:`, la CI pasó a verde, el PR siguió en borrador y una segunda pasada no repitió nada. Tras fusionar el usuario el PR, `/seguimiento` anotó «PR #1 fusionado» en el Registro de la nota y el validador pasó; como el ROADMAP del repo de prueba no tenía fase siguiente, `proxima_accion` quedó sin cambios (el camino «propone la siguiente fase» no se ha ejercitado, y la casilla «Reflejar en el vault…» sigue sin marcar por eso). Tampoco se ha probado en vivo el comentario de un tercero. El «Terminado si» de 2d sigue abierto.
 - 2026-11-18: Fase 1: el README usa una captura real del Panel (`_sistema/assets/panel.png`, con nombres y acciones de proyecto difuminados) y se elimina `panel-esquema.svg`.
 - 2026-11-18: Fase 1: [[Diagnóstico]] en 13/13 ✅ y Panel e índices sin errores de Dataview, comprobado con Obsidian abierto por depuración remota (CDP).
+- 2026-11-18: Fase 3a implementada por petición expresa con la Fase 1 abierta y la condición de entrada de la Fase 3 sin cumplir (sin lista de carencias del Panel ni decisión go/no-go escrita). Repo propio `cerebrojm-app`, solo local (sin GitHub ni push): `docs/DESIGN.md` con tokens, movimiento, componentes y estados de pantalla, y prototipo HTML sin dependencias de las 6 pantallas de 3b en claro y oscuro, con datos ficticios. Verificado: test de contraste WCAG AA en los dos temas y 55 comprobaciones en Chrome (todas las pantallas en los dos temas sin errores de consola, `Ctrl+K`, foco visible con Tab, Kanban con ratón y teclado, validación del diálogo, `prefers-reduced-motion`). El «Terminado si» de 3a sigue abierto: falta que revises y apruebes el prototipo. No se ha escrito código de la app (3b-3e).
