@@ -6,6 +6,7 @@ Este repositorio es un vault de Obsidian ("cerebro digital") sincronizado con Gi
 - Cada proyecto es una nota en `01 Proyectos/` con el frontmatter de `_sistema/plantillas/Proyecto.md`. Respeta exactamente los nombres de campos y los valores permitidos (ver `README.md`); el Panel depende de ellos.
 - Al modificar un proyecto, actualiza `ultima_revision` a la fecha de hoy y añade una línea al `## Registro`.
 - Las tareas de un proyecto van como `- [ ]` bajo `## Próximas tareas`.
+- Cada skill, agente, plugin o MCP es una nota en `05 Herramientas/` con el frontmatter de `_sistema/plantillas/Herramienta.md` (`clase`: skill·agente·plugin·mcp; `uso`: frecuente·ocasional·probando·descartada; `valoracion` 1-5). No inventes el origen ni la descripción: si no está verificado, escribe «por confirmar».
 - Fechas siempre en formato `AAAA-MM-DD`.
 - No edites `.obsidian/workspace*.json` ni crees ni subas `.obsidian/plugins/obsidian-full-calendar/data.json` (contiene la URL privada del calendario).
 - Usa enlaces `[[Nota]]` entre notas en lugar de rutas.

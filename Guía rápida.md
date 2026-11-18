@@ -18,6 +18,7 @@ Volver al [[00 Panel|Panel]]. Instalación y detalles: `README.md`. Evolución d
 - **Idea o nota suelta**: [[Bandeja de entrada]] o una nota en `02 Notas/`. Ver [[_Índice de notas]].
 - **Día a día**: `03 Diario/`. Ver [[_Índice del diario]].
 - **Revisiones**: `04 Revisiones/`. Ver [[_Índice de revisiones]].
+- **Skill, agente, plugin o MCP**: `05 Herramientas/`, plantilla **Herramienta**. Ver [[_Índice de herramientas]].
 
 ## Estados de un proyecto
 `idea` → `activo` → `completado`. En cualquier momento puede pasar a `pausado` o `bloqueado`, y `archivado` es para lo que abandonas. Pausar o archivar **a propósito** es mejor que dejar un proyecto "activo" sin tocarlo.
