@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-development": {
+      "source": "anthropics/claude-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/plugin-dev/skills/agent-development/SKILL.md",
+      "computedHash": "2363c8bf1b686fa477212110bd1f78086daad505dfe50d48b1981e9007bee3df"
+    },
+    "command-development": {
+      "source": "anthropics/claude-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/plugin-dev/skills/command-development/SKILL.md",
+      "computedHash": "9df69c3a9f233f5345d99b6a3beebc0e578da8d120434d3108a2fd78328174f0"
+    },
+    "obsidian-bases": {
+      "source": "obsidianmd/obsidian-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/obsidian/skills/obsidian-bases/SKILL.md",
+      "computedHash": "b18a375bf379d480356917ca18bd19c17c73bf993c9f7b99122cc9c822b0c4e7"
+    },
+    "obsidian-markdown": {
+      "source": "obsidianmd/obsidian-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/obsidian/skills/obsidian-markdown/SKILL.md",
+      "computedHash": "61e937be6e4e4754f117336c2ee8c978fbf77f955877d7b743d05078fd97fb3b"
+    }
+  }
+}

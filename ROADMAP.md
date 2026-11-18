@@ -22,8 +22,8 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 - [x] Índices por carpeta, [[Guía rápida]], [[Diagnóstico]], tests y CI
 
 ## 🔄 Fase 1: Adopción (ahora)
-- [ ] Clonar en el PC Windows (fuera de OneDrive) y abrir como vault
-- [ ] Instalar Node.js si no lo tienes y ejecutar `escanear.bat` con tus carpetas de proyectos
+- [x] Clonar en el PC Windows (fuera de OneDrive) y abrir como vault
+- [x] Instalar Node.js si no lo tienes y ejecutar `escanear.bat` con tus carpetas de proyectos
 - [ ] Activar los plugins y abrir [[Diagnóstico]]: todo en ✅ (en especial `requestUrl` y la descarga del calendario)
 - [ ] Comprobar que el Panel y los índices se ven sin errores
 - [ ] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
@@ -197,3 +197,4 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: añadida la Fase 2 (agente de proyectos con Claude Code); la app de escritorio pasa a Fase 3 y el resto se renumera (4 repos automático, 5 personales, 6 móvil).
 - 2026-11-18: **el repo pasa a ser solo el cerebro**: se eliminan del repo las notas de proyectos y herramientas, que ahora genera `escanear.bat` en el PC (excluidas de Git); tests del escáner en la CI; documentación con ejemplos genéricos.
 - 2026-11-18: ADR-0001 aceptado: notas, diario, revisiones y adjuntos salen de Git; copia cifrada local (`respaldar.bat` / `restaurar.bat`, AES-256-GCM, sin dependencias); el escáner crea la bandeja si falta; commits sin nombre de equipo; test de coherencia de `.gitignore` en CI.
+- 2026-11-18: Fase 1: primer escaneo de proyectos en el PC (Node v26, `escaner.local.json` local); `validar-vault.mjs` y tests en verde.
