@@ -101,6 +101,19 @@ Detecta las skills, agentes y servidores MCP que usan tus proyectos (`skills-loc
   <sub><i>Captura real del Panel; los nombres de proyecto y sus acciones están difuminados.</i></sub>
 </div>
 
+### App de escritorio (opcional)
+
+`cerebrojm-app` (repositorio propio) es una app de Windows (Tauri) que muestra y edita este mismo vault sin abrir Obsidian. Lee y escribe los mismos `.md`, solo cambia la línea que editas y no pisa los cambios de Obsidian ni de Obsidian Git.
+
+<div align="center">
+  <img src="_sistema/assets/app-inicio.png" alt="App de escritorio: Inicio con KPIs, foco de hoy, alertas y agenda" width="92%">
+  <br><br>
+  <img src="_sistema/assets/app-kanban.png" alt="App de escritorio: proyectos en Kanban, tema oscuro" width="45%">
+  <img src="_sistema/assets/app-detalle.png" alt="App de escritorio: detalle de un proyecto con propiedades editables" width="45%">
+  <br>
+  <sub><i>Capturas reales de la app con un vault de ejemplo (datos ficticios).</i></sub>
+</div>
+
 ---
 
 ## 🧠 Cómo funciona

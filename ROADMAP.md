@@ -79,7 +79,7 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 
 ### 2d · Seguimiento
 - [x] Vigilar los PRs abiertos (CI y comentarios) y corregir lo que pidan las revisiones, sin fusionar nunca.
-- [ ] Reflejar en el vault cuándo se fusiona un PR y cuál es la siguiente fase.
+- [x] Reflejar en el vault cuándo se fusiona un PR y cuál es la siguiente fase.
 
 **Terminado si:** durante 2 semanas el agente gestiona al menos 2 fases en repos distintos sin romper nada y sin que tengas que corregir el vault a mano.
 
@@ -124,33 +124,33 @@ App de escritorio para Windows, **minimalista, profesional y cuidada al detalle*
 **Terminado si:** tokens y componentes documentados en `docs/DESIGN.md` del repo de la app y prototipos revisados y aprobados.
 
 ### 3b · Pantallas
-- [ ] **Inicio**: KPIs por estado, foco del día (máx. 3), alertas (vencidos, bloqueados, estancados, sin próxima acción) y la agenda de hoy y mañana.
-- [ ] **Proyectos**: vista lista y vista **Kanban por estado**, con filtros por categoría y prioridad y orden configurable.
-- [ ] **Detalle de proyecto**: frontmatter editable con controles adecuados (selectores, deslizador de progreso, selector de fecha), tareas marcables y registro.
-- [ ] **Agenda**: vistas de semana y de día, con los eventos de Google Calendar y las fechas límite de los proyectos.
-- [ ] **Revisión semanal guiada**: asistente paso a paso que genera la nota en `04 Revisiones/`.
-- [ ] **Ajustes**: ruta del vault, tema e inicio con Windows.
+- [x] **Inicio**: KPIs por estado, foco del día (máx. 3), alertas (vencidos, bloqueados, estancados, sin próxima acción) y la agenda de hoy y mañana.
+- [x] **Proyectos**: vista lista y vista **Kanban por estado**, con filtros por categoría y prioridad y orden configurable.
+- [x] **Detalle de proyecto**: frontmatter editable con controles adecuados (selectores, deslizador de progreso, selector de fecha), tareas marcables y registro.
+- [x] **Agenda**: vistas de semana y de día, con los eventos de Google Calendar y las fechas límite de los proyectos.
+- [x] **Revisión semanal guiada**: asistente paso a paso que genera la nota en `04 Revisiones/`.
+- [x] **Ajustes**: ruta del vault, tema e inicio con Windows.
 
 ### 3c · Interacción
-- [ ] Paleta de comandos `Ctrl+K` para todo: ir a, crear, cambiar de estado, buscar.
-- [ ] Atajos de teclado para todas las acciones frecuentes, con una chuleta en `?`.
-- [ ] Búsqueda global en proyectos, notas y tareas.
-- [ ] Arrastrar tarjetas entre columnas del Kanban para cambiar `estado`, también con alternativa de teclado.
-- [ ] Actualización en vivo: si cambias algo en Obsidian, la app lo refleja al instante (*file watcher*).
+- [x] Paleta de comandos `Ctrl+K` para todo: ir a, crear, cambiar de estado, buscar.
+- [x] Atajos de teclado para todas las acciones frecuentes, con una chuleta en `?`.
+- [x] Búsqueda global en proyectos, notas y tareas.
+- [x] Arrastrar tarjetas entre columnas del Kanban para cambiar `estado`, también con alternativa de teclado.
+- [x] Actualización en vivo: si cambias algo en Obsidian, la app lo refleja al instante (*file watcher*).
 
 ### 3d · Escritura segura
-- [ ] Editar **solo** campos del frontmatter y casillas `- [ ]`, preservando el resto del archivo **byte a byte**: formato, comentarios y orden.
-- [ ] Escritura atómica (archivo temporal y renombrado); nunca dejar un `.md` a medias.
-- [ ] No tocar `.obsidian/`.
-- [ ] Convivencia con Obsidian Git: detectar cambios externos antes de guardar y no pisar ediciones ajenas.
-- [ ] Tests de ida y vuelta: leer, escribir y releer da exactamente el mismo archivo salvo el campo editado.
+- [x] Editar **solo** campos del frontmatter y casillas `- [ ]`, preservando el resto del archivo **byte a byte**: formato, comentarios y orden.
+- [x] Escritura atómica (archivo temporal y renombrado); nunca dejar un `.md` a medias.
+- [x] No tocar `.obsidian/`.
+- [x] Convivencia con Obsidian Git: detectar cambios externos antes de guardar y no pisar ediciones ajenas.
+- [x] Tests de ida y vuelta: leer, escribir y releer da exactamente el mismo archivo salvo el campo editado.
 
 ### 3e · Calidad y entrega
-- [ ] **Accesibilidad WCAG 2.1 AA**: contraste, foco siempre visible, objetivos de 44 px o más, navegable con teclado y compatible con lector de pantalla.
-- [ ] **Rendimiento**: arranque en frío por debajo de 1,5 s, interacción fluida a 60 fps y un vault de 500 notas sin retrasos perceptibles.
-- [ ] **Tests**: unitarios (parser, iCal, escritura segura) y e2e con Playwright de los flujos principales.
-- [ ] **Entrega**: instalador de Windows (MSI o NSIS), icono y marca propios, bandeja del sistema e inicio opcional con Windows.
-- [ ] Capturas reales de la app en el README del vault.
+- [x] **Accesibilidad WCAG 2.1 AA**: contraste, foco siempre visible, objetivos de 44 px o más, navegable con teclado y compatible con lector de pantalla.
+- [x] **Rendimiento**: arranque en frío por debajo de 1,5 s, interacción fluida a 60 fps y un vault de 500 notas sin retrasos perceptibles.
+- [x] **Tests**: unitarios (parser, iCal, escritura segura) y e2e con Playwright de los flujos principales.
+- [x] **Entrega**: instalador de Windows (MSI o NSIS), icono y marca propios, bandeja del sistema e inicio opcional con Windows.
+- [x] Capturas reales de la app en el README del vault.
 
 **Terminado si:** usas la app a diario durante 2 semanas en lugar del Panel de Obsidian, sin perder datos ni crear conflictos de Git, y cumple todos los criterios de 2e.
 
@@ -207,3 +207,48 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 - 2026-11-18: Fase 1: el README usa una captura real del Panel (`_sistema/assets/panel.png`, con nombres y acciones de proyecto difuminados) y se elimina `panel-esquema.svg`.
 - 2026-11-18: Fase 1: [[Diagnóstico]] en 13/13 ✅ y Panel e índices sin errores de Dataview, comprobado con Obsidian abierto por depuración remota (CDP).
 - 2026-11-18: Fase 3a implementada por petición expresa con la Fase 1 abierta y la condición de entrada de la Fase 3 sin cumplir (sin lista de carencias del Panel ni decisión go/no-go escrita). Repo propio `cerebrojm-app`, solo local (sin GitHub ni push): `docs/DESIGN.md` con tokens, movimiento, componentes y estados de pantalla, y prototipo HTML sin dependencias de las 6 pantallas de 3b en claro y oscuro, con datos ficticios. Verificado: test de contraste WCAG AA en los dos temas y 55 comprobaciones en Chrome (todas las pantallas en los dos temas sin errores de consola, `Ctrl+K`, foco visible con Tab, Kanban con ratón y teclado, validación del diálogo, `prefers-reduced-motion`). El «Terminado si» de 3a sigue abierto: falta que revises y apruebes el prototipo. No se ha escrito código de la app (3b-3e).
+- 2026-11-19: Fase 3a cerrada: el usuario aprueba el prototipo tal cual. Fase 3b (junto con el núcleo de la escritura segura de 3d) escrita en el repo local `cerebrojm-app` por petición expresa con la Fase 1 abierta. Incluye las 6 pantallas y el diálogo de nuevo proyecto en Tauri 2 + React + TypeScript estricto. La edición solo cambia la línea del campo o la casilla y conserva CRLF/LF. El guardado es atómico, detecta cambios hechos fuera (en Obsidian o por Obsidian Git) y ofrece aplicar solo el cambio propio. Al crear notas nunca sobrescribe, y no escribe en `.obsidian/`. Verificado: 23 tests unitarios (ida y vuelta byte a byte, alertas iguales al Panel, los casos iCal del vault y la revisión), `tsc` estricto, `vite build` y 34 comprobaciones de las pantallas en Chrome con el backend simulado sobre un vault ficticio. **Sin marcar ninguna casilla de 3b ni de 3d**: la parte Rust (comandos de archivo y agenda, con sus tests) no se ha podido compilar porque la instalación de Visual Studio del PC está incompleta (faltan `vcruntime.lib` y cabeceras del Windows SDK), así que la app no se ha arrancado de verdad.
+- 2026-11-19: Fase 3c (parte de interfaz) escrita en `cerebrojm-app`:
+  - Paleta `Ctrl+K`: ir a, crear, cambiar de estado y buscar proyectos y tareas, sin distinguir tildes.
+  - Atajos con chuleta en `?`.
+  - Kanban arrastrable y con `Alt+←/→`, siempre con «Deshacer».
+  - Verificado en Chrome con el backend simulado: 50 comprobaciones; cada cambio de estado escribe una sola línea.
+  - Sin marcar casillas: falta probarlo en la app real, que sigue sin compilar por Visual Studio.
+  - Quedan la búsqueda en notas sueltas y el *file watcher*, que necesitan comandos de Rust.
+- 2026-11-19: Visual Studio reparado:
+  - Se reconstruyó con `msiexec /fv` la caché de dos MSI rotas (.NET Host 9.0.19 y Debug Runtime 14.51), con las MSI oficiales verificadas por firma, ProductCode y PackageCode.
+  - Después se repararon VS 2022 y el Windows SDK 22621.
+  - Se volvieron a extraer dos crates corruptos en la caché de cargo.
+- 2026-11-19: Fase 3 probada en la app real (Tauri, compilada por primera vez) contra una copia del vault ficticio:
+  - `cargo test` 8/8.
+  - 20 comprobaciones por CDP con escritura real en disco: una línea por cambio, CRLF conservado, sin temporales, conflicto sin pisar, revisión sin sobrescribir.
+  - Rust rechaza rutas fuera del vault, en `.obsidian/` y que no son `.md`.
+  - Agenda descargada y, sin conexión, desde la caché.
+  - Inicio con Windows activado y desactivado.
+  - Humo de solo lectura con el vault real: los KPIs coinciden con las notas y Git queda sin cambios.
+  - Corregido: los comandos de Rust pasan a `async`, porque una ruta lenta (unidad de red desconectada) congelaba la ventana. Vite deja de vigilar `src-tauri/`.
+  - Se marcan las 6 casillas de 3b, 3 de 3c y las 5 de 3d. Quedan la búsqueda en notas, el *file watcher* y 3e.
+- 2026-11-19: Fase 3c completa en `cerebrojm-app`:
+  - Búsqueda en notas sueltas desde la paleta: comando de Rust `buscar_notas`, sin tildes; omite `.obsidian/`, `_sistema/` y los proyectos.
+  - Actualización en vivo con un vigilante (`notify`) sobre `01 Proyectos`.
+  - Probado en la app real: un cambio externo se ve en 280 ms sin recargar, un proyecto creado fuera aparece solo y la paleta encuentra notas.
+  - `cargo test` 9/9, e2e 51/51 y las 20 comprobaciones de la app real siguen en verde.
+- 2026-11-19: Fase 3e completa en `cerebrojm-app`, verificada en la build de release:
+  - **Accesibilidad:** axe-core WCAG 2.1 A/AA sin violaciones en las 8 pantallas × 2 temas y en los diálogos. Objetivos de 44 px o más, foco visible en todo el recorrido con Tab y Kanban y paleta manejables con teclado.
+    - Se corrigió el nombre accesible de las tarjetas del Kanban (2.5.3) y la altura de la navegación, los controles segmentados y las fechas de la agenda (2.5.5).
+    - Lectores de pantalla: el árbol de UI Automation expone 268 controles, todos con nombre. No se ha probado con NVDA ni Narrador manejados por una persona.
+  - **Rendimiento** con 500 proyectos: arranque 610 ms (mediana), interacciones de 49 a 70 ms y desplazamientos a 60 fps.
+    - La lista pasó de 153 a 70 ms con filas en rejilla y `content-visibility`, sin perder la semántica de tabla.
+  - **Tests:** vitest 23, `cargo test` 9, contraste 3, e2e simulado 51 y e2e de la app real 43 (`npm run e2e:app`).
+  - **Entrega:**
+    - Instalador NSIS para el usuario actual, sin administrador: instala, crea el acceso del menú Inicio y desinstala sin dejar rastro.
+    - Bandeja del sistema: el icono se registra en Windows y cerrar la ventana la oculta en la bandeja. El clic en el menú de la bandeja no se ha automatizado.
+    - Inicio con Windows: probado en Ajustes.
+  - **README del vault:** capturas reales de la app con el vault ficticio (`_sistema/assets/app-*.png`).
+  - Corregido además el aviso de `STATIC_VCRUNTIME`: venía del CLI global desfasado (2.11); se usa el CLI del proyecto (`@tauri-apps/cli` 2.12.4).
+  - El «Terminado si» de la Fase 3 sigue abierto: exige 2 semanas de uso diario.
+- 2026-11-19: Fase 2d (segunda mitad) probada con una fase real. En calendario DAM, `/implementar` hizo la fase 2.4.0 (CI en `windows-latest` con pruebas y `.exe` como artefacto):
+  - Rama `fase/2.4.0-ci-windows` con dos commits, CI en verde con 170 pruebas y PR #1 en borrador.
+  - El usuario lo revisó y lo fusionó él mismo (commit `0c193f4`). Antes pidió que lo fusionara el agente; se negó por las reglas `deny` de `.claude/settings.json` y por este ROADMAP.
+  - El paso de `/seguimiento` anotó «PR #1 fusionado» en la nota y propuso la siguiente fase de su ROADMAP (2.5.0, «(por confirmar)»). Este es el camino que faltaba ejercitar.
+  - Se marca la casilla de 2d. Con esto se cumple el «Terminado si» de 2c: una fase real implementada, con CI en verde y el PR revisado y fusionado por el usuario. El de 2d sigue abierto: exige 2 semanas gestionando al menos 2 fases en repos distintos.
