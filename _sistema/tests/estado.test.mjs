@@ -70,3 +70,40 @@ test("no modifica ninguna nota", () => {
   execFileSync("node", [ESTADO, "--vault", vault, "--hoy", "2026-11-18"]);
   assert.equal(fs.readFileSync(path.join(vault, "01 Proyectos", "al-dia.md"), "utf8"), antes);
 });
+
+// --- Robustez (auditoría 2026-11-20) ---
+const vault2 = fs.mkdtempSync(path.join(os.tmpdir(), "cerebro-estado2-"));
+fs.mkdirSync(path.join(vault2, "01 Proyectos"));
+const nota2 = (nombre, texto) => fs.writeFileSync(path.join(vault2, "01 Proyectos", `${nombre}.md`), texto);
+const ejecutar = (v, extra = [], env = {}) =>
+  JSON.parse(execFileSync("node", [ESTADO, "--vault", v, "--hoy", "2026-11-18", ...extra], { encoding: "utf8", env: { ...process.env, ...env } }));
+
+test("«hoy» por defecto es la fecha local del equipo, no la de UTC", () => {
+  for (const zona of ["Pacific/Kiritimati", "Pacific/Pago_Pago"]) { // UTC+14 y UTC-11: una de las dos cae siempre en otro día que UTC
+    const r = JSON.parse(execFileSync("node", [ESTADO, "--vault", vault], { encoding: "utf8", env: { ...process.env, TZ: zona } }));
+    assert.equal(r.hoy, new Intl.DateTimeFormat("sv-SE", { timeZone: zona }).format(new Date()), zona);
+  }
+});
+
+test("una nota con BOM UTF-8 se cuenta como cualquier otra", () => {
+  nota2("con-bom", String.fromCharCode(0xfeff) + "---\ntipo: proyecto\nestado: activo\nultima_revision: 2026-11-17\nproxima_accion: Algo\n---\n");
+  assert.deepEqual(ejecutar(vault2).por_estado, { activo: 1 });
+});
+
+test("null, ~ y '' valen como vacío, igual que en Dataview", () => {
+  for (const [i, valor] of ["null", "~", "''", '""', ""].entries()) {
+    nota2(`vacia-${i}`, `---\ntipo: proyecto\nestado: activo\nultima_revision: 2026-11-17\nproxima_accion: ${valor}\n---\n`);
+  }
+  const r = ejecutar(vault2);
+  assert.deepEqual(r.sin_proxima_accion.sort(), ["vacia-0", "vacia-1", "vacia-2", "vacia-3", "vacia-4"]);
+});
+
+test("comillas simples: 'activo' es activo", () => {
+  const v = fs.mkdtempSync(path.join(os.tmpdir(), "cerebro-estado3-"));
+  fs.mkdirSync(path.join(v, "01 Proyectos"));
+  fs.writeFileSync(path.join(v, "01 Proyectos", "p.md"), "---\ntipo: proyecto\nestado: 'activo'\nultima_revision: 2026-11-17\nproxima_accion: 'Algo'\n---\n");
+  const r = ejecutar(v);
+  assert.deepEqual(r.por_estado, { activo: 1 });
+  assert.deepEqual(r.sin_proxima_accion, []);
+  fs.rmSync(v, { recursive: true, force: true });
+});

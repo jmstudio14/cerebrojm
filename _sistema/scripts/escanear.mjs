@@ -21,13 +21,16 @@ import path from "node:path";
 import readline from "node:readline/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { escribirAtomico } from "./atomico.mjs";
 
 // ---------------------------------------------------------------- argumentos
 const args = process.argv.slice(2);
 const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const RAIZ_SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const VAULT = path.resolve(arg("--vault") || RAIZ_SCRIPT);
-const HOY = arg("--hoy") || new Date().toISOString().slice(0, 10);
+// AAAA-MM-DD en la hora local (toISOString da la de UTC: en España, de 00:00 a 01:00-02:00 sería otro día).
+const fechaLocal = (ms) => new Date(ms - new Date(ms).getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const HOY = arg("--hoy") || fechaLocal(Date.now());
 const CONFIG = path.join(VAULT, "_sistema", "config", "escaner.local.json");
 const DIR_PROY = path.join(VAULT, "01 Proyectos");
 const DIR_HERR = path.join(VAULT, "05 Herramientas");
@@ -73,7 +76,7 @@ function fechaArchivoMasReciente(dir) {
     if (n.startsWith(".") || n === "node_modules") continue;
     try { max = Math.max(max, fs.statSync(path.join(dir, n)).mtimeMs); } catch {}
   }
-  return max ? new Date(max).toISOString().slice(0, 10) : "";
+  return max ? fechaLocal(max) : "";
 }
 
 function diasDesde(fecha) {
@@ -194,9 +197,16 @@ function herramientasDe(dir) {
 }
 
 // ---------------------------------------------------------------- frontmatter
+// `bom` y `crlf` se conservan al reescribir la nota (ver `reconstruir`).
 function partir(texto) {
-  const m = texto.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-  return m ? { fm: m[1], cuerpo: texto.slice(m[0].length) } : { fm: "", cuerpo: texto };
+  const bom = texto.charCodeAt(0) === 0xfeff ? texto[0] : "";
+  const m = texto.slice(bom.length).match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  const crlf = texto.includes("\r\n");
+  return m ? { fm: m[1], cuerpo: texto.slice(bom.length + m[0].length), bom, crlf } : { fm: "", cuerpo: texto, bom, crlf };
+}
+function reconstruir({ bom, crlf }, nfm, cuerpo) {
+  const t = `---\n${nfm}\n---\n${cuerpo}`;
+  return bom + (crlf ? t.replace(/\r?\n/g, "\r\n") : t);
 }
 function leerCampo(fm, k) {
   const m = fm.match(new RegExp(`^${k}:[ \\t]*(.*)$`, "m"));
@@ -219,9 +229,7 @@ function ponerBloque(cuerpo, bloque) {
 
 function escribirSiCambia(f, contenido) {
   if (leer(f) === contenido) return false;
-  const tmp = f + ".tmp";
-  fs.writeFileSync(tmp, contenido, "utf8");
-  fs.renameSync(tmp, f); // escritura atómica
+  escribirAtomico(f, contenido);
   return true;
 }
 
@@ -256,6 +264,7 @@ inicio:
 fecha_limite:
 ultima_revision: ${p.ultimo || HOY}
 proxima_accion: ""
+entregable: ""
 repo: ${comillas(p.repo)}
 ruta_local: ${comillas(p.ruta)}
 ultimo_commit: ${p.ultimo}
@@ -287,13 +296,14 @@ ${FIN}
 }
 
 function actualizarProyecto(f, p) {
-  const { fm, cuerpo } = partir(leer(f));
+  const orig = partir(leer(f));
+  const { fm, cuerpo } = orig;
   let nfm = fm;
   nfm = ponerCampo(nfm, "repo", comillas(p.repo || leerCampo(fm, "repo")?.replace(/^"|"$/g, "") || ""));
   nfm = ponerCampo(nfm, "ruta_local", comillas(p.ruta));
   nfm = ponerCampo(nfm, "ultimo_commit", p.ultimo);
   nfm = ponerCampo(nfm, "escaneado", HOY);
-  return `---\n${nfm}\n---\n${ponerBloque(cuerpo, bloqueProyecto(p))}`;
+  return reconstruir(orig, nfm, ponerBloque(cuerpo, bloqueProyecto(p)));
 }
 
 // ---------------------------------------------------------------- notas de herramienta
@@ -341,18 +351,27 @@ ${FIN}
 }
 
 function actualizarHerramienta(f, h) {
-  const { fm, cuerpo } = partir(leer(f));
-  let nfm = ponerCampo(fm, "uso_en", `[${[...h.proyectos].sort().map((x) => comillas(`[[${x}]]`)).join(", ")}]`);
+  const orig = partir(leer(f));
+  const { fm, cuerpo } = orig;
+  let nfm = ponerCampo(fm, "uso_en",`[${[...h.proyectos].sort().map((x) => comillas(`[[${x}]]`)).join(", ")}]`);
   if (h.origen && !(leerCampo(fm, "origen") || "").replace(/"/g, "")) nfm = ponerCampo(nfm, "origen", comillas(h.origen));
   nfm = ponerCampo(nfm, "escaneado", HOY);
-  return `---\n${nfm}\n---\n${ponerBloque(cuerpo, bloqueHerramienta(h))}`;
+  return reconstruir(orig, nfm, ponerBloque(cuerpo, bloqueHerramienta(h)));
 }
 
 // ---------------------------------------------------------------- configuración
 async function obtenerConfig() {
   const desdeArgs = arg("--carpetas");
   if (desdeArgs) return { carpetas: desdeArgs.split(";").map((s) => s.trim()).filter(Boolean), ignorar: [] };
-  const c = leerJSON(CONFIG);
+  const textoConfig = leer(CONFIG);
+  let c = null;
+  if (textoConfig !== null) {
+    try { c = JSON.parse(textoConfig); }
+    catch (e) {
+      console.error(`${CONFIG} no es JSON válido (${e.message}). Corrígelo o bórralo; no se ha tocado.`);
+      process.exit(2);
+    }
+  }
   if (c?.carpetas?.length) return { ignorar: [], ...c };
   if (!process.stdin.isTTY) {
     console.error(`No hay configuración. Crea ${CONFIG} o usa --carpetas "C:\\ruta1;D:\\ruta2".`);
@@ -392,7 +411,12 @@ async function main() {
       const ultimo = git(dir, "log", "-1", "--format=%cs") || fechaArchivoMasReciente(dir);
       // Mismo nombre en dos carpetas madre: se distingue con el nombre de la madre.
       let nombre = nombreNota(n);
-      if (proyectos.some((q) => q.nombre === nombre)) nombre = nombreNota(`${n} (${path.basename(path.resolve(madre))})`);
+      if (proyectos.some((q) => q.nombre === nombre)) {
+        const madreNombre = path.basename(path.resolve(madre));
+        nombre = nombreNota(`${n} (${madreNombre})`);
+        // Dos carpetas madre con el mismo nombre (en discos distintos) seguirían chocando.
+        for (let i = 2; proyectos.some((q) => q.nombre === nombre); i++) nombre = nombreNota(`${n} (${madreNombre} ${i})`);
+      }
       proyectos.push({
         nombre, ruta: path.resolve(dir),
         repo: normalizarRemoto(git(dir, "remote", "get-url", "origin")),

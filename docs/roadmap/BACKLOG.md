@@ -6,6 +6,11 @@
 | ID | Estado | Nota |
 |---|---|---|
 | AUD-003, AUD-004, AUD-006, FEAT-002 | **Hecho** (2026-11-18) | ADR-0001 aceptado y fusionado en `main` (copia cifrada y zona personal fuera de Git) |
+| AUD-001 | **Parcial** (2026-11-20) | El escáner conserva el BOM y el final de línea y ya no duplica el frontmatter (test en `escanear.test.mjs`). Falta la línea en blanco o los espacios iniciales, y el modo *fail-safe* para notas sin frontmatter |
+| AUD-010 | **Parcial** (2026-11-20) | Un `UNTIL` mal formado ya no rompe la agenda (se ignora el límite). Falta aislar cada evento con `try/catch` y avisar del número de eventos ignorados; `BYDAY` y `DTSTART` inválidos sin comprobar |
+| AUD-017 | **Parcial** (2026-11-20) | Las series `DAILY` saltan a la ventana pedida y ya no desaparecen por el tope de 5000 pasos. El resto de frecuencias conserva el tope |
+| AUD-024 | **Hecho** (2026-11-20) | «Hoy» en fecha local en `escanear.mjs` y `estado.mjs` (tests con `TZ` UTC+14 y UTC-11) |
+| AUD-029 | **Hecho** (2026-11-20) | La plantilla de revisión usa 14 días, como el Panel y `estado.mjs` |
 | AUD-005 | **Parcial: riesgo aceptado** | Repo nuevo `cerebrojm` limpio y verificado (todas sus referencias). El repo antiguo `cerebrojm-antiguo` (privado, con el historial previo) no se ha borrado por decisión del usuario; riesgo bajo mientras siga siendo privado |
 
 ## Prioridades

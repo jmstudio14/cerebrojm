@@ -15,16 +15,18 @@ import { fileURLToPath } from "node:url";
 const args = process.argv.slice(2);
 const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const VAULT = path.resolve(arg("--vault") || path.join(path.dirname(fileURLToPath(import.meta.url)), "..", ".."));
-const HOY = arg("--hoy") || new Date().toISOString().slice(0, 10);
+// Fecha local (toISOString daría la de UTC: el Panel usa la hora local).
+const HOY = arg("--hoy") || new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 const DIAS = (a, b) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000);
 
 function frontmatter(texto) {
-  const m = texto.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const m = (texto.charCodeAt(0) === 0xfeff ? texto.slice(1) : texto).match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return null;
   const datos = {};
   for (const linea of m[1].split(/\r?\n/)) {
     const kv = linea.match(/^([A-Za-z_]+):\s*(.*)$/);
-    if (kv) datos[kv[1]] = kv[2].replace(/^"(.*)"$/, "$1").trim();
+    // null y ~ son YAML vacío (Dataview los trata como sin valor); se aceptan comillas simples y dobles.
+    if (kv) datos[kv[1]] = /^(null|~)$/i.test(kv[2].trim()) ? "" : kv[2].replace(/^(["'])(.*)\1$/, "$2").trim();
   }
   return datos;
 }

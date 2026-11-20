@@ -66,11 +66,13 @@ function parsearFecha(prop) {
   return { fecha: new Date(+Y, +M - 1, +D, +h, +mi, +s), todoElDia: false };
 }
 
+const claveDia = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+
 function parsearICS(texto) {
   const eventos = [];
   let actual = null;
   for (const linea of desplegarLineas(texto)) {
-    if (linea === "BEGIN:VEVENT") { actual = { exdates: [] }; continue; }
+    if (linea === "BEGIN:VEVENT") { actual = { exdates: [], exdias: [] }; continue; }
     if (linea === "END:VEVENT") { if (actual) eventos.push(actual); actual = null; continue; }
     if (!actual) continue;
     const p = parsearPropiedad(linea);
@@ -87,7 +89,8 @@ function parsearICS(texto) {
       case "EXDATE":
         for (const v of p.valor.split(",")) {
           const f = parsearFecha({ params: p.params, valor: v });
-          if (f) actual.exdates.push(f.fecha.getTime());
+          // EXDATE;VALUE=DATE excluye el día entero, también en series con hora.
+          if (f) (f.todoElDia ? actual.exdias.push(claveDia(f.fecha)) : actual.exdates.push(f.fecha.getTime()));
         }
         break;
     }
@@ -124,7 +127,8 @@ function expandir(ev, desde, hasta) {
   const freq = r.FREQ;
   const intervalo = parseInt(r.INTERVAL || "1", 10);
   const cuenta = r.COUNT ? parseInt(r.COUNT, 10) : Infinity;
-  const hastaRegla = r.UNTIL ? parsearFecha({ params: {}, valor: r.UNTIL }).fecha : null;
+  // Un UNTIL mal formado se ignora (la serie sigue): lanzar aquí rompería toda la agenda.
+  const hastaRegla = r.UNTIL ? (parsearFecha({ params: {}, valor: r.UNTIL })?.fecha ?? null) : null;
   const byday = r.BYDAY ? r.BYDAY.split(",") : null;
   const limite = hastaRegla && hastaRegla < hasta ? new Date(hastaRegla.getTime() + 1) : hasta;
 
@@ -138,7 +142,10 @@ function expandir(ev, desde, hasta) {
     return true;
   };
 
-  for (let paso = 0; paso < 5000; paso++) {
+  const sinExcluidos = (xs) => xs.filter((d) => !ev.exdates.includes(d.getTime()) && !ev.exdias.includes(claveDia(d)));
+  // DAILY sin COUNT: se salta a cerca de `desde` (con el tope de pasos, una serie de hace años desaparecería).
+  const pasoIni = freq === "DAILY" && cuenta === Infinity ? Math.max(0, Math.floor((desde - inicio) / (86400000 * intervalo)) - 2) : 0;
+  for (let paso = pasoIni; paso < pasoIni + 5000; paso++) {
     let candidatos = [];
     if (freq === "DAILY") {
       const d = new Date(inicio); d.setDate(d.getDate() + paso * intervalo);
@@ -170,9 +177,9 @@ function expandir(ev, desde, hasta) {
     } else {
       return inicio >= desde && inicio < hasta ? [inicio] : [];
     }
-    for (const c of candidatos) if (!empujar(c)) return out.filter((d) => !ev.exdates.includes(d.getTime()));
+    for (const c of candidatos) if (!empujar(c)) return sinExcluidos(out);
   }
-  return out.filter((d) => !ev.exdates.includes(d.getTime()));
+  return sinExcluidos(out);
 }
 
 function ocurrencias(eventos, desde, hasta) {
@@ -236,14 +243,20 @@ if (typeof dv !== "undefined") {
     const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + dias);
 
     // 1) URLs iCal desde la config local de Full Calendar
-    let fuentes = [];
-    try {
-      const cfg = JSON.parse(await dv.app.vault.adapter.read(CONFIG_FC));
-      fuentes = (cfg.calendarSources || []).filter((s) => s.type === "ical" && s.url);
-    } catch (e) { /* sin configurar todavía */ }
-
     const items = [];
     const avisos = [];
+    let fuentes = [];
+    let textoCfg = null;
+    let cfgIlegible = false;
+    try { textoCfg = await dv.app.vault.adapter.read(CONFIG_FC); } catch (e) { /* sin configurar todavía */ }
+    if (textoCfg !== null) {
+      try { fuentes = (JSON.parse(textoCfg).calendarSources || []).filter((s) => s.type === "ical" && s.url); }
+      catch (e) {
+        cfgIlegible = true;
+        avisos.push(`> [!warning] La configuración de Full Calendar (\`${CONFIG_FC}\`) no es un JSON válido y no se puede leer: ${escaparMd(e.message)}`);
+      }
+    }
+
     const req = obtenerRequestUrl();
     if (fuentes.length && !req) {
       avisos.push("> [!warning] `requestUrl` de Obsidian no está disponible: no se puede descargar el calendario. Abre [[Diagnóstico]].");
@@ -277,10 +290,12 @@ if (typeof dv !== "undefined") {
     for (const p of dv.pages(`"${CARPETA_PROYECTOS}"`).where((p) => p.tipo === "proyecto" && p.fecha_limite && !["completado", "archivado"].includes(p.estado))) {
       const d = new Date(p.fecha_limite.toJSDate ? p.fecha_limite.toJSDate() : p.fecha_limite);
       d.setHours(0, 0, 0, 0);
+      // «Vencido» solo cuenta en activo y bloqueado, como en el Panel (00 Panel.md) y estado.mjs.
+      if (d < hoy && !["activo", "bloqueado"].includes(p.estado)) continue;
       if (d < hasta) items.push({ titulo: p.file.link, inicio: d < hoy ? hoy : d, todoElDia: true, tipo: "limite", vencido: d < hoy, fechaReal: d });
     }
 
-    if (!fuentes.length) {
+    if (!fuentes.length && !cfgIlegible) {
       dv.paragraph("> [!info] Calendario sin conectar\n> Ajustes → Full Calendar → *Add calendar* → **iCal** y pega la *dirección secreta en formato iCal* de Google Calendar. Ver `README.md`.");
     }
     for (const a of avisos) dv.paragraph(a);

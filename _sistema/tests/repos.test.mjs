@@ -19,8 +19,10 @@ const a = process.argv.slice(2);
 if (a[0] === "auth") process.exit(process.env.FAKE_SIN_SESION ? 1 : 0);
 const nombre = /name:"([^"]+)"/.exec(a.join(" "))[1];
 if (nombre === "roto") { console.error("GraphQL: Could not resolve to a Repository with the name 'roto'."); process.exit(1); }
-const datos = { uno: ["2026-11-10T23:30:00Z", 3], dos: ["2026-10-01T00:00:00Z", 0] }[nombre];
-console.log(JSON.stringify({ data: { repository: { pushedAt: datos[0], issues: { totalCount: datos[1] } } } }));
+if (nombre === "cuelga") { setInterval(() => {}, 1000); } else {
+  const datos = { uno: ["2026-11-10T23:30:00Z", 3], dos: ["2026-10-01T00:00:00Z", 0] }[nombre];
+  console.log(JSON.stringify({ data: { repository: { pushedAt: datos[0], issues: { totalCount: datos[1] } } } }));
+}
 `);
 
 function vaultCon(notas) {
@@ -111,4 +113,35 @@ test("sin sesión de gh o sin gh instalado: mensaje claro y salida 1, sin tocar 
   assert.equal(sinGh.status, 1);
   assert.match(sinGh.stderr, /No se encuentra `gh`/);
   assert.equal(leer(vault, "uno"), original);
+});
+
+// --- Robustez (auditoría 2026-11-20) ---
+test("si gh se cuelga, se corta con un aviso claro, la nota queda intacta y se sigue con el resto", () => {
+  const cuelga = nota("https://github.com/usuario/cuelga");
+  const vault = vaultCon({ cuelga, uno: nota("https://github.com/usuario/uno") });
+  const r = ejecutar(vault, { CEREBRO_GH_TIMEOUT_MS: "400" });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /cuelga \(usuario\/cuelga\): gh no respondió/);
+  assert.equal(leer(vault, "cuelga"), cuelga);
+  assert.match(leer(vault, "uno"), /^ultimo_push: 2026-11-10$/m);
+});
+
+test("una nota con BOM UTF-8 y un repo con comillas simples también se actualizan", () => {
+  const bom = String.fromCharCode(0xfeff);
+  const original = bom + nota("'https://github.com/usuario/uno'");
+  const vault = vaultCon({ uno: original });
+  const r = ejecutar(vault);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(leer(vault, "uno"), original.replace("ultimo_commit: 2026-11-01", "ultimo_commit: 2026-11-01\nultimo_push: 2026-11-10\nissues_abiertos: 3"));
+});
+
+test("una URL de GitHub mal escrita se avisa en vez de saltarse en silencio", () => {
+  for (const url of ["http://github.com/usuario/uno", "www.github.com/usuario/uno", "github.com/usuario/uno", "https://github.com/usuario/uno/tree/main"]) {
+    const original = nota(url);
+    const vault = vaultCon({ uno: original });
+    const r = ejecutar(vault);
+    assert.equal(r.status, 1, url);
+    assert.match(r.stderr, /uno: URL de GitHub no reconocida/, url);
+    assert.equal(leer(vault, "uno"), original, url);
+  }
 });

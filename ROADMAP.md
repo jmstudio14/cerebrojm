@@ -185,43 +185,46 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests, CI, Panel, plantillas, comandos, ADR y documentación). Arreglarlos está permitido con la congelación de la Fase 1, porque son correcciones. Lo marcado «posible» falta reproducirlo.
 
 ### Alta: fallos reales o riesgo de datos
-- [ ] Añadir a Git `_sistema/scripts/repos.mjs`, `_sistema/tests/repos.test.mjs` y `repos.bat`. Están sin seguimiento y `validar.yml` ya ejecuta `repos.test.mjs`: un commit sin ellos rompe la CI.
-- [ ] `respaldo-lib.mjs:90`: `includes("..")` rechaza nombres legítimos (`Ideas... sueltas.md`) y la copia entera falla. Hay que comprobar segmentos `..`, no la subcadena.
-- [ ] `.gitignore`: falta excluir `*.cjmbak` y `*.tmp`, y `respaldar.mjs` no impide guardar la copia dentro del vault. Obsidian Git la subiría. Añadir el caso a `coherencia.test.mjs`.
-- [ ] `escanear.mjs:43`: un `escaner.local.json` con JSON mal formado se trata como si no existiera y, en modo interactivo, se sobrescribe y se pierden `carpetas` e `ignorar`. Pasa lo mismo, con menos impacto, en `respaldar.mjs`.
-- [ ] `validar-vault.mjs`:
+- [x] Añadir a Git `_sistema/scripts/repos.mjs`, `_sistema/tests/repos.test.mjs` y `repos.bat`. Están sin seguimiento y `validar.yml` ya ejecuta `repos.test.mjs`: un commit sin ellos rompe la CI.
+- [x] `respaldo-lib.mjs:90`: `includes("..")` rechaza nombres legítimos (`Ideas... sueltas.md`) y la copia entera falla. Hay que comprobar segmentos `..`, no la subcadena.
+- [x] `.gitignore`: falta excluir `*.cjmbak` y `*.tmp`, y `respaldar.mjs` no impide guardar la copia dentro del vault. Obsidian Git la subiría. Añadir el caso a `coherencia.test.mjs`.
+- [x] `escanear.mjs:43`: un `escaner.local.json` con JSON mal formado se trata como si no existiera y, en modo interactivo, se sobrescribe y se pierden `carpetas` e `ignorar`. Pasa lo mismo, con menos impacto, en `respaldar.mjs`.
+- [x] `validar-vault.mjs`:
   - `progreso:` vacío pasa como 0 (`Number("")`).
   - Los campos obligatorios vacíos pasan, porque solo se comprueba `k in fm`.
   - Fechas imposibles como `2026-13-45` pasan.
   - Usa `"."` como raíz: fuera del vault da un falso «✓ 0 proyectos».
-- [ ] «Vencidos» con dos criterios: la cabecera del Panel (`00 Panel.md:12`) y `agenda.js:277` cuentan también `idea` y `pausado`; «Necesitan atención» y `estado.mjs` solo cuentan `activo` y `bloqueado`.
-- [ ] Umbrales incoherentes:
+- [x] «Vencidos» con dos criterios: la cabecera del Panel (`00 Panel.md:12`) y `agenda.js:277` cuentan también `idea` y `pausado`; «Necesitan atención» y `estado.mjs` solo cuentan `activo` y `bloqueado`.
+- [x] Umbrales incoherentes:
   - La plantilla de revisión marca estancado a los 7 días; el Panel y `estado.mjs`, a los 14.
   - El aviso de activos salta con más de 5 (Panel y Guía rápida), pero la regla es 3-4 (plantilla y Fase 1).
 
 ### Media: robustez y pendientes de fases ya implementadas
 - [ ] Fase 4:
-  - registrar la tarea programada de Windows (sigue sin crear);
+  - registrar la tarea programada de Windows (sigue sin crear; la registra el usuario con el comando del README);
   - comprobar en Obsidian la alerta «🧊 sin push»;
-  - mostrar «sin push» en `cerebrojm-app`.
-- [ ] Fase 5: comprobar en Obsidian la columna `entregable`. `escanear.mjs` no añade `entregable` a las notas nuevas y nunca asigna `creativo`.
-- [ ] Enrutamiento de modelos (`opusplan` y `model:` por comando): sin verificar en una sesión interactiva. `/estado` usa `haiku` para una tarea de varios pasos, y `CLAUDE.md` reserva `haiku` a tareas atómicas.
-- [ ] «Hoy» en UTC en `estado.mjs:18` y `escanear.mjs:30,76`, mientras el Panel usa la hora local: en España, entre las 00:00 y la 01:00-02:00 dan días distintos.
-- [ ] Posible: notas con BOM UTF-8 que se saltan `estado.mjs`, `repos.mjs` y `validar-vault.mjs`. Posible también: valores `''`, `null` o `~` que los scripts toman por rellenos y Dataview por vacíos.
-- [ ] Posible: `escanear.mjs` mezcla LF y CRLF al editar notas CRLF. `repos.mjs` sí respeta el final de línea.
-- [ ] Posible: `renameSync` sin reintento ante EPERM/EBUSY en Windows (`escanear.mjs`, `repos.mjs`, `respaldo-lib.mjs`). Deja `.tmp` sueltos y aborta el escaneo.
-- [ ] `repos.mjs`: `execFileSync` sin `timeout`; si `gh` se cuelga, la tarea programada no termina.
-- [ ] `respaldo-lib.mjs`: los errores de lectura de carpeta y los enlaces simbólicos se omiten sin avisar, y la copia sale incompleta.
-- [ ] `agenda.js`, todo «posible»:
-  - las repeticiones se expanden en la zona horaria del sistema, no en la `TZID` del evento;
-  - `EXDATE;VALUE=DATE` no excluye nada en series con hora;
-  - YEARLY ignora `BYMONTH` y `BYDAY`;
-  - un UNTIL mal formado rompe toda la agenda;
-  - el tope de 5000 pasos hace desaparecer series DAILY muy antiguas;
-  - un JSON de Full Calendar corrupto se muestra como «sin conectar».
-- [ ] `repo` sin validar: `repos.mjs` se salta en silencio URLs como `http://`, `www.`, sin esquema o con `/tree/main`, y `validar-vault.mjs` no las comprueba.
-- [ ] Los `.bat` siempre salen con código 0: no propagan el `errorlevel` de node.
-- [ ] `escanear.mjs:395`: a la tercera coincidencia de nombre, dos proyectos escriben la misma nota.
+  - ~~mostrar «sin push» en `cerebrojm-app`~~ (hecho el 2026-11-20).
+- [ ] Fase 5:
+  - [x] `escanear.mjs` añade `entregable` a las notas nuevas. `creativo` no se asigna solo, por diseño: una carpeta no dice si el proyecto es creativo, así que se cambia a mano;
+  - [ ] comprobar en Obsidian la columna `entregable`.
+- [ ] Enrutamiento de modelos (`opusplan` y `model:` por comando): sigue sin verificarse en una sesión interactiva. `/estado` pasa de `haiku` a `sonnet` porque encadena varios pasos y edita notas.
+- [x] «Hoy» en UTC en `estado.mjs` y `escanear.mjs` (incluida la fecha de los archivos): ahora es la fecha local, comprobado con `TZ` en UTC+14 y UTC-11.
+- [x] Notas con BOM UTF-8 (reproducido): `estado.mjs` las ignoraba, `validar-vault.mjs` las daba por «sin frontmatter», `repos.mjs` las saltaba y `escanear.mjs` duplicaba su frontmatter. Y valores `null`, `~`, `''` que se tomaban por rellenos (reproducido en `estado.mjs`): ahora valen como vacío, y las comillas simples se aceptan.
+- [x] `escanear.mjs` mezclaba LF y CRLF al editar notas CRLF (reproducido): ahora conserva el final de línea y el BOM.
+- [x] `renameSync` sin reintento ante EPERM/EBUSY/EACCES: nuevo `atomico.mjs` (reintenta con espera creciente y borra el `.tmp` si falla), usado en `escanear.mjs`, `repos.mjs`, `respaldo-lib.mjs` y `respaldar.mjs`. Probado con un `rename` simulado; el bloqueo real de Windows no se ha reproducido.
+- [x] `repos.mjs`: `gh` con `timeout` de 30 s; si se cuelga, avisa con la causa y sigue con el resto (reproducido: el test se quedaba colgado).
+- [x] `respaldo-lib.mjs`: las carpetas ilegibles y los enlaces simbólicos se listan como omitidos; `respaldar.mjs` crea la copia, avisa y sale con 1.
+- [ ] `agenda.js`:
+  - [ ] las repeticiones se expanden en la zona horaria del sistema, no en la `TZID` del evento (limitación conocida: no afecta con calendario y PC en Europe/Madrid; el motor de recurrencias no se ha tocado);
+  - [x] `EXDATE;VALUE=DATE` no excluía nada en series con hora (reproducido);
+  - [ ] YEARLY ignora `BYMONTH` y `BYDAY` (limitación conocida, igual que la anterior);
+  - [x] un UNTIL mal formado rompía toda la agenda (reproducido);
+  - [x] el tope de 5000 pasos hacía desaparecer series DAILY de hace más de 13 años (reproducido);
+  - [x] un JSON de Full Calendar corrupto se mostraba como «sin conectar» (ahora avisa de que es ilegible; solo probado con un `dv` simulado, no en Obsidian).
+  - `cerebrojm-app` tiene su propio port del iCal y no recibe estos arreglos.
+- [x] `repo` sin validar: `repos.mjs` avisa y sale con 1 si una URL de GitHub está mal escrita (`http://`, `www.`, sin esquema, `/tree/main`), y `validar-vault.mjs` también la rechaza. Una URL de otro host sigue siendo válida.
+- [x] Los `.bat` «siempre salen con código 0»: **no reproducido**. `pause` no cambia `ERRORLEVEL` y el código de node llega (comprobado con `respaldar.bat`, sale con 1). Sin cambios.
+- [x] `escanear.mjs`: nombres repetidos con carpetas madre del mismo nombre. Ahora se añade un contador (`app (proyectos 2)`).
 
 ### Media: tests y CI
 - [ ] La CI solo usa Ubuntu con Node 22. Falta Windows (CRLF, `.bat`, rutas) y la versión mínima que promete el README.
@@ -348,7 +351,30 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
     - Real sobre el vault: 26 repos consultados y 26 notas actualizadas. Comparado con una copia previa, solo se añaden las líneas `ultimo_push` e `issues_abiertos`. En 3 repos coinciden con la API REST (`pushed_at` y `gh issue list`). Una segunda pasada no reescribe ninguna nota. `estado.mjs` marca 1 activo sin push.
     - Sin verificar: la alerta en el Panel renderizada en Obsidian, y la tarea programada, que no está creada todavía (el permiso para registrarla se denegó en la sesión; el comando está en el README).
   - **Decisión de diseño:** ADR-0007 (propuesta) proponía una opción `--github` en el escáner y un bloque automático en el cuerpo de la nota. Se eligió otra cosa: script aparte y campos en el frontmatter, porque la alerta del Panel (Dataview) necesita leer `ultimo_push` como campo.
-  - **Pendiente:** `cerebrojm-app` aún no muestra la alerta «sin push». El «Terminado si» de la Fase 4 sigue abierto: exige una semana de actualización automática sin conflictos.
+  - **Pendiente:** ~~`cerebrojm-app` aún no muestra la alerta «sin push»~~ (ya la muestra desde el 2026-11-20). El «Terminado si» de la Fase 4 sigue abierto: exige una semana de actualización automática sin conflictos.
 - 2026-11-19: enrutamiento automático de modelos: `.claude/settings.json` fija `opusplan` (Opus en plan mode, Sonnet al ejecutar); `model:` en el frontmatter de cada comando (`/fase` en Opus; `/implementar`, `/seguimiento`, `/revision` y `/proyecto` en Sonnet; `/estado` en Haiku); nueva sección «Selección de modelo» en `CLAUDE.md`. Sin verificar en una sesión interactiva.
 - 2026-11-19: Fase 5 (parte) implementada por petición expresa con la Fase 1 abierta: campo opcional `entregable` (qué produce el proyecto al terminar) en `_sistema/plantillas/Proyecto.md`, en el modelo de datos del README y como columna en la tabla de personales y creativos del Panel. El validador no lo exige. No hay proyectos sin GitHub que dar de alta por ahora, así que esa casilla y el «Terminado si» siguen abiertos. Sin verificar: la columna renderizada en Obsidian (Dataview).
 - 2026-11-20: auditoría completa del sistema (scripts, tests, CI, Panel, plantillas, comandos, ADR y documentación), en solo lectura. Los hallazgos están en *Correcciones pendientes*, por prioridad. Corregido en este ROADMAP: «criterios de 2e» pasa a 3e, la fecha de `actualizado` y la idea de Templater (ya instalado). No se ha arreglado ningún fallo de los listados.
+- 2026-11-20: correcciones de prioridad alta de la auditoría:
+  - `repos.mjs`, `repos.test.mjs` y `repos.bat` ya estaban en Git (commit 381fd0a).
+  - Respaldo: `rutaSegura` comprueba segmentos `..` (ya acepta `Ideas... sueltas.md`), `.gitignore` excluye `*.cjmbak` y `*.tmp`, `respaldar.mjs` rechaza un destino dentro del vault y una configuración mal formada.
+  - `escanear.mjs` ya no sobrescribe un `escaner.local.json` mal formado.
+  - `validar-vault.mjs`: obligatorios vacíos (salvo `proxima_accion`), `progreso` vacío y fechas imposibles dan error; la raíz por defecto es la del repo; nuevo `validar-vault.test.mjs` en la CI.
+  - «Vencido» solo cuenta en `activo` y `bloqueado` (cabecera del Panel y `agenda.js`).
+  - Umbrales: estancado a 14 días en la plantilla de revisión y aviso de activos con más de 4 (Panel y Guía rápida).
+  - Sin verificar en Obsidian: cabecera del Panel y agenda (Dataview).
+- 2026-11-20: correcciones de prioridad media de la auditoría (robustez):
+  - Nuevo `atomico.mjs`: escritura atómica con reintento ante bloqueos de Windows, usada por `escanear.mjs`, `repos.mjs`, `respaldo-lib.mjs` y `respaldar.mjs`.
+  - «Hoy» en hora local en `estado.mjs` y `escanear.mjs`.
+  - Notas con BOM, `null`/`~`/`''` y comillas simples: `estado.mjs`, `repos.mjs`, `validar-vault.mjs` y `escanear.mjs` las tratan bien (`escanear.mjs` ya no duplica el frontmatter ni mezcla LF y CRLF).
+  - `escanear.mjs`: `entregable` en las notas nuevas y nombres repetidos sin colisión.
+  - `repos.mjs`: `timeout` de `gh` y aviso de las URLs de GitHub mal escritas, que `validar-vault.mjs` también rechaza.
+  - `respaldar.mjs`: lista las entradas omitidas (carpetas ilegibles y enlaces simbólicos) y sale con código 1.
+  - `agenda.js`: `UNTIL` mal formado, `EXDATE;VALUE=DATE`, series DAILY antiguas y Full Calendar ilegible.
+  - `/estado` pasa a `sonnet`.
+  - Sin cambios en los `.bat`: el fallo de código de salida no se reproduce.
+  - Pendiente: tarea programada de Windows (la registra el usuario), comprobaciones en Obsidian, «sin push» en `cerebrojm-app`, y TZID y YEARLY de `agenda.js` como limitaciones conocidas.
+- 2026-11-20: `cerebrojm-app` muestra las herramientas, por petición expresa con la Fase 1 abierta. Pantalla «Herramientas» de solo lectura (fichas de `05 Herramientas/`, filtros por clase, uso y proyecto) y sección «Herramientas» en el detalle de cada proyecto. Nuevo comando Rust `leer_herramientas` y vigilancia en vivo de `05 Herramientas/`. Verificado: 28 tests unitarios, `tsc`, `vite build`, e2e en Chrome con el backend simulado y axe WCAG 2.1 AA en las pantallas nuevas (claro y oscuro); `vault.rs` con sus 9 tests en un crate aislado. **Sin verificar:** `lib.rs` (el comando nuevo y el vigilante) no se ha compilado porque el Windows SDK del PC está incompleto (falta `specstrings_strict.h`), ni se ha abierto la app real. El escáner sigue sin detectar plugins: solo salen si existe su ficha.
+- 2026-11-20: `cerebrojm-app` alinea sus reglas con el Panel del vault (solo correcciones de coherencia, sin funciones nuevas). Alerta «Sin push (+30 días)» (solo `activo`, con el orden del Panel), «vencido» solo para `activo` y `bloqueado` (también en la agenda de hoy), «para revisar» a 14 días en vez de 7, lectura de `ultimo_push`, `issues_abiertos` y `entregable` (solo lectura en el detalle; `entregable` también en la lista) y atajo `Alt+6` a Herramientas. Verificado: 32 tests unitarios (4 nuevos, escritos antes en rojo), `tsc`, `vite build`, e2e en Chrome con el backend simulado (sin fallos; un aviso de React por clave de aviso duplicada salió una vez en 5 ejecuciones; corregido después, ver la entrada siguiente de avisos) y axe WCAG 2.1 AA en Inicio, lista y dos detalles (claro y oscuro). **Sin verificar:** Rust no se ha tocado y `lib.rs` sigue sin compilarse en este PC; no se ha abierto la app real.
+- 2026-11-20: `lib.rs` compilado y app real probada. La causa del fallo de compilación era el Windows SDK 10.0.26100.0 incompleto (faltan `specstrings_strict.h` y `stdio.h`), que `vcvars64.bat` elige por ser el más nuevo; con `vcvars64.bat 10.0.22621.0` compila (documentado en el README de la app). Verificado: `cargo test` del crate completo (10 de 10), build de release y `npm run e2e:app` contra el `.exe` real, con 4 comprobaciones nuevas que pasan: `leer_herramientas` lee las 4 fichas, el vigilante de `05 Herramientas/` refleja una ficha creada y borrada, y el detalle muestra «Último push». El e2e real encontró un enlace «Ver en Herramientas» del detalle por debajo de 44 px (corregido: ahora es un botón fantasma) y un defecto antiguo en la agenda: `.cal-now` lleva `aria-label` sin `role` (axe `aria-prohibited-attr`, solo aparece cuando la hora actual cae dentro del tramo visible). **Pendiente:** ese defecto de la agenda, sin corregir por estar fuera de lo pedido.
+- 2026-11-20: corregida la clave duplicada en los avisos de `cerebrojm-app`. Causa confirmada: `toast` generaba el id con `Date.now() + Math.random()`, que no garantiza unicidad (con el reloj del e2e congelado la clave era `1794994200000.241`, y un `double` de ese tamaño solo tiene unas 4096 fracciones distintas; en la app real dos avisos en el mismo milisegundo tenían el mismo riesgo). Ahora el id es un contador (`src/app.tsx`). Comprobación nueva en el e2e, determinista: con `Date` congelado y `Math.random` fijo en 0,5, dos avisos seguidos daban `same key 1794994200000.5` (rojo antes, verde después). Verificado: `tsc`, 32 tests, build, 3 ejecuciones seguidas de `npm run e2e` sin FALLA ni avisos de React, y `npm run e2e:app` sin cambios (solo sigue el fallo de `.cal-now`). `coherencia.test.mjs` con el reporter `spec`: 4 de 4 pasan, y `validar-vault.mjs`: 34 proyectos y 49 herramientas válidos.

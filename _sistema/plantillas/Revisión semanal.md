@@ -12,7 +12,7 @@ Tiempo objetivo: 30 min. Sin revisión semanal, este sistema se degrada en un me
 TABLE WITHOUT ID file.link AS "Proyecto", estado, ultima_revision AS "Última revisión", proxima_accion AS "Próxima acción"
 FROM "01 Proyectos"
 WHERE tipo = "proyecto" AND contains(list("activo","bloqueado"), estado)
-  AND (!ultima_revision OR date(today) - ultima_revision > dur(7 days) OR !proxima_accion)
+  AND (!ultima_revision OR date(today) - ultima_revision > dur(14 days) OR !proxima_accion)
 SORT ultima_revision ASC
 ```
 

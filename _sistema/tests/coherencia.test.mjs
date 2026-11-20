@@ -24,6 +24,8 @@ const PERSONALES = [
   "_sistema/config/escaner.local.json",
   "_sistema/config/respaldo.local.json",
   ".obsidian/plugins/obsidian-full-calendar/data.json",
+  "cerebrojm-2026-11-20_120000.cjmbak", // copia cifrada guardada por error en el vault
+  "00 Panel.md.tmp", // restos de una escritura atómica interrumpida
 ];
 const SISTEMA = [
   "00 Panel.md",

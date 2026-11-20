@@ -127,4 +127,74 @@ test("crea la Bandeja de entrada si falta (ya no está en Git) y no la toca si e
   assert.match(fs.readFileSync(bandeja, "utf8"), /mi idea/);
 });
 
+test("un escaner.local.json mal formado se rechaza con un error claro y no se toca", () => {
+  const cfg = path.join(vault, "_sistema", "config", "escaner.local.json");
+  fs.mkdirSync(path.dirname(cfg), { recursive: true });
+  fs.writeFileSync(cfg, '{ "carpetas": [');
+  assert.throws(
+    () => execFileSync("node", [ESCANER, "--vault", vault, "--hoy", "2026-11-18"], { encoding: "utf8", stdio: "pipe" }),
+    (e) => e.status === 2 && /no es JSON válido/.test(String(e.stderr)),
+  );
+  assert.equal(fs.readFileSync(cfg, "utf8"), '{ "carpetas": [');
+});
+
+// --- Robustez (auditoría 2026-11-20): cada caso usa su propio vault temporal ---
+const ZONAS = ["Pacific/Kiritimati", "Pacific/Pago_Pago"]; // UTC+14 y UTC-11: en cualquier instante una de las dos cae en otro día que UTC
+const diaEn = (zona) => new Intl.DateTimeFormat("sv-SE", { timeZone: zona }).format(new Date());
+const escanearEn = (v, carpetas, extra = [], env = {}) =>
+  execFileSync("node", [ESCANER, "--vault", v, "--carpetas", carpetas, ...extra], { encoding: "utf8", env: { ...process.env, ...env } });
+const vaultNuevo = () => fs.mkdtempSync(path.join(tmp, "vault-"));
+
+test("las notas nuevas llevan el campo entregable, como la plantilla", () => {
+  const v = vaultNuevo();
+  escanearEn(v, madre, ["--hoy", "2026-11-18"]);
+  assert.match(fs.readFileSync(path.join(v, "01 Proyectos", "app-web.md"), "utf8"), /^proxima_accion: ""\nentregable: ""\nrepo: /m);
+});
+
+test("«hoy» es la fecha local del equipo, no la de UTC", () => {
+  for (const zona of ZONAS) {
+    const v = vaultNuevo();
+    escanearEn(v, madre, [], { TZ: zona });
+    assert.match(fs.readFileSync(path.join(v, "01 Proyectos", "app-web.md"), "utf8"), new RegExp(`^escaneado: ${diaEn(zona)}$`, "m"), zona);
+  }
+});
+
+test("una nota con finales de línea CRLF sigue siendo CRLF tras reescanear", () => {
+  const v = vaultNuevo();
+  escanearEn(v, madre, ["--hoy", "2026-11-18"]);
+  const f = path.join(v, "01 Proyectos", "app-web.md");
+  fs.writeFileSync(f, fs.readFileSync(f, "utf8").replace(/\r?\n/g, "\r\n"));
+  escanearEn(v, madre, ["--hoy", "2026-11-19"]);
+  const t = fs.readFileSync(f, "utf8");
+  assert.match(t, /^escaneado: 2026-11-19\r$/m);
+  assert.ok(!/(?<!\r)\n/.test(t), "hay saltos de línea LF sueltos");
+});
+
+test("una nota con BOM UTF-8 se actualiza sin duplicar el frontmatter", () => {
+  const v = vaultNuevo();
+  escanearEn(v, madre, ["--hoy", "2026-11-18"]);
+  const f = path.join(v, "01 Proyectos", "app-web.md");
+  const BOM = String.fromCharCode(0xfeff);
+  fs.writeFileSync(f, BOM + fs.readFileSync(f, "utf8"));
+  escanearEn(v, madre, ["--hoy", "2026-11-19"]);
+  const t = fs.readFileSync(f, "utf8");
+  assert.ok(t.startsWith(BOM + "---\n"), "se conserva el BOM");
+  assert.equal(t.match(/^tipo: proyecto$/gm).length, 1);
+  assert.match(t, /^escaneado: 2026-11-19$/m);
+});
+
+test("tres proyectos con el mismo nombre en carpetas madre con el mismo nombre no pisan la misma nota", () => {
+  const raiz = fs.mkdtempSync(path.join(tmp, "madres-"));
+  const madres = ["a", "b", "c"].map((x) => {
+    const m = path.join(raiz, x, "proyectos");
+    fs.mkdirSync(path.join(m, "app"), { recursive: true });
+    fs.writeFileSync(path.join(m, "app", "main.py"), "print(1)\n");
+    return m;
+  });
+  const v = vaultNuevo();
+  assert.match(escanearEn(v, madres.join(";")), /3 proyectos escaneados: 3 nuevos/);
+  const rutas = fs.readdirSync(path.join(v, "01 Proyectos")).filter((n) => n.startsWith("app")).sort();
+  assert.deepEqual(rutas, ["app (proyectos 2).md", "app (proyectos).md", "app.md"]);
+});
+
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

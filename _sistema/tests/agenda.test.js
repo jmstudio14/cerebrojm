@@ -60,3 +60,31 @@ test("la clave de caché no contiene la URL secreta", () => {
   assert.ok(!k.includes("secreto") && !k.includes("abc"));
   assert.equal(k, claveCache(url));
 });
+
+// --- Robustez (auditoría 2026-11-20) ---
+const evento = (...lineas) => ["BEGIN:VCALENDAR", "BEGIN:VEVENT", "UID:u@test", "SUMMARY:Prueba", ...lineas, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+const dias = (ics, desde, hasta) => ocurrencias(parsearICS(ics), desde, hasta).map((o) => o.inicio.toISOString().slice(0, 10));
+
+test("un UNTIL mal formado no rompe la agenda: se ignora el límite", () => {
+  const ics = evento("DTSTART:20261118T100000Z", "RRULE:FREQ=DAILY;UNTIL=basura");
+  assert.deepEqual(dias(ics, new Date(2026, 10, 18), new Date(2026, 10, 21)), ["2026-11-18", "2026-11-19", "2026-11-20"]);
+});
+
+test("EXDATE;VALUE=DATE excluye el día en una serie con hora", () => {
+  const ics = evento("DTSTART;TZID=Europe/Madrid:20261116T100000", "RRULE:FREQ=DAILY;COUNT=5", "EXDATE;VALUE=DATE:20261118");
+  assert.deepEqual(dias(ics, new Date(2026, 10, 16), new Date(2026, 10, 22)), ["2026-11-16", "2026-11-17", "2026-11-19", "2026-11-20"]);
+});
+
+test("una serie DAILY de hace más de 5000 días sigue apareciendo", () => {
+  const ics = evento("DTSTART:20100101T090000Z", "RRULE:FREQ=DAILY");
+  assert.deepEqual(dias(ics, new Date(2026, 10, 18), new Date(2026, 10, 21)), ["2026-11-18", "2026-11-19", "2026-11-20"]);
+});
+
+test("DAILY con INTERVAL desde hace años cae en los días que tocan", () => {
+  const ics = evento("DTSTART:20100101T090000Z", "RRULE:FREQ=DAILY;INTERVAL=3");
+  const esperado = [];
+  for (let d = new Date(Date.UTC(2010, 0, 1)); d < new Date(Date.UTC(2026, 10, 25)); d = new Date(d.getTime() + 3 * 86400000)) {
+    if (d >= new Date(Date.UTC(2026, 10, 18))) esperado.push(d.toISOString().slice(0, 10));
+  }
+  assert.deepEqual(dias(ics, new Date(2026, 10, 18), new Date(2026, 10, 25)), esperado);
+});

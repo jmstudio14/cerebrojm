@@ -6,9 +6,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { recogerArchivos, crearCopia, leerCopia, restaurar, aplicarRetencion, listarCopias } from "../scripts/respaldo-lib.mjs";
+import { recogerArchivos, crearCopia, leerCopia, restaurar, aplicarRetencion, listarCopias, rutaSegura } from "../scripts/respaldo-lib.mjs";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const RESPALDAR = path.join(RAIZ, "_sistema", "scripts", "respaldar.mjs");
@@ -111,6 +111,75 @@ test("CLI: respaldar y restaurar de punta a punta, y registro de la fecha de la 
   assert.match(out2, /1 restaurados/);
   assert.ok(fs.existsSync(path.join(vault, "03 Diario/2026-11-18.md")));
   assert.throws(() => execFileSync("node", [RESTAURAR, "--vault", vault, "--password-env", "MAL"], { env: { ...env, MAL: "x" }, stdio: "pipe" }));
+});
+
+test("rutaSegura acepta nombres con puntos suspensivos y rechaza segmentos .. y rutas absolutas", () => {
+  for (const ok of ["02 Notas/Ideas... sueltas.md", "02 Notas/a..b.md", "01 Proyectos/..oculto.md"]) assert.ok(rutaSegura(ok), ok);
+  for (const mal of ["../x", "a/../../x", "a\\..\\..\\x", path.resolve("/etc/x")]) assert.ok(!rutaSegura(mal), mal);
+});
+
+test("una copia con una nota llamada 'Ideas... sueltas.md' se lee y se restaura", () => {
+  escribir("02 Notas/Ideas... sueltas.md", "puntos\n");
+  const { buffer } = crearCopia(vault, PWD);
+  fs.rmSync(path.join(vault, "02 Notas/Ideas... sueltas.md"));
+  assert.ok(restaurar(vault, leerCopia(buffer, PWD)).restaurados.includes("02 Notas/Ideas... sueltas.md"));
+  fs.rmSync(path.join(vault, "02 Notas/Ideas... sueltas.md"));
+});
+
+test("CLI: un destino dentro del vault se rechaza y no crea la carpeta", () => {
+  const dentro = path.join(vault, "copias-dentro");
+  const env = { ...process.env, CJM_PWD: PWD };
+  assert.throws(
+    () => execFileSync("node", [RESPALDAR, "--vault", vault, "--destino", dentro, "--password-env", "CJM_PWD"], { env, stdio: "pipe" }),
+    (e) => /dentro del vault/.test(String(e.stderr)),
+  );
+  assert.ok(!fs.existsSync(dentro));
+});
+
+test("CLI: un respaldo.local.json mal formado se rechaza y no se sobrescribe", () => {
+  const cfg = path.join(vault, "_sistema/config/respaldo.local.json");
+  const original = fs.readFileSync(cfg, "utf8");
+  fs.writeFileSync(cfg, "{ roto");
+  const env = { ...process.env, CJM_PWD: PWD };
+  assert.throws(
+    () => execFileSync("node", [RESPALDAR, "--vault", vault, "--destino", destino, "--password-env", "CJM_PWD"], { env, stdio: "pipe" }),
+    (e) => /no es JSON válido/.test(String(e.stderr)),
+  );
+  assert.equal(fs.readFileSync(cfg, "utf8"), "{ roto");
+  fs.writeFileSync(cfg, original);
+});
+
+// --- Copia incompleta: lo que no se puede leer se avisa, no se omite en silencio ---
+function vaultIncompleto() {
+  const v = fs.mkdtempSync(path.join(tmp, "incompleto-"));
+  fs.mkdirSync(path.join(v, "02 Notas"));
+  fs.writeFileSync(path.join(v, "02 Notas", "Nota.md"), "# Nota\n");
+  fs.writeFileSync(path.join(v, "03 Diario"), "esto debería ser una carpeta"); // readdir falla con ENOTDIR
+  return v;
+}
+
+test("una carpeta ilegible se anota en omitidos y el resto sí entra en la copia", () => {
+  const { total, omitidos } = crearCopia(vaultIncompleto(), PWD);
+  assert.equal(total, 1);
+  assert.equal(omitidos.length, 1);
+  assert.match(omitidos[0], /03 Diario.*ENOTDIR/);
+});
+
+test("un enlace simbólico se anota en omitidos", (t) => {
+  const v = vaultIncompleto();
+  try { fs.symlinkSync(path.join(v, "02 Notas", "Nota.md"), path.join(v, "02 Notas", "enlace.md")); }
+  catch { return t.skip("este sistema no permite crear enlaces simbólicos sin privilegios"); }
+  assert.ok(crearCopia(v, PWD).omitidos.some((o) => /enlace\.md.*enlace simbólico/.test(o)));
+});
+
+test("CLI: una copia incompleta se crea, avisa de lo omitido y sale con código 1", () => {
+  const v = vaultIncompleto();
+  const dest = path.join(tmp, "copias-incompletas");
+  const r = spawnSync(process.execPath, [RESPALDAR, "--vault", v, "--destino", dest, "--password-env", "CJM_PWD"],
+    { env: { ...process.env, CJM_PWD: PWD }, encoding: "utf8" });
+  assert.equal(r.status, 1);
+  assert.match(r.stdout + r.stderr, /1 entrada omitida.*03 Diario/s);
+  assert.equal(fs.readdirSync(dest).length, 1, "la copia se crea igualmente");
 });
 
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

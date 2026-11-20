@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import zlib from "node:zlib";
+import { escribirAtomico } from "./atomico.mjs";
 
 export const MAGIA = Buffer.from("CJMBAK1\n");
 export const PATRON_COPIA = /^cerebrojm-\d{4}-\d{2}-\d{2}_\d{6}\.cjmbak$/;
@@ -31,30 +32,43 @@ function derivarClave(password, sal) {
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
 const aPosix = (p) => p.split(path.sep).join("/");
 
-function recorrer(dir, base, salida) {
-  let entradas = [];
-  try { entradas = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+/** Ruta de una copia sin salir del vault: relativa y sin segmentos `..` (nombres como "a...b.md" son válidos). */
+export const rutaSegura = (ruta) => !path.isAbsolute(ruta) && !ruta.split(/[\\/]/).includes("..");
+
+// Una carpeta que no existe no es un fallo; cualquier otro error de lectura o un enlace simbólico
+// (no se siguen) se anota en `omitidos` para que la copia incompleta no pase por buena.
+function recorrer(dir, base, salida, omitidos) {
+  let entradas;
+  try { entradas = fs.readdirSync(dir, { withFileTypes: true }); }
+  catch (e) {
+    if (e.code !== "ENOENT") omitidos.push(`${aPosix(path.relative(base, dir))} (no se pudo leer: ${e.code})`);
+    return;
+  }
   for (const e of entradas) {
     const abs = path.join(dir, e.name);
-    if (e.isDirectory()) recorrer(abs, base, salida);
+    if (e.isSymbolicLink()) omitidos.push(`${aPosix(path.relative(base, abs))} (enlace simbólico)`);
+    else if (e.isDirectory()) recorrer(abs, base, salida, omitidos);
     else if (e.isFile() && !esDelSistema(e.name) && !e.name.endsWith(".tmp")) salida.push(aPosix(path.relative(base, abs)));
   }
 }
 
-/** Rutas relativas (con "/") de todos los archivos personales del vault. */
-export function recogerArchivos(vault) {
+/** Rutas relativas (con "/") de todos los archivos personales del vault. Lo que no se puede leer se añade a `omitidos`. */
+export function recogerArchivos(vault, omitidos = []) {
   const lista = [];
-  for (const carpeta of ZONA_PERSONAL) recorrer(path.join(vault, carpeta), vault, lista);
+  for (const carpeta of ZONA_PERSONAL) recorrer(path.join(vault, carpeta), vault, lista, omitidos);
   const cfg = path.join(vault, CONFIG_LOCAL);
   try {
     for (const n of fs.readdirSync(cfg)) if (n.endsWith(".local.json")) lista.push(`${CONFIG_LOCAL}/${n}`);
-  } catch {}
+  } catch (e) {
+    if (e.code !== "ENOENT") omitidos.push(`${CONFIG_LOCAL} (no se pudo leer: ${e.code})`);
+  }
   return lista.sort();
 }
 
-/** Crea el contenido cifrado de una copia. Devuelve { buffer, total }. */
+/** Crea el contenido cifrado de una copia. Devuelve { buffer, total, omitidos }. */
 export function crearCopia(vault, password, ahora = new Date()) {
-  const archivos = recogerArchivos(vault).map((ruta) => {
+  const omitidos = [];
+  const archivos = recogerArchivos(vault, omitidos).map((ruta) => {
     const abs = path.join(vault, ruta);
     const datos = fs.readFileSync(abs);
     return { ruta, mtime: fs.statSync(abs).mtimeMs, sha256: sha256(datos), datos: datos.toString("base64") };
@@ -64,7 +78,7 @@ export function crearCopia(vault, password, ahora = new Date()) {
   const iv = crypto.randomBytes(12);
   const cifrador = crypto.createCipheriv("aes-256-gcm", derivarClave(password, sal), iv);
   const cifrado = Buffer.concat([cifrador.update(plano), cifrador.final()]);
-  return { buffer: Buffer.concat([MAGIA, sal, iv, cifrador.getAuthTag(), cifrado]), total: archivos.length };
+  return { buffer: Buffer.concat([MAGIA, sal, iv, cifrador.getAuthTag(), cifrado]), total: archivos.length, omitidos };
 }
 
 /** Descifra y valida una copia. Lanza un error claro si la contraseña es incorrecta o el archivo está dañado. */
@@ -87,7 +101,7 @@ export function leerCopia(buffer, password) {
   const manifiesto = JSON.parse(zlib.gunzipSync(plano).toString("utf8"));
   for (const a of manifiesto.archivos) {
     if (sha256(Buffer.from(a.datos, "base64")) !== a.sha256) throw new Error(`Copia dañada: ${a.ruta}`);
-    if (a.ruta.includes("..") || path.isAbsolute(a.ruta)) throw new Error(`Ruta no permitida en la copia: ${a.ruta}`);
+    if (!rutaSegura(a.ruta)) throw new Error(`Ruta no permitida en la copia: ${a.ruta}`);
   }
   return manifiesto;
 }
@@ -108,9 +122,7 @@ export function restaurar(vault, manifiesto, { forzar = false } = {}) {
       if (!forzar && fs.statSync(abs).mtimeMs > a.mtime + 1000) { res.omitidos.push(a.ruta); continue; }
     }
     fs.mkdirSync(path.dirname(abs), { recursive: true });
-    const tmp = abs + ".tmp";
-    fs.writeFileSync(tmp, datos);
-    fs.renameSync(tmp, abs);
+    escribirAtomico(abs, datos);
     const t = new Date(a.mtime);
     fs.utimesSync(abs, t, t);
     res.restaurados.push(a.ruta);

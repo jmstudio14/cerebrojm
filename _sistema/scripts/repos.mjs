@@ -11,23 +11,29 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { escribirAtomico } from "./atomico.mjs";
 
 const args = process.argv.slice(2);
 const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const VAULT = path.resolve(arg("--vault") || path.join(path.dirname(fileURLToPath(import.meta.url)), "..", ".."));
 const REPO_GITHUB = /^https:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+?)(?:\.git)?\/?$/;
 
-// CEREBRO_GH_FAKE solo lo usan los tests: sustituye a `gh` por un script de Node.
+// CEREBRO_GH_FAKE y CEREBRO_GH_TIMEOUT_MS solo los usan los tests: sustituyen a `gh` por un
+// script de Node y acortan el límite de espera.
 const FAKE = process.env.CEREBRO_GH_FAKE;
+const TIMEOUT_MS = Number(process.env.CEREBRO_GH_TIMEOUT_MS) || 30000;
 const gh = (a) => FAKE
-  ? execFileSync(process.execPath, [FAKE, ...a], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
-  : execFileSync("gh", a, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-const causa = (e) => String(e.stderr || e.message).trim().replace(/\s*\r?\n\s*/g, " ");
+  ? execFileSync(process.execPath, [FAKE, ...a], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: TIMEOUT_MS })
+  : execFileSync("gh", a, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: TIMEOUT_MS });
+const causa = (e) => e.code === "ETIMEDOUT"
+  ? `gh no respondió en ${TIMEOUT_MS / 1000} s`
+  : String(e.stderr || e.message).trim().replace(/\s*\r?\n\s*/g, " ");
 
 // ---------------------------------------------------------------- frontmatter
 function partir(texto) {
-  const m = texto.match(/^---(\r?\n)([\s\S]*?)\r?\n---/);
-  return m ? { fm: m[2], ini: 3 + m[1].length, eol: m[1] } : null;
+  const bom = texto.charCodeAt(0) === 0xfeff ? 1 : 0; // BOM UTF-8
+  const m = texto.slice(bom).match(/^(---(\r?\n))([\s\S]*?)\r?\n---/);
+  return m ? { fm: m[3], ini: bom + m[1].length, eol: m[2] } : null;
 }
 function leerCampo(fm, k) {
   const m = fm.match(new RegExp(`^${k}:[ \\t]*(.*)$`, "m"));
@@ -43,9 +49,7 @@ function ponerCampo(fm, eol, k, v, tras) {
 }
 function escribirSiCambia(f, contenido) {
   if (fs.readFileSync(f, "utf8") === contenido) return false;
-  const tmp = f + ".tmp";
-  fs.writeFileSync(tmp, contenido, "utf8");
-  fs.renameSync(tmp, f); // escritura atómica
+  escribirAtomico(f, contenido);
   return true;
 }
 
@@ -63,7 +67,9 @@ try {
 } catch (e) {
   console.error(e.code === "ENOENT"
     ? "✗ No se encuentra `gh`. Instala la CLI de GitHub: https://cli.github.com"
-    : `✗ \`gh\` no tiene sesión iniciada: ejecuta \`gh auth login\`. ${causa(e)}`);
+    : e.code === "ETIMEDOUT"
+      ? `✗ ${causa(e)} al comprobar la sesión.`
+      : `✗ \`gh\` no tiene sesión iniciada: ejecuta \`gh auth login\`. ${causa(e)}`);
   process.exit(1);
 }
 
@@ -77,8 +83,13 @@ for (const f of nombres) {
   const texto = fs.readFileSync(ruta, "utf8");
   const p = partir(texto);
   if (!p || leerCampo(p.fm, "tipo")?.replace(/^"(.*)"$/, "$1") !== "proyecto") continue;
-  const m = (leerCampo(p.fm, "repo") || "").replace(/^"(.*)"$/, "$1").trim().match(REPO_GITHUB);
-  if (!m) continue;
+  const repo = (leerCampo(p.fm, "repo") || "").replace(/^(["'])(.*)\1$/, "$2").trim();
+  const m = repo.match(REPO_GITHUB);
+  if (!m) {
+    // Un repo de otro host es legítimo; uno de GitHub que no cuadra (http://, www., sin esquema, /tree/main) es un error de la nota.
+    if (/github\.com/i.test(repo)) fallos.push(`${f.slice(0, -3)}: URL de GitHub no reconocida (${repo}); usa https://github.com/usuario/repo`);
+    continue;
+  }
   try {
     const { push, issues } = consultar(m[1], m[2]);
     consultados++;

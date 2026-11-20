@@ -1,7 +1,7 @@
 ---
 description: Estado de mis proyectos por estado, con alertas, último push y PRs abiertos
 allowed-tools: Bash(node:*), Bash(gh:*), Bash(git status:*), Bash(git pull --ff-only), Read, Edit
-model: haiku
+model: sonnet
 ---
 
 Usa el subagente `gestor-proyectos` o sigue estos pasos tú mismo, con las reglas de `CLAUDE.md`.

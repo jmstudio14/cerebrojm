@@ -32,7 +32,7 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 - ⛔ **bloqueado**: escribe el motivo en *Bloqueos / riesgos*.
 - ❓ **sin próxima acción**: no sabes cuál es el siguiente paso, y por eso no avanza.
 - 💤 **estancado**: lleva más de 14 días sin revisión.
-- Más de 5 activos: estás repartiendo demasiado la atención.
+- Más de 4 activos: estás repartiendo demasiado la atención.
 
 ## Atajos útiles
 - `Ctrl+P` → *Templates: Insert template*: insertar una plantilla.

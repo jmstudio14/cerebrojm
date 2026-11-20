@@ -9,14 +9,14 @@ cssclasses: [panel]
 const ps = dv.pages('"01 Proyectos"').where(p => p.tipo === "proyecto");
 const n = e => ps.where(p => p.estado === e).length;
 const hoy = dv.date("today");
-const vencidos = ps.where(p => p.fecha_limite && p.fecha_limite < hoy && !["completado","archivado"].includes(p.estado)).length;
+const vencidos = ps.where(p => p.fecha_limite && p.fecha_limite < hoy && ["activo","bloqueado"].includes(p.estado)).length;
 dv.paragraph(
   `**${n("activo")}** activos · **${n("bloqueado")}** bloqueados · **${n("pausado")}** pausados · ` +
   `**${n("idea")}** ideas · **${n("completado")}** completados` +
   (vencidos ? ` · ⚠️ **${vencidos} vencidos**` : "")
 );
 if (!ps.length) dv.paragraph("> [!info] Aún no hay proyectos\n> Ejecuta **`escanear.bat`** (en la carpeta del vault) para cargar tus proyectos desde tus carpetas. Ver [[Guía rápida]].");
-if (n("activo") > 5) dv.paragraph("> [!warning] Tienes más de 5 proyectos activos. Probablemente alguno debería estar `pausado`.");
+if (n("activo") > 4) dv.paragraph("> [!warning] Tienes más de 4 proyectos activos. Probablemente alguno debería estar `pausado`.");
 ```
 
 ## 📅 Agenda (7 días)

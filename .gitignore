@@ -8,6 +8,10 @@
 .obsidian/cache
 .trash/
 
+# --- Copias cifradas y temporales de escritura atómica ---
+*.cjmbak
+*.tmp
+
 # --- Sistema ---
 .DS_Store
 Thumbs.db

@@ -103,7 +103,7 @@ Detecta las skills, agentes y servidores MCP que usan tus proyectos (`skills-loc
 
 ### App de escritorio (opcional)
 
-`cerebrojm-app` (repositorio propio) es una app de Windows (Tauri) que muestra y edita este mismo vault sin abrir Obsidian. Lee y escribe los mismos `.md`, solo cambia la línea que editas y no pisa los cambios de Obsidian ni de Obsidian Git.
+`cerebrojm-app` (repositorio propio) es una app de Windows (Tauri) que muestra y edita este mismo vault sin abrir Obsidian. Lee y escribe los mismos `.md`, solo cambia la línea que editas y no pisa los cambios de Obsidian ni de Obsidian Git. Aplica las mismas reglas de alerta que el Panel (incluida «sin push») y tiene una pantalla de solo lectura con las herramientas de `05 Herramientas/`.
 
 <div align="center">
   <img src="_sistema/assets/app-inicio.png" alt="App de escritorio: Inicio con KPIs, foco de hoy, alertas y agenda" width="92%">
@@ -140,7 +140,7 @@ flowchart LR
 | **Escáner** | `escanear.mjs` lee tus carpetas (Git, README, package.json, skills, MCP) y crea o actualiza las notas. Solo toca sus campos automáticos y su bloque `escaner`. |
 | **Notas de proyecto** | Cada proyecto es un `.md` con frontmatter: estado, prioridad, progreso, fechas y próxima acción. Son la fuente de verdad y viven solo en tu PC. |
 | **Dataview** | Consulta esas notas como si fueran una base de datos y genera las tablas del Panel. |
-| **`agenda.js`** | Lee el calendario iCal, expande los eventos recurrentes y mezcla eventos y fechas límite. |
+| **`agenda.js`** | Lee el calendario iCal, expande los eventos recurrentes y mezcla eventos y fechas límite. Si la configuración de Full Calendar está corrupta, lo avisa en lugar de mostrar «Calendario sin conectar». |
 | **Obsidian Git** | Mantiene el vault y GitHub sincronizados en segundo plano. |
 
 ---
@@ -212,7 +212,7 @@ Los plugins (Dataview, Obsidian Git y Full Calendar) **vienen incluidos** en `.o
 Requiere [Node.js](https://nodejs.org) 18 o superior. Doble clic en **`escanear.bat`** (en la carpeta del vault):
 
 1. La primera vez pregunta qué **carpetas madre** contienen tus proyectos, por ejemplo `C:\Programacion;D:\Creativo`. Cada subcarpeta cuenta como un proyecto. Se guarda en `_sistema/config/escaner.local.json`, que no se sube a Git (ver `escaner.ejemplo.json`).
-2. Crea una nota por proyecto en `01 Proyectos/` y una ficha por herramienta en `05 Herramientas/`, con la etiqueta `revisar`.
+2. Crea una nota por proyecto en `01 Proyectos/` (con el campo `entregable` vacío) y una ficha por herramienta en `05 Herramientas/`, con la etiqueta `revisar`. Si dos proyectos tienen el mismo nombre, añade el de su carpeta madre (y un número si aun así chocan), por ejemplo `app (proyectos 2)`.
 3. Vuelve a ejecutarlo cuando quieras actualizar: refresca repositorio, último cambio y el bloque automático, y **respeta** estado, prioridad, progreso, próxima acción y todo tu texto. Si una carpeta desaparece, avisa pero no borra la nota.
 
 ```powershell
@@ -225,7 +225,7 @@ Tus notas (proyectos, notas, diario, revisiones, herramientas y adjuntos) **no s
 
 1. Doble clic en **`respaldar.bat`**. La primera vez pregunta en qué carpeta guardar las copias: mejor un disco externo o una carpeta de la nube, porque van cifradas.
 2. Elige una contraseña. **No se guarda en ningún sitio: si la olvidas, la copia no se puede recuperar.**
-3. Se crea `cerebrojm-AAAA-MM-DD_hhmmss.cjmbak` (AES-256-GCM) y se conservan las 10 últimas.
+3. Se crea `cerebrojm-AAAA-MM-DD_hhmmss.cjmbak` (AES-256-GCM) y se conservan las 10 últimas. La carpeta de destino no puede estar dentro del vault. Si algo no se puede leer o es un enlace simbólico (no se siguen), la copia se crea igualmente, lista lo omitido y termina con código 1.
 
 Para recuperar: **`restaurar.bat`** restaura la copia más reciente **sin pisar** archivos que hayas modificado después (añade `--forzar` para sobrescribirlos). El Diagnóstico (`_sistema/Diagnóstico.md`) te avisa si la última copia tiene más de 14 días.
 
@@ -240,7 +240,7 @@ Requiere la [CLI de GitHub](https://cli.github.com) con la sesión iniciada (`gh
 node _sistema/scripts/repos.mjs
 ```
 
-Para cada proyecto cuyo `repo` sea una URL de GitHub (`https://github.com/usuario/repo`), consulta GitHub y escribe en el frontmatter solo dos campos: `ultimo_push` (AAAA-MM-DD, en UTC) e `issues_abiertos` (sin contar PRs). El resto de la nota queda igual, byte a byte, y no se reescribe si nada cambió. Si un repo falla (renombrado, sin acceso), avisa con la causa, deja esa nota intacta y termina con código 1.
+Para cada proyecto cuyo `repo` sea una URL de GitHub (`https://github.com/usuario/repo`), consulta GitHub y escribe en el frontmatter solo dos campos: `ultimo_push` (AAAA-MM-DD, en UTC) e `issues_abiertos` (sin contar PRs). El resto de la nota queda igual, byte a byte, y no se reescribe si nada cambió. Si un repo falla (renombrado, sin acceso, o `gh` no responde en 30 s), avisa con la causa, deja esa nota intacta y termina con código 1. Una URL de GitHub mal escrita (`http://`, `www.`, sin esquema o con `/tree/main`) también se avisa y termina con código 1; una URL de otro host se ignora.
 
 El Panel y `/estado` marcan **🧊 sin push (+30 días)** a los proyectos `activo` cuyo `ultimo_push` tenga más de 30 días.
 
@@ -350,11 +350,13 @@ cerebrojm/
 │   ├── scripts/escanear.mjs  Escáner de proyectos y herramientas
 │   ├── scripts/estado.mjs    Resumen de estado y alertas (solo lectura)
 │   ├── scripts/repos.mjs     Último push e issues abiertos de los repos (usa `gh`)
+│   ├── scripts/respaldar.mjs · restaurar.mjs · respaldo-lib.mjs   Copia cifrada y restauración
+│   ├── scripts/atomico.mjs   Escritura atómica con reintento ante bloqueos de Windows
 │   ├── config/               Configuración local del escáner (*.local.json fuera de Git)
-│   ├── tests/                Tests de la agenda y del escáner, validador del vault (CI)
+│   ├── tests/                Tests de los scripts y validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema
 │   └── assets/               Imágenes del README
-├── .claude/                  Subagente gestor-proyectos y comandos /estado, /revision y /proyecto
+├── .claude/                  Subagente gestor-proyectos y comandos /estado, /revision, /proyecto, /fase, /implementar y /seguimiento
 └── .obsidian/                Configuración y plugins incluidos
 ```
 
@@ -381,7 +383,7 @@ Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se e
 - **Tus datos no salen de tu PC** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat`.
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
-- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal, el escáner y la copia de seguridad (con datos ficticios), comprueba que la zona personal sigue fuera de Git y valida las notas del repo.
+- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal, el escáner, la escritura atómica, la copia de seguridad, el resumen de estado, los repos y el validador (con datos ficticios), comprueba que la zona personal sigue fuera de Git y valida las notas del repo.
 - Los commits automáticos no incluyen el nombre de tu equipo.
 - Si Obsidian Git detecta un conflicto, te avisa: abre el archivo, quédate con la versión buena y haz *Commit-and-sync*.
 
