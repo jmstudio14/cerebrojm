@@ -4,7 +4,7 @@ rem Necesita la CLI de GitHub (gh) con la sesion iniciada: gh auth login
 cd /d "%~dp0"
 where node >nul 2>nul
 if errorlevel 1 (
-  echo Necesitas Node.js 18 o superior: https://nodejs.org
+  echo Necesitas Node.js 22 o superior: https://nodejs.org
   pause
   exit /b 1
 )

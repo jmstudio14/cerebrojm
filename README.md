@@ -186,7 +186,7 @@ git pull   # comprueba que la autenticación funciona
 3. Abre **`_sistema/Diagnóstico.md`**: comprueba plugins, calendario y proyectos. Todo debería salir en ✅.
 4. Abre **`00 Panel.md`**, que también está en Marcadores.
 
-Los plugins (Dataview, Obsidian Git y Full Calendar) **vienen incluidos** en `.obsidian/plugins/`: no hay que instalar nada.
+Los plugins **vienen incluidos** en `.obsidian/plugins/`: no hay que instalar nada. Se activan Dataview, Obsidian Git, Full Calendar y Templater. Excalidraw también viene incluido, pero no está en la lista de plugins activados.
 
 </details>
 
@@ -209,7 +209,7 @@ Los plugins (Dataview, Obsidian Git y Full Calendar) **vienen incluidos** en `.o
 
 ### 5 · Cargar tus proyectos
 
-Requiere [Node.js](https://nodejs.org) 18 o superior. Doble clic en **`escanear.bat`** (en la carpeta del vault):
+Requiere [Node.js](https://nodejs.org) 22 o superior. Doble clic en **`escanear.bat`** (en la carpeta del vault):
 
 1. La primera vez pregunta qué **carpetas madre** contienen tus proyectos, por ejemplo `C:\Programacion;D:\Creativo`. Cada subcarpeta cuenta como un proyecto. Se guarda en `_sistema/config/escaner.local.json`, que no se sube a Git (ver `escaner.ejemplo.json`).
 2. Crea una nota por proyecto en `01 Proyectos/` (con el campo `entregable` vacío) y una ficha por herramienta en `05 Herramientas/`, con la etiqueta `revisar`. Si dos proyectos tienen el mismo nombre, añade el de su carpeta madre (y un número si aun así chocan), por ejemplo `app (proyectos 2)`.
@@ -269,6 +269,10 @@ Unregister-ScheduledTask -TaskName "cerebrojm - estado de repos" -Confirm:$false
 | Hacer la revisión semanal | Nota nueva en `04 Revisiones/` → plantilla **Revisión semanal** |
 | Ver el calendario completo | `Ctrl+P` → *Full Calendar: Open Calendar* |
 | Sincronizar ya | `Ctrl+P` → *Obsidian Git: Commit-and-sync* |
+| Cargar o actualizar proyectos | Doble clic en **`escanear.bat`** |
+| Actualizar último push e issues de GitHub | Doble clic en **`repos.bat`** (necesita `gh`) |
+| Copia cifrada de mis notas | Doble clic en **`respaldar.bat`**, cada semana al terminar la revisión |
+| Recuperar una copia | Doble clic en **`restaurar.bat`** (no pisa lo modificado después) |
 
 La rutina completa y el significado de cada alerta están en **[Guía rápida](Guía%20rápida.md)**.
 
@@ -277,7 +281,7 @@ Abre Claude Code en la carpeta del vault. El subagente `gestor-proyectos` (`.cla
 
 | Comando | Qué hace |
 |---|---|
-| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Solo escribe `ultimo_push` e `issues_abiertos`, mediante `repos.mjs`. |
+| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Ejecuta `escanear.mjs` y `repos.mjs`, así que refresca los campos automáticos de las notas (`ultimo_push`, `issues_abiertos` y los del escáner). Nunca toca `estado`, `prioridad`, `progreso` ni `proxima_accion`. |
 | `/revision` | Crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla, con los datos del día. No sobrescribe y no marca el checklist. |
 | `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs abiertos y una propuesta de siguiente paso. Solo lectura. |
 | `/fase <nombre>` | Lee el repo del proyecto (su `CLAUDE.md`, `ROADMAP.md`, tests y CI) y propone el plan de su fase siguiente. No escribe nada. |
@@ -300,14 +304,21 @@ categoria: codigo          # codigo · personal · creativo
 estado: activo             # idea · activo · pausado · bloqueado · completado · archivado
 prioridad: alta            # alta · media · baja
 progreso: 40               # 0–100
+inicio: 2026-11-01         # la plantilla pone la fecha de hoy; el escáner la deja vacía
 fecha_limite: 2026-11-30   # aparece en la agenda
 ultima_revision: 2026-11-18  # +14 días → estancado
 proxima_accion: "Una acción concreta"
 entregable: "Un libro"     # opcional: qué produce al terminar (personal/creativo)
 repo: "https://github.com/…"
+ruta_local: "C:\\Programacion\\mi-proyecto"   # lo rellena el escáner
+ultimo_commit: 2026-11-10  # lo escribe el escáner
+etiquetas: [revisar]       # el escáner marca «revisar» hasta que lo confirmas
+escaneado: 2026-11-18      # lo escribe el escáner: fecha del último escaneo
 ultimo_push: 2026-11-10    # lo escribe repos.mjs; +30 días en un activo → sin push
 issues_abiertos: 3         # lo escribe repos.mjs
 ```
+
+`ruta_local` y `ultimo_commit` los incluye la plantilla de Proyecto; `escaneado` solo lo añade el escáner. `ultimo_push` e `issues_abiertos` los añade `repos.mjs` la primera vez que consulta GitHub.
 
 ```mermaid
 stateDiagram-v2
@@ -336,6 +347,7 @@ cerebrojm/
 ├── 00 Panel.md               Dashboard principal
 ├── Guía rápida.md            Rutina diaria/semanal y señales de alarma
 ├── ROADMAP.md                Evolución del propio sistema
+├── skills-lock.json          Origen y hash de las skills de `.claude/skills/`
 ├── escanear.bat              Carga o actualiza tus proyectos y herramientas
 ├── repos.bat                 Actualiza el último push y los issues de tus repos de GitHub
 ├── respaldar.bat · restaurar.bat   Copia cifrada de tus datos personales
@@ -353,10 +365,12 @@ cerebrojm/
 │   ├── scripts/respaldar.mjs · restaurar.mjs · respaldo-lib.mjs   Copia cifrada y restauración
 │   ├── scripts/atomico.mjs   Escritura atómica con reintento ante bloqueos de Windows
 │   ├── config/               Configuración local del escáner (*.local.json fuera de Git)
-│   ├── tests/                Tests de los scripts y validador del vault (CI)
+│   ├── tests/                Tests de agenda, escáner, escritura atómica, respaldo, estado y repos, coherencia con .gitignore y validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema
 │   └── assets/               Imágenes del README
-├── .claude/                  Subagente gestor-proyectos y comandos /estado, /revision, /proyecto, /fase, /implementar y /seguimiento
+├── docs/                     Decisiones (architecture/ADR), roadmap, auditoría y estrategia de pruebas
+├── .github/workflows/validar.yml   CI: tests y validación del frontmatter
+├── .claude/                  Subagente gestor-proyectos, comandos /estado, /revision, /proyecto, /fase, /implementar y /seguimiento, skills y settings.json (reglas deny)
 └── .obsidian/                Configuración y plugins incluidos
 ```
 
@@ -366,15 +380,15 @@ cerebrojm/
 
 | Fase | Estado | Objetivo |
 |:---:|:---:|---|
-| **0** | ✅ Hecha | Vault, Panel, agenda, plantillas y proyectos importados |
+| **0** | ✅ Hecha | Vault, Panel, agenda, plantillas y escáner de proyectos |
 | **1** | 🔄 En curso | Adopción: 2 semanas de uso real y máximo 3-4 proyectos activos |
-| **2** | ⏳ | Agente de Claude Code que gestiona los proyectos e implementa la siguiente fase de cada repo vía PR |
-| **3** | ⏳ | App de escritorio minimalista y profesional (Tauri + React), con sistema de diseño propio |
-| **4** | ⏳ | Estado de los repos actualizado automáticamente desde GitHub |
-| **5** | ⏳ | Proyectos personales y creativos |
+| **2** | 🟡 Implementada, sin cerrar | Agente de Claude Code que gestiona los proyectos e implementa la siguiente fase de cada repo vía PR |
+| **3** | 🟡 Implementada, sin cerrar | App de escritorio minimalista y profesional (Tauri + React), con sistema de diseño propio |
+| **4** | 🟡 Implementada, sin cerrar | Estado de los repos actualizado automáticamente desde GitHub (`repos.mjs`) |
+| **5** | 🔄 Parcial | Proyectos personales y creativos: la plantilla ya sirve; falta dar de alta los proyectos |
 | **6** | ⏳ | Captura desde el móvil (opcional) |
 
-Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se empieza una fase hasta cerrar la anterior.
+«Sin cerrar» significa que el código está hecho, pero la condición de entrada o el criterio de terminado del roadmap aún no se han marcado. Detalle en **[ROADMAP.md](ROADMAP.md)**. Regla: no se empieza una fase hasta cerrar la anterior.
 
 ---
 
@@ -383,7 +397,7 @@ Detalle y criterios de terminado en **[ROADMAP.md](ROADMAP.md)**. Regla: no se e
 - **Tus datos no salen de tu PC** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat`.
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
-- Cada push ejecuta un CI (`.github/workflows/validar.yml`) que prueba el lector iCal, el escáner, la escritura atómica, la copia de seguridad, el resumen de estado, los repos y el validador (con datos ficticios), comprueba que la zona personal sigue fuera de Git y valida las notas del repo.
+- Cada push ejecuta un CI (`.github/workflows/validar.yml`) en Ubuntu y Windows, con Node 22 y 24. Corre todos los tests de `_sistema/tests/` (lector iCal, escáner, escritura atómica, copia de seguridad, resumen de estado, repos y validador, con datos ficticios), entre ellos la comprobación de que la zona personal sigue fuera de Git, y valida las notas del repo. Un test nuevo entra solo, sin tocar el workflow.
 - Los commits automáticos no incluyen el nombre de tu equipo.
 - Si Obsidian Git detecta un conflicto, te avisa: abre el archivo, quédate con la versión buena y haz *Commit-and-sync*.
 

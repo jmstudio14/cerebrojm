@@ -4,7 +4,7 @@ rem La primera vez te pregunta que carpetas escanear y lo guarda en _sistema\con
 cd /d "%~dp0"
 where node >nul 2>nul
 if errorlevel 1 (
-  echo Necesitas Node.js 18 o superior: https://nodejs.org
+  echo Necesitas Node.js 22 o superior: https://nodejs.org
   pause
   exit /b 1
 )

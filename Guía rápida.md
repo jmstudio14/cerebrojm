@@ -15,7 +15,9 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 | Cada día (2 min) | Abrir la nota diaria, mirar la agenda y elegir máximo 3 focos | `Ctrl+P` → *Daily notes: Open today's daily note* |
 | Al tocar un proyecto | Actualizar `estado`, `progreso`, `proxima_accion` y `ultima_revision`, y añadir una línea al Registro | Nota del proyecto |
 | Cada semana (30 min) | Revisión semanal: vaciar la bandeja, revisar los estancados y limitar los activos | Nota nueva en `04 Revisiones/` con la plantilla **Revisión semanal** |
+| Antes de la revisión | Actualizar último push e issues de tus repos (necesita `gh` con sesión) | Doble clic en **`repos.bat`** |
 | Al terminar la revisión | Copia de seguridad cifrada de tus notas (no están en GitHub) | Doble clic en **`respaldar.bat`** |
+| Al cambiar de PC o tras perder datos | Recuperar la copia más reciente sin pisar lo modificado después | Doble clic en **`restaurar.bat`** |
 
 ## Dónde va cada cosa
 - **Proyecto** (tiene un final): lo crea el escáner; si no está en una carpeta escaneada, nota en `01 Proyectos/` con la plantilla **Proyecto**. Ver [[_Índice de proyectos]].
@@ -32,7 +34,21 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 - ⛔ **bloqueado**: escribe el motivo en *Bloqueos / riesgos*.
 - ❓ **sin próxima acción**: no sabes cuál es el siguiente paso, y por eso no avanza.
 - 💤 **estancado**: lleva más de 14 días sin revisión.
+- 🧊 **sin push (+30 días)**: un proyecto `activo` cuyo último push a GitHub tiene más de 30 días. Lo calcula `repos.bat`; sin él no aparece.
+- 📆 **límite cercano**: la `fecha_limite` vence en menos de 14 días.
 - Más de 4 activos: estás repartiendo demasiado la atención.
+
+## Con Claude Code
+Abre Claude Code en la carpeta del vault. Ninguno de estos comandos hace commit ni push en el vault. El detalle está en el `README.md`.
+
+| Comando | Qué hace |
+|---|---|
+| `/estado` | Resumen por estado con las mismas alertas que el Panel, último push y PRs abiertos |
+| `/revision` | Crea la nota de la revisión semanal de hoy con los datos del día |
+| `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs y propuesta de siguiente paso (solo lectura) |
+| `/fase <nombre>` | Propone el plan de la fase siguiente de un repo, sin escribir nada |
+| `/implementar <nombre>` | Con tu aprobación, implementa esa fase en una rama y abre un PR en borrador. Nunca fusiona |
+| `/seguimiento [nombre]` | Vigila los PRs de fase abiertos (CI y comentarios) |
 
 ## Atajos útiles
 - `Ctrl+P` → *Templates: Insert template*: insertar una plantilla.

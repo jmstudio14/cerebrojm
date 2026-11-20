@@ -1,8 +1,10 @@
 # ADR-0007 · Integración con GitHub: local y bajo demanda
 
-- **Estado:** Propuesta
+- **Estado:** Sustituida por la implementación de `repos.mjs` (2026-11-20)
 - **Fecha:** 2026-11-18
 - **Relacionado:** AUD-027, FEAT-003, `ROADMAP.md` Fase 4
+
+> **Sustituida (2026-11-20):** se mantiene la idea de fondo (local, bajo demanda, con `gh` y sin tokens en el vault), pero la implementación es otra. Un script propio, `_sistema/scripts/repos.mjs` (con `repos.bat`), consulta GitHub y escribe dos campos del **frontmatter** de cada nota: `ultimo_push` e `issues_abiertos`. No es una opción `--github` del escáner ni escribe en el bloque automático. Si `gh` falla o tarda más de 30 s, avisa, deja la nota intacta y termina con código 1. PRs abiertos, último release y estado del workflow no se guardan: `/estado` consulta los PRs bajo demanda con `gh`.
 
 ## Contexto
 

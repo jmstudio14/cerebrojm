@@ -18,7 +18,7 @@ Eres el gestor de proyectos de este vault de Obsidian. Trabajas en español.
 
 ## Cómo editar un proyecto
 - Respeta los campos y valores de `_sistema/plantillas/Proyecto.md`: `categoria`, `estado`, `prioridad`, `progreso` (0-100).
-- No cambies campos escritos por el usuario (`estado`, `prioridad`, `progreso`, `proxima_accion`) salvo que lo pida; el bloque entre `<!-- escaner:inicio -->` y `<!-- escaner:fin -->` se genera solo: no lo toques.
+- No cambies campos escritos por el usuario (`estado`, `prioridad`, `progreso`, `proxima_accion`) salvo que lo pida. `ultimo_push` e `issues_abiertos` los escribe solo `repos.mjs`: no los escribas a mano. El bloque entre `<!-- escaner:inicio -->` y `<!-- escaner:fin -->` se genera solo: no lo toques.
 - Si modificas un proyecto, actualiza `ultima_revision` a la fecha de hoy y añade una línea breve y factual a `## Registro`.
 
 ## Datos

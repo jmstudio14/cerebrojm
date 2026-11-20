@@ -70,6 +70,27 @@ test("un UNTIL mal formado no rompe la agenda: se ignora el límite", () => {
   assert.deepEqual(dias(ics, new Date(2026, 10, 18), new Date(2026, 10, 21)), ["2026-11-18", "2026-11-19", "2026-11-20"]);
 });
 
+test("un UNTIL válido corta la serie en esa fecha, incluida", () => {
+  const ics = evento("DTSTART:20261116T100000Z", "RRULE:FREQ=DAILY;UNTIL=20261118T100000Z");
+  assert.deepEqual(dias(ics, new Date(2026, 10, 16), new Date(2026, 10, 25)), ["2026-11-16", "2026-11-17", "2026-11-18"]);
+});
+
+test("MONTHLY con BYMONTHDAY cae ese día de cada mes", () => {
+  const ics = evento("DTSTART:20260910T100000Z", "RRULE:FREQ=MONTHLY;BYMONTHDAY=15");
+  assert.deepEqual(dias(ics, new Date(2026, 9, 1), new Date(2027, 0, 1)), ["2026-10-15", "2026-11-15", "2026-12-15"]);
+});
+
+test("MONTHLY con BYMONTHDAY=31 se salta los meses que no tienen día 31", () => {
+  const ics = evento("DTSTART:20260831T100000Z", "RRULE:FREQ=MONTHLY;BYMONTHDAY=31");
+  assert.deepEqual(dias(ics, new Date(2026, 9, 1), new Date(2027, 0, 1)), ["2026-10-31", "2026-12-31"]);
+});
+
+test("una serie semanal a las 10:00 de Madrid mantiene la hora local al cambiar el horario", () => {
+  const ics = evento("DTSTART;TZID=Europe/Madrid:20261019T100000", "RRULE:FREQ=WEEKLY;COUNT=3");
+  const horas = ocurrencias(parsearICS(ics), new Date(2026, 9, 19), new Date(2026, 10, 10)).map((o) => o.inicio.toISOString());
+  assert.deepEqual(horas, ["2026-10-19T08:00:00.000Z", "2026-10-26T09:00:00.000Z", "2026-11-02T09:00:00.000Z"]);
+});
+
 test("EXDATE;VALUE=DATE excluye el día en una serie con hora", () => {
   const ics = evento("DTSTART;TZID=Europe/Madrid:20261116T100000", "RRULE:FREQ=DAILY;COUNT=5", "EXDATE;VALUE=DATE:20261118");
   assert.deepEqual(dias(ics, new Date(2026, 10, 16), new Date(2026, 10, 22)), ["2026-11-16", "2026-11-17", "2026-11-19", "2026-11-20"]);

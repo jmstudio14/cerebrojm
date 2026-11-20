@@ -6,9 +6,10 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
+import zlib from "node:zlib";
 import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { recogerArchivos, crearCopia, leerCopia, restaurar, aplicarRetencion, listarCopias, rutaSegura } from "../scripts/respaldo-lib.mjs";
+import { MAGIA, recogerArchivos, crearCopia, leerCopia, restaurar, aplicarRetencion, listarCopias, rutaSegura } from "../scripts/respaldo-lib.mjs";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const RESPALDAR = path.join(RAIZ, "_sistema", "scripts", "respaldar.mjs");
@@ -100,17 +101,17 @@ test("retención: conserva las 10 últimas copias y no toca otros archivos", () 
 
 test("CLI: respaldar y restaurar de punta a punta, y registro de la fecha de la última copia", () => {
   const env = { ...process.env, CJM_PWD: PWD };
-  const out = execFileSync("node", [RESPALDAR, "--vault", vault, "--destino", destino, "--password-env", "CJM_PWD"], { env, encoding: "utf8" });
+  const out = execFileSync(process.execPath, [RESPALDAR, "--vault", vault, "--destino", destino, "--password-env", "CJM_PWD"], { env, encoding: "utf8" });
   assert.match(out, /Copia creada/);
   assert.match(out, /7 archivos/);
   const cfg = JSON.parse(fs.readFileSync(path.join(vault, "_sistema/config/respaldo.local.json"), "utf8"));
   assert.equal(path.resolve(cfg.destino), path.resolve(destino));
   assert.ok(!Number.isNaN(Date.parse(cfg.ultimo)));
   fs.rmSync(path.join(vault, "03 Diario/2026-11-18.md"));
-  const out2 = execFileSync("node", [RESTAURAR, "--vault", vault, "--password-env", "CJM_PWD"], { env, encoding: "utf8" });
+  const out2 = execFileSync(process.execPath, [RESTAURAR, "--vault", vault, "--password-env", "CJM_PWD"], { env, encoding: "utf8" });
   assert.match(out2, /1 restaurados/);
   assert.ok(fs.existsSync(path.join(vault, "03 Diario/2026-11-18.md")));
-  assert.throws(() => execFileSync("node", [RESTAURAR, "--vault", vault, "--password-env", "MAL"], { env: { ...env, MAL: "x" }, stdio: "pipe" }));
+  assert.throws(() => execFileSync(process.execPath, [RESTAURAR, "--vault", vault, "--password-env", "MAL"], { env: { ...env, MAL: "x" }, stdio: "pipe" }));
 });
 
 test("rutaSegura acepta nombres con puntos suspensivos y rechaza segmentos .. y rutas absolutas", () => {
@@ -130,7 +131,7 @@ test("CLI: un destino dentro del vault se rechaza y no crea la carpeta", () => {
   const dentro = path.join(vault, "copias-dentro");
   const env = { ...process.env, CJM_PWD: PWD };
   assert.throws(
-    () => execFileSync("node", [RESPALDAR, "--vault", vault, "--destino", dentro, "--password-env", "CJM_PWD"], { env, stdio: "pipe" }),
+    () => execFileSync(process.execPath, [RESPALDAR, "--vault", vault, "--destino", dentro, "--password-env", "CJM_PWD"], { env, stdio: "pipe" }),
     (e) => /dentro del vault/.test(String(e.stderr)),
   );
   assert.ok(!fs.existsSync(dentro));
@@ -142,7 +143,7 @@ test("CLI: un respaldo.local.json mal formado se rechaza y no se sobrescribe", (
   fs.writeFileSync(cfg, "{ roto");
   const env = { ...process.env, CJM_PWD: PWD };
   assert.throws(
-    () => execFileSync("node", [RESPALDAR, "--vault", vault, "--destino", destino, "--password-env", "CJM_PWD"], { env, stdio: "pipe" }),
+    () => execFileSync(process.execPath, [RESPALDAR, "--vault", vault, "--destino", destino, "--password-env", "CJM_PWD"], { env, stdio: "pipe" }),
     (e) => /no es JSON válido/.test(String(e.stderr)),
   );
   assert.equal(fs.readFileSync(cfg, "utf8"), "{ roto");
@@ -180,6 +181,42 @@ test("CLI: una copia incompleta se crea, avisa de lo omitido y sale con código 
   assert.equal(r.status, 1);
   assert.match(r.stdout + r.stderr, /1 entrada omitida.*03 Diario/s);
   assert.equal(fs.readdirSync(dest).length, 1, "la copia se crea igualmente");
+});
+
+// Copia válida cuyo manifiesto se altera antes de volver a cifrarla (mismos parámetros scrypt que respaldo-lib).
+function copiaAlterada(buffer, alterar) {
+  const clave = (sal) => crypto.scryptSync(PWD, sal, 32, { N: 2 ** 15, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+  const sal = buffer.subarray(MAGIA.length, MAGIA.length + 16);
+  const iv = buffer.subarray(MAGIA.length + 16, MAGIA.length + 28);
+  const descifrador = crypto.createDecipheriv("aes-256-gcm", clave(sal), iv);
+  descifrador.setAuthTag(buffer.subarray(MAGIA.length + 28, MAGIA.length + 44));
+  const plano = Buffer.concat([descifrador.update(buffer.subarray(MAGIA.length + 44)), descifrador.final()]);
+  const manifiesto = JSON.parse(zlib.gunzipSync(plano).toString("utf8"));
+  alterar(manifiesto);
+  const cifrador = crypto.createCipheriv("aes-256-gcm", clave(sal), iv);
+  const cifrado = Buffer.concat([cifrador.update(zlib.gzipSync(Buffer.from(JSON.stringify(manifiesto)))), cifrador.final()]);
+  return Buffer.concat([MAGIA, sal, iv, cifrador.getAuthTag(), cifrado]);
+}
+
+test("una copia con un sha256 que no cuadra se rechaza como dañada", () => {
+  const { buffer } = crearCopia(vault, PWD);
+  const mala = copiaAlterada(buffer, (m) => { m.archivos[0].sha256 = "0".repeat(64); });
+  assert.throws(() => leerCopia(mala, PWD), /Copia dañada: /);
+});
+
+test("una copia con una ruta que sale del vault se rechaza y no escribe nada", () => {
+  const { buffer } = crearCopia(vault, PWD);
+  const mala = copiaAlterada(buffer, (m) => { m.archivos[0].ruta = "../fuera.md"; });
+  assert.throws(() => leerCopia(mala, PWD), /Ruta no permitida en la copia: \.\.\/fuera\.md/);
+  assert.ok(!fs.existsSync(path.join(tmp, "fuera.md")));
+});
+
+test("los archivos .tmp de la zona personal no entran en la copia", () => {
+  escribir("02 Notas/Nota.md.tmp", "a medias\n");
+  const archivos = recogerArchivos(vault);
+  fs.rmSync(path.join(vault, "02 Notas/Nota.md.tmp"));
+  assert.ok(!archivos.some((r) => r.endsWith(".tmp")));
+  assert.ok(archivos.includes("02 Notas/Bandeja de entrada.md"));
 });
 
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

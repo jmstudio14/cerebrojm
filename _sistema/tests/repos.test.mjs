@@ -145,3 +145,5 @@ test("una URL de GitHub mal escrita se avisa en vez de saltarse en silencio", ()
     assert.equal(leer(vault, "uno"), original, url);
   }
 });
+
+test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

@@ -22,7 +22,7 @@ const escribir = (rel, txt) => {
 };
 const gitEn = (dir, ...a) => execFileSync("git", ["-C", dir, "-c", "user.name=Test", "-c", "user.email=t@example.com", ...a], { stdio: "ignore" });
 const escanear = (...extra) =>
-  execFileSync("node", [ESCANER, "--vault", vault, "--carpetas", madre, "--hoy", "2026-11-18", ...extra], { encoding: "utf8" });
+  execFileSync(process.execPath, [ESCANER, "--vault", vault, "--carpetas", madre, "--hoy", "2026-11-18", ...extra], { encoding: "utf8" });
 const nota = (rel) => fs.readFileSync(path.join(vault, rel), "utf8");
 
 // --- Proyectos ficticios ---
@@ -81,7 +81,7 @@ test("las herramientas se agrupan por paquete y enlazan a los proyectos", () => 
 });
 
 test("lo generado pasa el validador del vault", () => {
-  const out = execFileSync("node", [VALIDADOR, vault], { encoding: "utf8" });
+  const out = execFileSync(process.execPath, [VALIDADOR, vault], { encoding: "utf8" });
   assert.match(out, /2 proyectos y 5 herramientas válidos/);
 });
 
@@ -132,7 +132,7 @@ test("un escaner.local.json mal formado se rechaza con un error claro y no se to
   fs.mkdirSync(path.dirname(cfg), { recursive: true });
   fs.writeFileSync(cfg, '{ "carpetas": [');
   assert.throws(
-    () => execFileSync("node", [ESCANER, "--vault", vault, "--hoy", "2026-11-18"], { encoding: "utf8", stdio: "pipe" }),
+    () => execFileSync(process.execPath, [ESCANER, "--vault", vault, "--hoy", "2026-11-18"], { encoding: "utf8", stdio: "pipe" }),
     (e) => e.status === 2 && /no es JSON válido/.test(String(e.stderr)),
   );
   assert.equal(fs.readFileSync(cfg, "utf8"), '{ "carpetas": [');
@@ -142,7 +142,7 @@ test("un escaner.local.json mal formado se rechaza con un error claro y no se to
 const ZONAS = ["Pacific/Kiritimati", "Pacific/Pago_Pago"]; // UTC+14 y UTC-11: en cualquier instante una de las dos cae en otro día que UTC
 const diaEn = (zona) => new Intl.DateTimeFormat("sv-SE", { timeZone: zona }).format(new Date());
 const escanearEn = (v, carpetas, extra = [], env = {}) =>
-  execFileSync("node", [ESCANER, "--vault", v, "--carpetas", carpetas, ...extra], { encoding: "utf8", env: { ...process.env, ...env } });
+  execFileSync(process.execPath, [ESCANER, "--vault", v, "--carpetas", carpetas, ...extra], { encoding: "utf8", env: { ...process.env, ...env } });
 const vaultNuevo = () => fs.mkdtempSync(path.join(tmp, "vault-"));
 
 test("las notas nuevas llevan el campo entregable, como la plantilla", () => {
@@ -195,6 +195,15 @@ test("tres proyectos con el mismo nombre en carpetas madre con el mismo nombre n
   assert.match(escanearEn(v, madres.join(";")), /3 proyectos escaneados: 3 nuevos/);
   const rutas = fs.readdirSync(path.join(v, "01 Proyectos")).filter((n) => n.startsWith("app")).sort();
   assert.deepEqual(rutas, ["app (proyectos 2).md", "app (proyectos).md", "app.md"]);
+});
+
+test("una carpeta sin stack ni repositorio se registra como proyecto personal", () => {
+  const m = fs.mkdtempSync(path.join(tmp, "personal-"));
+  fs.mkdirSync(path.join(m, "reforma-casa"));
+  fs.writeFileSync(path.join(m, "reforma-casa", "presupuesto.txt"), "pendiente\n");
+  const v = vaultNuevo();
+  escanearEn(v, m, ["--hoy", "2026-11-18"]);
+  assert.match(fs.readFileSync(path.join(v, "01 Proyectos", "reforma-casa.md"), "utf8"), /^categoria: personal$/m);
 });
 
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

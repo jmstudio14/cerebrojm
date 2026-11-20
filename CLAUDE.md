@@ -31,6 +31,7 @@ Este repositorio es el sistema de un vault de Obsidian («cerebro digital»), si
 - Valores permitidos: `categoria`: `codigo`, `personal` o `creativo`; `estado`: `idea`, `activo`, `pausado`, `bloqueado`, `completado` o `archivado`; `prioridad`: `alta`, `media` o `baja`; `progreso`: entero de 0 a 100.
 - Si modificas un proyecto, actualiza `ultima_revision` a la fecha actual y añade una línea breve y factual a `## Registro`. Las tareas van como `- [ ]` bajo `## Próximas tareas`.
 - No cambies campos escritos por el usuario ni el contenido manual del proyecto al actualizar datos automáticos del escáner.
+- `ultimo_push` e `issues_abiertos` los escribe solo `repos.mjs`: no los edites a mano.
 
 ## Notas de herramientas
 
@@ -45,7 +46,7 @@ Este repositorio es el sistema de un vault de Obsidian («cerebro digital»), si
 
 ## Tareas habituales
 
-- **Estado de mis proyectos:** cuando se solicite, lee las notas de `01 Proyectos/` y resume por estado. Señala vencidos, bloqueados, estancados (más de 14 días sin revisión) y sin próxima acción; distingue los hechos de lo que no se pudo comprobar.
+- **Estado de mis proyectos:** cuando se solicite, lee las notas de `01 Proyectos/` y resume por estado. Señala vencidos, bloqueados, estancados (más de 14 días sin revisión), sin push (activos con `ultimo_push` de hace más de 30 días) y sin próxima acción; distingue los hechos de lo que no se pudo comprobar.
 - **Revisión semanal:** cuando se solicite, crea `04 Revisiones/AAAA-MM-DD.md` desde `_sistema/plantillas/Revisión semanal.md` y complétala con datos reales, sin inventar ni publicar información personal.
 
 ## Selección de modelo

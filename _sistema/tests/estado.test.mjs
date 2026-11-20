@@ -33,7 +33,7 @@ proyecto("bloqueado-sin-push", { estado: "bloqueado", ultimo_push: "2026-09-01" 
 proyecto("archivado", { estado: "archivado", proxima_accion: "" });
 fs.writeFileSync(path.join(vault, "01 Proyectos", "_Índice.md"), "---\ntipo: indice\n---\n");
 
-const salida = JSON.parse(execFileSync("node", [ESTADO, "--vault", vault, "--hoy", "2026-11-18"], { encoding: "utf8" }));
+const salida = JSON.parse(execFileSync(process.execPath, [ESTADO, "--vault", vault, "--hoy", "2026-11-18"], { encoding: "utf8" }));
 
 test("recuento por estado, sin contar índices", () => {
   assert.deepEqual(salida.por_estado, { activo: 9, bloqueado: 2, archivado: 1 });
@@ -67,7 +67,7 @@ test("los archivados no generan alertas y cada proyecto cuenta una vez", () => {
 
 test("no modifica ninguna nota", () => {
   const antes = fs.readFileSync(path.join(vault, "01 Proyectos", "al-dia.md"), "utf8");
-  execFileSync("node", [ESTADO, "--vault", vault, "--hoy", "2026-11-18"]);
+  execFileSync(process.execPath, [ESTADO, "--vault", vault, "--hoy", "2026-11-18"]);
   assert.equal(fs.readFileSync(path.join(vault, "01 Proyectos", "al-dia.md"), "utf8"), antes);
 });
 
@@ -76,11 +76,11 @@ const vault2 = fs.mkdtempSync(path.join(os.tmpdir(), "cerebro-estado2-"));
 fs.mkdirSync(path.join(vault2, "01 Proyectos"));
 const nota2 = (nombre, texto) => fs.writeFileSync(path.join(vault2, "01 Proyectos", `${nombre}.md`), texto);
 const ejecutar = (v, extra = [], env = {}) =>
-  JSON.parse(execFileSync("node", [ESTADO, "--vault", v, "--hoy", "2026-11-18", ...extra], { encoding: "utf8", env: { ...process.env, ...env } }));
+  JSON.parse(execFileSync(process.execPath, [ESTADO, "--vault", v, "--hoy", "2026-11-18", ...extra], { encoding: "utf8", env: { ...process.env, ...env } }));
 
 test("«hoy» por defecto es la fecha local del equipo, no la de UTC", () => {
   for (const zona of ["Pacific/Kiritimati", "Pacific/Pago_Pago"]) { // UTC+14 y UTC-11: una de las dos cae siempre en otro día que UTC
-    const r = JSON.parse(execFileSync("node", [ESTADO, "--vault", vault], { encoding: "utf8", env: { ...process.env, TZ: zona } }));
+    const r = JSON.parse(execFileSync(process.execPath, [ESTADO, "--vault", vault], { encoding: "utf8", env: { ...process.env, TZ: zona } }));
     assert.equal(r.hoy, new Intl.DateTimeFormat("sv-SE", { timeZone: zona }).format(new Date()), zona);
   }
 });
@@ -107,3 +107,5 @@ test("comillas simples: 'activo' es activo", () => {
   assert.deepEqual(r.sin_proxima_accion, []);
   fs.rmSync(v, { recursive: true, force: true });
 });
+
+test.after(() => { for (const d of [vault, vault2]) fs.rmSync(d, { recursive: true, force: true }); });

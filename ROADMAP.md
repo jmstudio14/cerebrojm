@@ -227,48 +227,35 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - [x] `escanear.mjs`: nombres repetidos con carpetas madre del mismo nombre. Ahora se añade un contador (`app (proyectos 2)`).
 
 ### Media: tests y CI
-- [ ] La CI solo usa Ubuntu con Node 22. Falta Windows (CRLF, `.bat`, rutas) y la versión mínima que promete el README.
-- [ ] Node mínimo: el README y los `.bat` dicen 18, pero `test.after` exige 18.8 y Node 18 ya no tiene soporte. Decidir un mínimo (20 o 22) y declararlo.
-- [ ] En la CI, `validar-vault.mjs` valida 0 proyectos porque las notas están fuera de Git. Faltan casos negativos con datos ficticios.
-- [ ] Faltan tests:
-  - agenda: DAILY, UNTIL, BYMONTHDAY, cambio de horario, EXDATE de fecha y fechas límite;
-  - escáner: CRLF, configuración rota, nombres repetidos y proyecto `personal`;
-  - respaldo: rutas con `..`, `.tmp` y sha256 que no cuadra;
-  - estado: `HOY` por defecto, BOM y vacíos.
-- [ ] `estado.test.mjs` y `repos.test.mjs` no borran sus carpetas temporales, y los tests lanzan node de forma distinta (`"node"` frente a `process.execPath`).
-- [ ] `validar.yml` lista cada test a mano: uno nuevo puede quedarse fuera sin que nadie lo note.
+- [x] CI en Ubuntu y Windows con Node 22 y 24 (`validar.yml`, matriz con `fail-fast: false`). **Sin verificar en GitHub:** el workflow no se puede ejecutar desde este PC; solo se comprobó que el YAML se interpreta y que los tests pasan en Windows local con Node 26. Vigilar en la primera ejecución el checkout con CRLF en Windows y el test de enlaces simbólicos.
+- [x] Node mínimo: **22**. Declarado en el README y en el mensaje de los cuatro `.bat`; coincide con la CI. No hay guarda de versión en los `.bat`.
+- [x] `validar-vault.mjs` valida 0 proyectos en la CI porque las notas están fuera de Git. Los casos negativos con datos ficticios ya estaban en `validar-vault.test.mjs` (notas inválidas en una carpeta temporal).
+- [x] Tests que faltaban, salvo uno:
+  - agenda: `UNTIL` válido, `BYMONTHDAY` (también el 31, que se salta los meses cortos) y el cambio de horario de octubre; DAILY, `UNTIL` mal formado y `EXDATE` de fecha ya existían;
+  - escáner: proyecto `personal`; CRLF, configuración rota y nombres repetidos ya existían;
+  - respaldo: `sha256` que no cuadra («Copia dañada»), ruta con `..` dentro de una copia y archivos `.tmp` (cada uno falla si se rompe la regla en una copia del script);
+  - estado: `HOY` por defecto, BOM y vacíos ya existían.
+- [ ] Test de las fechas límite de la agenda: la lógica vive en el bloque de Dataview de `agenda.js` (usa `dv`) y no se exporta. Probarla exige extraer una función, un refactor que no se ha hecho.
+- [x] `estado.test.mjs` y `repos.test.mjs` borran sus carpetas temporales (`test.after`), y los tests de escáner, estado y respaldo lanzan node con `process.execPath`.
+- [x] `validar.yml` ya no lista los tests a mano: `node --test "_sistema/tests/*.test.*"` recoge los nuevos.
 
 ### Baja: documentación y decisiones
-- [ ] README:
-  - la tabla de fases marca ⏳ en las fases 2, 3 y 4, aunque están implementadas y sin cerrar;
-  - la Fase 0 dice «proyectos importados»;
-  - en «Estructura» faltan `respaldar.mjs`, `restaurar.mjs`, `respaldo-lib.mjs`, varios tests, `/fase`, `/implementar`, `/seguimiento`, `settings.json`, `docs/`, `.github/` y `skills-lock.json`;
-  - la CI se describe incompleta;
-  - en los plugins faltan Templater (activado) y Excalidraw (incluido);
-  - «`/estado` solo escribe…» es falso, porque también ejecuta `escanear.mjs`;
-  - en el modelo de datos faltan `inicio`, `ruta_local`, `ultimo_commit`, `etiquetas` y `escaneado`;
-  - «Uso diario» no menciona `repos.bat`, `respaldar.bat` ni `restaurar.bat`.
-- [ ] Guía rápida: faltan las alertas «🧊 sin push» y «📆 límite cercano», `repos.bat`, `restaurar.bat` y los comandos de Claude Code.
-- [ ] Plantilla de revisión semanal: no muestra «sin push» ni vencidos, y su checklist no tiene «ejecutar `repos.bat`» ni «copia con `respaldar.bat`».
+- [x] README: tabla de fases (2, 3 y 4 «Implementada, sin cerrar», 5 «Parcial»), Fase 0 sin «proyectos importados», «Estructura» completa (`skills-lock.json`, `docs/`, `.github/`, tests, `.claude/`), CI descrita con la matriz, plugins (Templater activado y Excalidraw incluido sin activar), `/estado` corregido (ejecuta `escanear.mjs` y `repos.mjs`), modelo de datos con `inicio`, `ruta_local`, `ultimo_commit`, `etiquetas` y `escaneado`, y «Uso diario» con `repos.bat`, `respaldar.bat` y `restaurar.bat`.
+- [x] Guía rápida: alertas «🧊 sin push» y «📆 límite cercano», `repos.bat`, `restaurar.bat` y los comandos de Claude Code.
+- [x] Plantilla de revisión semanal: la tabla incluye vencidos y «sin push» con el mismo «Motivo» que el Panel, y el checklist pide ejecutar `repos.bat` y hacer la copia con `respaldar.bat`. **Sin verificar en Obsidian:** la consulta es la del Panel, pero no se ha abierto una revisión de prueba.
 - [ ] Diagnóstico:
-  - no comprueba `gh` con sesión, la última ejecución de `repos.mjs`, la tarea programada ni la versión de Node;
-  - no lista Templater;
-  - el «13/13» del README y del ROADMAP depende del número de calendarios.
-- [ ] Comandos, agente y `CLAUDE.md`:
-  - `/revision` omite `sin_push` en «Datos del día»;
-  - `gestor-proyectos.md` y `CLAUDE.md` no dicen que `ultimo_push` e `issues_abiertos` los escribe solo `repos.mjs`;
-  - `CLAUDE.md` no incluye «sin push» en «Estado de mis proyectos».
+  - [x] lista Templater;
+  - [x] comprueba la versión de Node (22 o superior) con `node --version`; el fragmento se probó fuera de Obsidian y **no dentro de Dataview**;
+  - [x] `gh` con sesión: ⚪ si no está instalado o no hay sesión (es opcional), ✅ si `gh auth status` sale con 0. La orden se probó en terminal (sale con 0) y el fragmento se ejecutó fuera de Obsidian con y sin `gh` en el `PATH`; la rama «sin sesión» no se ha ejecutado;
+  - [ ] tarea programada y última ejecución de `repos.mjs`: decidido comprobar solo la tarea programada (`Get-ScheduledTaskInfo`), sin que `repos.mjs` deje rastro, pero **no está añadido**: el permiso de la sesión de Claude Code denegó probar esa orden de PowerShell y no lo he esquivado. Un diagnóstico sin probar puede dar resultados falsos. No cubriría las ejecuciones manuales con `repos.bat`;
+  - [x] el «13/13»: **no reproducido**. Ya no aparece en el README; solo queda en una entrada fechada del registro de cambios, que es histórica.
+- [x] Comandos, agente y `CLAUDE.md`: `/revision` incluye `sin_push` en «Datos del día»; `gestor-proyectos.md` y `CLAUDE.md` dicen que `ultimo_push` e `issues_abiertos` los escribe solo `repos.mjs`; `CLAUDE.md` añade «sin push» a «Estado de mis proyectos».
 - [ ] ADR:
-  - 0003 dice «app solo condicionada», pero la app ya está hecha sin decisión go/no-go escrita;
-  - 0004 está implementado pero sigue «Propuesta», con la tabla desfasada;
-  - 0005 (`ultima_actividad`) y 0006 (`esquema.json`) siguen sin decidir;
-  - 0007 debe pasar a sustituido por `repos.mjs`;
-  - el índice `docs/architecture/ADR/README.md` necesita actualizarse con todo esto.
-- [ ] `docs/roadmap/` y `docs/audit/`: AUD-027 pide cambiar `ultimo_push` por `ultimo_commit` y está obsoleto; FEAT-003 describe `--github`, que no se hizo; no consta si MASTER-ROADMAP se adoptó o se descartó.
-- [ ] `.claude/skills/ui-ux-pro-max/scripts/__pycache__/*.pyc` están en Git y falta `__pycache__/` en `.gitignore`.
-- [ ] Aviso de proyectos `codigo` sin `repo` (viene de *Ideas sin priorizar*).
-
----
+  - [x] 0003 «Aceptada, con enmienda»: la app se construyó por petición expresa y sin go/no-go previo;
+  - [x] 0004 «Aceptada», con la tabla de los 6 comandos reales;
+  - [x] 0007 «Sustituida» por `repos.mjs`;
+  - [x] el índice `docs/architecture/ADR/README.md` está al día;
+  - [ ] 0005 (`ultima_actividad`) y 0006 (`esquema.json`) siguen «Propuesta»: son decisiones del usuario y quedan marcadas como pendientes de decisión en el índice.
 
 ## Ideas sin priorizar
 - Vistas con **Bases** (núcleo de Obsidian), por ejemplo tarjetas por estado
@@ -380,3 +367,6 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-20: corregida la clave duplicada en los avisos de `cerebrojm-app`. Causa confirmada: `toast` generaba el id con `Date.now() + Math.random()`, que no garantiza unicidad (con el reloj del e2e congelado la clave era `1794994200000.241`, y un `double` de ese tamaño solo tiene unas 4096 fracciones distintas; en la app real dos avisos en el mismo milisegundo tenían el mismo riesgo). Ahora el id es un contador (`src/app.tsx`). Comprobación nueva en el e2e, determinista: con `Date` congelado y `Math.random` fijo en 0,5, dos avisos seguidos daban `same key 1794994200000.5` (rojo antes, verde después). Verificado: `tsc`, 32 tests, build, 3 ejecuciones seguidas de `npm run e2e` sin FALLA ni avisos de React, y `npm run e2e:app` sin cambios (el fallo de `.cal-now` se corrigió después). `coherencia.test.mjs` con el reporter `spec`: 4 de 4 pasan, y `validar-vault.mjs`: 34 proyectos y 49 herramientas válidos.
 - 2026-11-20: repo de `cerebrojm-app` preparado para GitHub. `.gitattributes` (`* text=auto eol=lf`, `*.cmd` en CRLF y el fixture «Web de portfolio» sin conversión): con `core.autocrlf=true` el primer commit había guardado ese fixture en LF y habría roto los tests de CRLF en un clon; ahora el blob conserva el CRLF (comprobado con `git cat-file`).
 - 2026-11-20: documentación de `cerebrojm-app` depurada (repo privado `jmstudio14/cerebrojm-app`): rutas locales sustituidas por `<repo-app>` y `<vault>`; `SECURITY.md` con canal real (los avisos privados de GitHub no existen en repos privados: la API devuelve 404 y se documenta el paso a seguir si se hace público); su `ROADMAP.md` reducido a lo propio de la app y enlazado a este, con lo pendiente contrastado con el código (sin `esquema.json` en el vault, sin RDATE/DURATION en `ical.ts`, sin CI en el repo de la app).
+- 2026-11-20: «Media: tests y CI» del roadmap. Node mínimo fijado en 22 (README y mensajes de los `.bat`). `validar.yml` pasa a una matriz Ubuntu y Windows con Node 22 y 24 y ejecuta `node --test "_sistema/tests/*.test.*"`, así que un test nuevo ya no se queda fuera. 8 tests nuevos (agenda: `UNTIL` válido, `BYMONTHDAY`, `BYMONTHDAY=31` y cambio de horario; escáner: proyecto `personal`; respaldo: `sha256`, ruta con `..` y `.tmp`); los de agenda y respaldo se comprobaron rompiendo la regla en una copia del script (el test falla). Los tests de estado y repos limpian sus carpetas temporales y todos lanzan node con `process.execPath`. Verificado: `node --test "_sistema/tests/*.test.*"` 82 de 82 (antes 74), sin carpetas temporales nuevas, y `validar-vault.mjs` con 34 proyectos y 49 herramientas válidos. **Sin verificar:** la CI en GitHub (Ubuntu y Windows). Pendiente: test de las fechas límite de la agenda, que necesita extraer la lógica del bloque Dataview.
+- 2026-11-20: «Baja: documentación y decisiones» del roadmap, salvo dos pendientes. README (tabla de fases, estructura, CI, plugins, `/estado`, modelo de datos y uso diario), Guía rápida (alertas «sin push» y «límite cercano», `repos.bat`, `restaurar.bat` y comandos de Claude Code), plantilla de revisión semanal (vencidos, «sin push» y dos casillas nuevas), `/revision`, `gestor-proyectos.md` y `CLAUDE.md` (`repos.mjs` único escritor de `ultimo_push` e `issues_abiertos`; «sin push» en el estado de proyectos), Diagnóstico (Templater y versión de Node) y ADR (0003 «Aceptada, con enmienda», 0004 «Aceptada» con sus 6 comandos, 0007 «Sustituida» por `repos.mjs`, índice al día; 0005 y 0006 siguen «Propuesta» por decisión del usuario). El «13/13» no se reproduce. **Sin verificar:** la consulta de la plantilla de revisión y el bloque del Diagnóstico dentro de Obsidian (el fragmento de Node se probó fuera). Pendiente: comprobaciones de `gh` con sesión, última ejecución de `repos.mjs` y tarea programada en el Diagnóstico, porque no se pudieron probar sus órdenes.
+- 2026-11-20: el Diagnóstico comprueba también `gh` con sesión (opcional: ⚪ si falta). Verificado: `gh auth status` sale con 0 en este PC, y el bloque se ejecutó fuera de Obsidian con `gh` y sin él en el `PATH` (filas ✅ y ⚪ esperadas). **Sin verificar:** dentro de Obsidian (no hay puerto de depuración abierto) ni la rama «sin sesión». **Pendiente:** la tarea programada y su última ejecución, porque la sesión denegó probar `Get-ScheduledTaskInfo`.

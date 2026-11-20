@@ -1,8 +1,10 @@
 # ADR-0003 · Interfaz principal: Obsidian frente a una aplicación de escritorio propia
 
-- **Estado:** Propuesta
+- **Estado:** Aceptada, con enmienda (2026-11-20)
 - **Fecha:** 2026-11-18
 - **Relacionado:** `ROADMAP.md` Fase 3 (app de escritorio), FEAT-008, FEAT-013
+
+> **Enmienda (2026-11-20):** la app de escritorio (`cerebrojm-app`) ya se ha construido, por petición expresa del usuario y con la Fase 1 abierta. No hubo una decisión go/no-go escrita antes de empezar, así que la «opción condicionada» de abajo no se cumplió tal cual. La decisión de fondo sigue vigente: **Obsidian es la interfaz principal** y la app solo lee y escribe los mismos `.md`, sin base de datos propia. El esquema único (ADR-0006) sigue sin decidir.
 
 ## Contexto
 

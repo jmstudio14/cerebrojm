@@ -12,7 +12,7 @@ const ok = (nombre, bien, detalle = "") => filas.push([bien === null ? "⚪" : b
 
 // 1. Plugins
 const plugins = app.plugins.enabledPlugins;
-for (const [id, nombre] of [["dataview", "Dataview"], ["obsidian-git", "Obsidian Git"], ["obsidian-full-calendar", "Full Calendar"]]) {
+for (const [id, nombre] of [["dataview", "Dataview"], ["obsidian-git", "Obsidian Git"], ["obsidian-full-calendar", "Full Calendar"], ["templater-obsidian", "Templater"]]) {
   ok(`Plugin ${nombre}`, plugins.has(id), plugins.has(id) ? "activado" : "Ajustes → Community plugins → actívalo");
 }
 ok("DataviewJS", true, "si lees esta tabla, funciona");
@@ -75,6 +75,24 @@ for (const p of ps) {
 ok(`Frontmatter de ${ps.length} proyectos`, ps.length === 0 ? null : malos.length === 0, ps.length === 0 ? "todavía no hay proyectos (escanear.bat)" : malos.length ? malos.join("<br>") : "todos válidos");
 const pendientes = ps.where((p) => (p.etiquetas || []).includes("revisar")).length;
 ok("Proyectos por confirmar (`revisar`)", pendientes === 0 ? true : null, pendientes ? `${pendientes} pendientes: revísalos en la revisión semanal` : "ninguno");
+
+// 8. Node.js: lo usan escanear.bat, repos.bat, respaldar.bat y restaurar.bat (el de Obsidian es otro)
+let versionNode = null;
+try {
+  const { execFile } = require("child_process");
+  versionNode = await new Promise((resolver) => execFile("node", ["--version"], { timeout: 5000, windowsHide: true }, (e, salida) => resolver(e ? null : String(salida).trim())));
+} catch (e) {}
+const mayorNode = versionNode ? parseInt(versionNode.replace(/^v/, ""), 10) : NaN;
+ok("Node.js para los scripts", Number.isNaN(mayorNode) ? null : mayorNode >= 22, Number.isNaN(mayorNode) ? "no se pudo comprobar: instálalo desde nodejs.org (22 o superior)" : mayorNode >= 22 ? versionNode : `${versionNode}: hace falta la 22 o superior`);
+
+// 9. CLI de GitHub (opcional: solo la usan repos.bat y la tarea programada)
+const ghEstado = await new Promise((resolver) => {
+  try {
+    require("child_process").execFile("gh", ["auth", "status"], { timeout: 8000, windowsHide: true }, (e) => resolver(e ? (e.code === "ENOENT" ? "no instalado" : "sin sesión") : "ok"));
+  } catch (e) { resolver("no instalado"); }
+});
+ok("GitHub CLI (`gh`) con sesión", ghEstado === "ok" ? true : null,
+  ghEstado === "ok" ? "sesión iniciada" : ghEstado === "sin sesión" ? "sin sesión: ejecuta `gh auth login` (opcional, README paso 7)" : "no instalado o no se pudo comprobar (opcional, README paso 7)");
 
 dv.table(["", "Comprobación", "Detalle"], filas);
 ```

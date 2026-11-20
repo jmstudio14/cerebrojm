@@ -3,7 +3,7 @@ rem Copia de seguridad cifrada de tus datos personales (ver README, "Copias de s
 cd /d "%~dp0"
 where node >nul 2>nul
 if errorlevel 1 (
-  echo Necesitas Node.js 18 o superior: https://nodejs.org
+  echo Necesitas Node.js 22 o superior: https://nodejs.org
   pause
   exit /b 1
 )

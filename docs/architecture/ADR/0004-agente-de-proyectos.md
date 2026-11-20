@@ -1,6 +1,6 @@
 # ADR-0004 · Agente de proyectos con Claude Code
 
-- **Estado:** Propuesta
+- **Estado:** Aceptada (2026-11-20)
 - **Fecha:** 2026-11-18
 - **Relacionado:** `ROADMAP.md` Fase 2, FEAT-004, FEAT-003
 
@@ -14,10 +14,12 @@ El usuario quiere un agente que consulte el estado de sus proyectos, analice sus
 
 | Comando | Lee | Escribe | Efectos externos |
 |---|---|---|---|
-| `/estado` | Notas de proyecto, salida del escáner, `gh` (FEAT-003) | Nada, o un informe en `04 Revisiones/` si se pide | Ninguno |
+| `/estado` | Notas de proyecto, `estado.mjs`, `gh` (FEAT-003) | Ejecuta `escanear.mjs` y `repos.mjs`: refrescan los campos automáticos de las notas (`ultimo_push`, `issues_abiertos` y los del escáner). Sin informe | Consultas de solo lectura a GitHub con `gh` |
 | `/revision` | Lo mismo | `04 Revisiones/AAAA-MM-DD.md` | Ninguno |
+| `/proyecto <nombre>` | Nota del proyecto, commits y PRs | Nada | Consultas de solo lectura a GitHub con `gh` |
 | `/fase <proyecto>` | `ROADMAP.md`, `CLAUDE.md`, tests y CI del repo del proyecto | Plan (modo plan) | Ninguno |
 | `/implementar <proyecto>` | Plan **aprobado** | Rama nueva en el repo del proyecto | Push de la rama y **PR en borrador**. Nunca merge |
+| `/seguimiento [proyecto]` | PRs `fase/*` abiertos: CI y comentarios | Correcciones en la misma rama, a petición del propietario, y la nota del proyecto cuando se fusiona un PR | Push normal a la rama de fase y respuestas en el PR. Nunca merge |
 
 **Reglas obligatorias (verificables):**
 1. El `CLAUDE.md` del repositorio de destino prevalece sobre las reglas del agente.
