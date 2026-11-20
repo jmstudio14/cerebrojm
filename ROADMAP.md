@@ -1,6 +1,6 @@
 ---
 tipo: roadmap
-actualizado: 2026-11-18
+actualizado: 2026-11-20
 ---
 
 # Roadmap del cerebro digital
@@ -152,7 +152,7 @@ App de escritorio para Windows, **minimalista, profesional y cuidada al detalle*
 - [x] **Entrega**: instalador de Windows (MSI o NSIS), icono y marca propios, bandeja del sistema e inicio opcional con Windows.
 - [x] Capturas reales de la app en el README del vault.
 
-**Terminado si:** usas la app a diario durante 2 semanas en lugar del Panel de Obsidian, sin perder datos ni crear conflictos de Git, y cumple todos los criterios de 2e.
+**Terminado si:** usas la app a diario durante 2 semanas en lugar del Panel de Obsidian, sin perder datos ni crear conflictos de Git, y cumple todos los criterios de 3e.
 
 **Riesgos:**
 - Es un segundo sistema que mantener.
@@ -161,15 +161,15 @@ App de escritorio para Windows, **minimalista, profesional y cuidada al detalle*
 
 ## Fase 4: Estado de los repos automático
 Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/estado` del agente (Fase 2) no lo resuelve ya bajo demanda.
-- [ ] Script (GitHub Action programada o PowerShell local) que actualice `ultimo_push` y los issues abiertos en el frontmatter de cada proyecto con `repo`
-- [ ] Alerta en el Panel: proyecto `activo` sin push en más de 30 días
-- [ ] Decidir cómo convive con Obsidian Git sin conflictos (que el Action haga commit solo de ese campo)
+- [x] Script (GitHub Action programada o PowerShell local) que actualice `ultimo_push` y los issues abiertos en el frontmatter de cada proyecto con `repo` → script local `repos.mjs` + tarea de Windows; la Action no es viable porque las notas están fuera de Git (ADR-0001)
+- [x] Alerta en el Panel: proyecto `activo` sin push en más de 30 días
+- [x] Decidir cómo convive con Obsidian Git sin conflictos (que el Action haga commit solo de ese campo) → no hay conflictos de Git porque `01 Proyectos/` no se versiona; el script solo cambia las líneas `ultimo_push` e `issues_abiertos`, con escritura atómica, por si se edita la nota a la vez en Obsidian
 
 **Terminado si:** el campo se actualiza solo durante una semana sin conflictos de Git.
 
 ## Fase 5: Proyectos personales y creativos
 - [ ] Dar de alta los proyectos que no están en GitHub (`categoria: personal` o `creativo`)
-- [ ] Revisar si la plantilla les sirve o necesitan otros campos (por ejemplo, `entregable`)
+- [x] Revisar si la plantilla les sirve o necesitan otros campos (por ejemplo, `entregable`) → campo opcional `entregable` en la plantilla, el README y la tabla de personales y creativos del Panel
 
 **Terminado si:** todo proyecto en marcha, con código o sin él, tiene su nota.
 
@@ -181,10 +181,95 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
 
 ---
 
+## Correcciones pendientes
+Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests, CI, Panel, plantillas, comandos, ADR y documentación). Arreglarlos está permitido con la congelación de la Fase 1, porque son correcciones. Lo marcado «posible» falta reproducirlo.
+
+### Alta: fallos reales o riesgo de datos
+- [ ] Añadir a Git `_sistema/scripts/repos.mjs`, `_sistema/tests/repos.test.mjs` y `repos.bat`. Están sin seguimiento y `validar.yml` ya ejecuta `repos.test.mjs`: un commit sin ellos rompe la CI.
+- [ ] `respaldo-lib.mjs:90`: `includes("..")` rechaza nombres legítimos (`Ideas... sueltas.md`) y la copia entera falla. Hay que comprobar segmentos `..`, no la subcadena.
+- [ ] `.gitignore`: falta excluir `*.cjmbak` y `*.tmp`, y `respaldar.mjs` no impide guardar la copia dentro del vault. Obsidian Git la subiría. Añadir el caso a `coherencia.test.mjs`.
+- [ ] `escanear.mjs:43`: un `escaner.local.json` con JSON mal formado se trata como si no existiera y, en modo interactivo, se sobrescribe y se pierden `carpetas` e `ignorar`. Pasa lo mismo, con menos impacto, en `respaldar.mjs`.
+- [ ] `validar-vault.mjs`:
+  - `progreso:` vacío pasa como 0 (`Number("")`).
+  - Los campos obligatorios vacíos pasan, porque solo se comprueba `k in fm`.
+  - Fechas imposibles como `2026-13-45` pasan.
+  - Usa `"."` como raíz: fuera del vault da un falso «✓ 0 proyectos».
+- [ ] «Vencidos» con dos criterios: la cabecera del Panel (`00 Panel.md:12`) y `agenda.js:277` cuentan también `idea` y `pausado`; «Necesitan atención» y `estado.mjs` solo cuentan `activo` y `bloqueado`.
+- [ ] Umbrales incoherentes:
+  - La plantilla de revisión marca estancado a los 7 días; el Panel y `estado.mjs`, a los 14.
+  - El aviso de activos salta con más de 5 (Panel y Guía rápida), pero la regla es 3-4 (plantilla y Fase 1).
+
+### Media: robustez y pendientes de fases ya implementadas
+- [ ] Fase 4:
+  - registrar la tarea programada de Windows (sigue sin crear);
+  - comprobar en Obsidian la alerta «🧊 sin push»;
+  - mostrar «sin push» en `cerebrojm-app`.
+- [ ] Fase 5: comprobar en Obsidian la columna `entregable`. `escanear.mjs` no añade `entregable` a las notas nuevas y nunca asigna `creativo`.
+- [ ] Enrutamiento de modelos (`opusplan` y `model:` por comando): sin verificar en una sesión interactiva. `/estado` usa `haiku` para una tarea de varios pasos, y `CLAUDE.md` reserva `haiku` a tareas atómicas.
+- [ ] «Hoy» en UTC en `estado.mjs:18` y `escanear.mjs:30,76`, mientras el Panel usa la hora local: en España, entre las 00:00 y la 01:00-02:00 dan días distintos.
+- [ ] Posible: notas con BOM UTF-8 que se saltan `estado.mjs`, `repos.mjs` y `validar-vault.mjs`. Posible también: valores `''`, `null` o `~` que los scripts toman por rellenos y Dataview por vacíos.
+- [ ] Posible: `escanear.mjs` mezcla LF y CRLF al editar notas CRLF. `repos.mjs` sí respeta el final de línea.
+- [ ] Posible: `renameSync` sin reintento ante EPERM/EBUSY en Windows (`escanear.mjs`, `repos.mjs`, `respaldo-lib.mjs`). Deja `.tmp` sueltos y aborta el escaneo.
+- [ ] `repos.mjs`: `execFileSync` sin `timeout`; si `gh` se cuelga, la tarea programada no termina.
+- [ ] `respaldo-lib.mjs`: los errores de lectura de carpeta y los enlaces simbólicos se omiten sin avisar, y la copia sale incompleta.
+- [ ] `agenda.js`, todo «posible»:
+  - las repeticiones se expanden en la zona horaria del sistema, no en la `TZID` del evento;
+  - `EXDATE;VALUE=DATE` no excluye nada en series con hora;
+  - YEARLY ignora `BYMONTH` y `BYDAY`;
+  - un UNTIL mal formado rompe toda la agenda;
+  - el tope de 5000 pasos hace desaparecer series DAILY muy antiguas;
+  - un JSON de Full Calendar corrupto se muestra como «sin conectar».
+- [ ] `repo` sin validar: `repos.mjs` se salta en silencio URLs como `http://`, `www.`, sin esquema o con `/tree/main`, y `validar-vault.mjs` no las comprueba.
+- [ ] Los `.bat` siempre salen con código 0: no propagan el `errorlevel` de node.
+- [ ] `escanear.mjs:395`: a la tercera coincidencia de nombre, dos proyectos escriben la misma nota.
+
+### Media: tests y CI
+- [ ] La CI solo usa Ubuntu con Node 22. Falta Windows (CRLF, `.bat`, rutas) y la versión mínima que promete el README.
+- [ ] Node mínimo: el README y los `.bat` dicen 18, pero `test.after` exige 18.8 y Node 18 ya no tiene soporte. Decidir un mínimo (20 o 22) y declararlo.
+- [ ] En la CI, `validar-vault.mjs` valida 0 proyectos porque las notas están fuera de Git. Faltan casos negativos con datos ficticios.
+- [ ] Faltan tests:
+  - agenda: DAILY, UNTIL, BYMONTHDAY, cambio de horario, EXDATE de fecha y fechas límite;
+  - escáner: CRLF, configuración rota, nombres repetidos y proyecto `personal`;
+  - respaldo: rutas con `..`, `.tmp` y sha256 que no cuadra;
+  - estado: `HOY` por defecto, BOM y vacíos.
+- [ ] `estado.test.mjs` y `repos.test.mjs` no borran sus carpetas temporales, y los tests lanzan node de forma distinta (`"node"` frente a `process.execPath`).
+- [ ] `validar.yml` lista cada test a mano: uno nuevo puede quedarse fuera sin que nadie lo note.
+
+### Baja: documentación y decisiones
+- [ ] README:
+  - la tabla de fases marca ⏳ en las fases 2, 3 y 4, aunque están implementadas y sin cerrar;
+  - la Fase 0 dice «proyectos importados»;
+  - en «Estructura» faltan `respaldar.mjs`, `restaurar.mjs`, `respaldo-lib.mjs`, varios tests, `/fase`, `/implementar`, `/seguimiento`, `settings.json`, `docs/`, `.github/` y `skills-lock.json`;
+  - la CI se describe incompleta;
+  - en los plugins faltan Templater (activado) y Excalidraw (incluido);
+  - «`/estado` solo escribe…» es falso, porque también ejecuta `escanear.mjs`;
+  - en el modelo de datos faltan `inicio`, `ruta_local`, `ultimo_commit`, `etiquetas` y `escaneado`;
+  - «Uso diario» no menciona `repos.bat`, `respaldar.bat` ni `restaurar.bat`.
+- [ ] Guía rápida: faltan las alertas «🧊 sin push» y «📆 límite cercano», `repos.bat`, `restaurar.bat` y los comandos de Claude Code.
+- [ ] Plantilla de revisión semanal: no muestra «sin push» ni vencidos, y su checklist no tiene «ejecutar `repos.bat`» ni «copia con `respaldar.bat`».
+- [ ] Diagnóstico:
+  - no comprueba `gh` con sesión, la última ejecución de `repos.mjs`, la tarea programada ni la versión de Node;
+  - no lista Templater;
+  - el «13/13» del README y del ROADMAP depende del número de calendarios.
+- [ ] Comandos, agente y `CLAUDE.md`:
+  - `/revision` omite `sin_push` en «Datos del día»;
+  - `gestor-proyectos.md` y `CLAUDE.md` no dicen que `ultimo_push` e `issues_abiertos` los escribe solo `repos.mjs`;
+  - `CLAUDE.md` no incluye «sin push» en «Estado de mis proyectos».
+- [ ] ADR:
+  - 0003 dice «app solo condicionada», pero la app ya está hecha sin decisión go/no-go escrita;
+  - 0004 está implementado pero sigue «Propuesta», con la tabla desfasada;
+  - 0005 (`ultima_actividad`) y 0006 (`esquema.json`) siguen sin decidir;
+  - 0007 debe pasar a sustituido por `repos.mjs`;
+  - el índice `docs/architecture/ADR/README.md` necesita actualizarse con todo esto.
+- [ ] `docs/roadmap/` y `docs/audit/`: AUD-027 pide cambiar `ultimo_push` por `ultimo_commit` y está obsoleto; FEAT-003 describe `--github`, que no se hizo; no consta si MASTER-ROADMAP se adoptó o se descartó.
+- [ ] `.claude/skills/ui-ux-pro-max/scripts/__pycache__/*.pyc` están en Git y falta `__pycache__/` en `.gitignore`.
+- [ ] Aviso de proyectos `codigo` sin `repo` (viene de *Ideas sin priorizar*).
+
+---
+
 ## Ideas sin priorizar
 - Vistas con **Bases** (núcleo de Obsidian), por ejemplo tarjetas por estado
-- **Templater** para crear un proyecto contestando preguntas en vez de editar el frontmatter
-- Aviso de proyectos `codigo` sin `repo`
+- **Templater** (ya incluido y activado): plantilla de proyecto que pregunte los campos en vez de editar el frontmatter
 - Calendario bidireccional (crear eventos desde Obsidian): solo con una necesidad clara; exige credenciales OAuth y mantenimiento
 
 ## Registro de cambios del sistema
@@ -252,3 +337,18 @@ Solo si en la Fase 1 queda claro que mantenerlo a mano es el problema, y si `/es
   - El usuario lo revisó y lo fusionó él mismo (commit `0c193f4`). Antes pidió que lo fusionara el agente; se negó por las reglas `deny` de `.claude/settings.json` y por este ROADMAP.
   - El paso de `/seguimiento` anotó «PR #1 fusionado» en la nota y propuso la siguiente fase de su ROADMAP (2.5.0, «(por confirmar)»). Este es el camino que faltaba ejercitar.
   - Se marca la casilla de 2d. Con esto se cumple el «Terminado si» de 2c: una fase real implementada, con CI en verde y el PR revisado y fusionado por el usuario. El de 2d sigue abierto: exige 2 semanas gestionando al menos 2 fases en repos distintos.
+- 2026-11-19: Fase 4 implementada por petición expresa con la Fase 1 abierta y su condición de entrada sin cumplir (la Fase 1 sigue abierta y no ha aclarado si mantenerlo a mano es el problema):
+  - **Qué se hizo:**
+    - `_sistema/scripts/repos.mjs` y `repos.bat`: consultan con `gh` el último push y los issues abiertos de cada proyecto con `repo` de GitHub y escriben solo `ultimo_push` (AAAA-MM-DD, UTC) e `issues_abiertos` en el frontmatter, conservando CRLF/LF y el resto de la nota. Si un repo falla, deja su nota intacta, avisa con la causa y sale con 1.
+    - Alerta «🧊 sin push (+30 días)» en el Panel y lista `sin_push` en `estado.mjs` (solo `activo` con `ultimo_push` de hace más de 30 días).
+    - `/estado` usa `repos.mjs` como único escritor de esos campos; `validar-vault.mjs` exige `issues_abiertos` entero ≥ 0; nuevo paso de CI con `repos.test.mjs`.
+    - Tarea programada diaria de Windows documentada en el README.
+  - **Verificación:**
+    - Tests: 38/38 (`repos` 7, con `gh` simulado: LF y CRLF, insertar y sustituir, repo no GitHub, repo roto, sin `gh` o sin sesión, segunda pasada sin reescribir). `validar-vault.mjs` en verde.
+    - Real sobre el vault: 26 repos consultados y 26 notas actualizadas. Comparado con una copia previa, solo se añaden las líneas `ultimo_push` e `issues_abiertos`. En 3 repos coinciden con la API REST (`pushed_at` y `gh issue list`). Una segunda pasada no reescribe ninguna nota. `estado.mjs` marca 1 activo sin push.
+    - Sin verificar: la alerta en el Panel renderizada en Obsidian, y la tarea programada, que no está creada todavía (el permiso para registrarla se denegó en la sesión; el comando está en el README).
+  - **Decisión de diseño:** ADR-0007 (propuesta) proponía una opción `--github` en el escáner y un bloque automático en el cuerpo de la nota. Se eligió otra cosa: script aparte y campos en el frontmatter, porque la alerta del Panel (Dataview) necesita leer `ultimo_push` como campo.
+  - **Pendiente:** `cerebrojm-app` aún no muestra la alerta «sin push». El «Terminado si» de la Fase 4 sigue abierto: exige una semana de actualización automática sin conflictos.
+- 2026-11-19: enrutamiento automático de modelos: `.claude/settings.json` fija `opusplan` (Opus en plan mode, Sonnet al ejecutar); `model:` en el frontmatter de cada comando (`/fase` en Opus; `/implementar`, `/seguimiento`, `/revision` y `/proyecto` en Sonnet; `/estado` en Haiku); nueva sección «Selección de modelo» en `CLAUDE.md`. Sin verificar en una sesión interactiva.
+- 2026-11-19: Fase 5 (parte) implementada por petición expresa con la Fase 1 abierta: campo opcional `entregable` (qué produce el proyecto al terminar) en `_sistema/plantillas/Proyecto.md`, en el modelo de datos del README y como columna en la tabla de personales y creativos del Panel. El validador no lo exige. No hay proyectos sin GitHub que dar de alta por ahora, así que esa casilla y el «Terminado si» siguen abiertos. Sin verificar: la columna renderizada en Obsidian (Dataview).
+- 2026-11-20: auditoría completa del sistema (scripts, tests, CI, Panel, plantillas, comandos, ADR y documentación), en solo lectura. Los hallazgos están en *Correcciones pendientes*, por prioridad. Corregido en este ROADMAP: «criterios de 2e» pasa a 3e, la fecha de `actualizado` y la idea de Templater (ya instalado). No se ha arreglado ningún fallo de los listados.

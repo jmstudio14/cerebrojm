@@ -41,6 +41,10 @@ for (const nombre of (fs.existsSync(carpeta) ? fs.readdirSync(carpeta) : []).fil
     const n = Number(fm.progreso);
     if (!Number.isInteger(n) || n < 0 || n > 100) err(`\`progreso: ${fm.progreso}\` debe ser un entero 0-100`);
   }
+  if ("issues_abiertos" in fm) {
+    const n = Number(fm.issues_abiertos);
+    if (fm.issues_abiertos === "" || !Number.isInteger(n) || n < 0) err(`\`issues_abiertos: ${fm.issues_abiertos}\` debe ser un entero 0 o mayor`);
+  }
   for (const k of ["inicio", "fecha_limite", "ultima_revision", "ultimo_push", "ultimo_commit", "escaneado"]) {
     if (fm[k] && !FECHA.test(fm[k])) err(`\`${k}: ${fm[k]}\` debe tener formato AAAA-MM-DD`);
   }

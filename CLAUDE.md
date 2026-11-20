@@ -47,3 +47,17 @@ Este repositorio es el sistema de un vault de Obsidian («cerebro digital»), si
 
 - **Estado de mis proyectos:** cuando se solicite, lee las notas de `01 Proyectos/` y resume por estado. Señala vencidos, bloqueados, estancados (más de 14 días sin revisión) y sin próxima acción; distingue los hechos de lo que no se pudo comprobar.
 - **Revisión semanal:** cuando se solicite, crea `04 Revisiones/AAAA-MM-DD.md` desde `_sistema/plantillas/Revisión semanal.md` y complétala con datos reales, sin inventar ni publicar información personal.
+
+## Selección de modelo
+
+Equilibra precisión, latencia y cuota. Se aplica al delegar en subagentes (tool `Agent` con el parámetro `model`) y al recomendar cambios de modelo en la sesión principal (`/model`).
+
+- **Automático en este vault:** `.claude/settings.json` fija `opusplan` (Opus en plan mode, Sonnet al ejecutar), y cada comando de `.claude/commands/` y agente de `.claude/agents/` fija su modelo en el frontmatter (`model:`). Un `/model` manual manda sobre `opusplan`.
+- **Haiku (`haiku`), exploración y tareas atómicas:** búsqueda de archivos, símbolos o referencias; lectura de logs u outputs largos; extracción de datos (JSON, CSV, Markdown); boilerplate trivial, renombrados simples y tareas mecánicas. Nunca para diseñar lógica de negocio, modificar varios archivos acoplados ni depurar errores complejos.
+- **Sonnet (`sonnet`), ejecución diaria (por defecto):** implementar features y lógica a partir de un plan claro; escribir y ejecutar tests; refactorizaciones acotadas (1 a 3 archivos); bugs estándar (sintaxis, tipos, errores locales); ciclos de leer, editar y verificar con herramientas y MCP.
+- **Opus (`opus`), alto impacto cognitivo:** planificación inicial (arquitectura, esquemas de datos, contratos de API, planes de ejecución); debugging profundo (concurrencia, condiciones de carrera, fugas de memoria, bugs transversales) cuando Sonnet haya fallado 2 veces seguidas; auditorías de seguridad, casos límite y refactorizaciones que afecten a toda la estructura.
+
+Reglas operativas:
+1. **Planifica arriba, ejecuta abajo:** si la sesión está fijada a mano en Opus y la tarea es compleja, genera primero el plan paso a paso en Markdown y sugiere `/model sonnet` antes de la implementación masiva.
+2. **Escalado automático por bloqueo:** si fallas 2 veces seguidas con el mismo error, detén los intentos y delega el diagnóstico de la causa raíz en un subagente con `model: "opus"`.
+3. **Subagentes ligeros por defecto:** al delegar exploración o recopilación de contexto, usa `model: "haiku"`, salvo que la subtarea exija análisis lógico profundo.

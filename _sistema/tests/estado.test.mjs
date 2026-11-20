@@ -27,21 +27,25 @@ proyecto("bloqueado", { estado: "bloqueado" });
 proyecto("vencido", { fecha_limite: "2026-11-10" });
 proyecto("limite-cercano", { fecha_limite: "2026-12-01" });
 proyecto("limite-lejano", { fecha_limite: "2026-12-02" });
+proyecto("sin-push", { ultimo_push: "2026-10-18" });
+proyecto("push-de-treinta-dias", { ultimo_push: "2026-10-19" });
+proyecto("bloqueado-sin-push", { estado: "bloqueado", ultimo_push: "2026-09-01" });
 proyecto("archivado", { estado: "archivado", proxima_accion: "" });
 fs.writeFileSync(path.join(vault, "01 Proyectos", "_Índice.md"), "---\ntipo: indice\n---\n");
 
 const salida = JSON.parse(execFileSync("node", [ESTADO, "--vault", vault, "--hoy", "2026-11-18"], { encoding: "utf8" }));
 
 test("recuento por estado, sin contar índices", () => {
-  assert.deepEqual(salida.por_estado, { activo: 7, bloqueado: 1, archivado: 1 });
+  assert.deepEqual(salida.por_estado, { activo: 9, bloqueado: 2, archivado: 1 });
 });
 
 test("cada alerta sigue las reglas del Panel", () => {
   assert.deepEqual(salida.sin_proxima_accion, ["sin-accion"]);
   assert.deepEqual(salida.estancados, ["estancado"]);
-  assert.deepEqual(salida.bloqueados, ["bloqueado"]);
+  assert.deepEqual(salida.bloqueados, ["bloqueado-sin-push", "bloqueado"]);
   assert.deepEqual(salida.vencidos, ["vencido"]);
   assert.deepEqual(salida.limite_cercano, ["limite-cercano"]);
+  assert.deepEqual(salida.sin_push, ["sin-push"]);
 });
 
 test("14 días exactos sin revisar no es estancado; 13 y 14 días al límite se distinguen", () => {
@@ -49,9 +53,16 @@ test("14 días exactos sin revisar no es estancado; 13 y 14 días al límite se 
   assert.ok(!salida.limite_cercano.includes("limite-lejano"));
 });
 
+test("sin push: más de 30 días (31 sí, 30 exactos no) y solo en proyectos activos", () => {
+  assert.ok(salida.sin_push.includes("sin-push"));
+  assert.ok(!salida.sin_push.includes("push-de-treinta-dias"));
+  assert.ok(!salida.sin_push.includes("bloqueado-sin-push"));
+  assert.ok(!salida.sin_push.includes("al-dia")); // sin ultimo_push no hay alerta
+});
+
 test("los archivados no generan alertas y cada proyecto cuenta una vez", () => {
   assert.ok(!Object.values(salida).flat().includes("archivado"));
-  assert.equal(salida.necesitan_atencion, 5);
+  assert.equal(salida.necesitan_atencion, 7);
 });
 
 test("no modifica ninguna nota", () => {

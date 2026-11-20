@@ -44,7 +44,7 @@ Estado de todos los proyectos de un vistazo: resumen por estado, barras de progr
 <td width="50%" valign="top">
 
 ### ⚠️ Alertas automáticas
-Señala lo que se está quedando atrás: **vencidos**, **bloqueados**, **estancados** (más de 14 días sin revisión) y proyectos **sin próxima acción**.
+Señala lo que se está quedando atrás: **vencidos**, **bloqueados**, **estancados** (más de 14 días sin revisión), proyectos **sin próxima acción** y activos **sin push** en GitHub desde hace más de 30 días.
 
 </td>
 </tr>
@@ -232,6 +232,32 @@ Para recuperar: **`restaurar.bat`** restaura la copia más reciente **sin pisar*
 > [!TIP]
 > Hazlo cada semana al terminar la revisión semanal, y siempre antes de cambiar de PC.
 
+### 7 · Estado de los repos (opcional)
+
+Requiere la [CLI de GitHub](https://cli.github.com) con la sesión iniciada (`gh auth login`). Doble clic en **`repos.bat`**, o desde terminal:
+
+```powershell
+node _sistema/scripts/repos.mjs
+```
+
+Para cada proyecto cuyo `repo` sea una URL de GitHub (`https://github.com/usuario/repo`), consulta GitHub y escribe en el frontmatter solo dos campos: `ultimo_push` (AAAA-MM-DD, en UTC) e `issues_abiertos` (sin contar PRs). El resto de la nota queda igual, byte a byte, y no se reescribe si nada cambió. Si un repo falla (renombrado, sin acceso), avisa con la causa, deja esa nota intacta y termina con código 1.
+
+El Panel y `/estado` marcan **🧊 sin push (+30 días)** a los proyectos `activo` cuyo `ultimo_push` tenga más de 30 días.
+
+Para que se actualice solo cada día, crea una tarea programada de Windows (PowerShell, sin administrador; sustituye `<ruta-del-vault>`):
+
+```powershell
+Register-ScheduledTask -TaskName "cerebrojm - estado de repos" `
+  -Action (New-ScheduledTaskAction -Execute "conhost.exe" -Argument "--headless `"$((Get-Command node).Source)`" `"<ruta-del-vault>\_sistema\scripts\repos.mjs`"") `
+  -Trigger (New-ScheduledTaskTrigger -Daily -At 10:00) `
+  -Settings (New-ScheduledTaskSettingsSet -StartWhenAvailable)
+
+Get-ScheduledTaskInfo -TaskName "cerebrojm - estado de repos"                      # última ejecución y resultado
+Unregister-ScheduledTask -TaskName "cerebrojm - estado de repos" -Confirm:$false   # borrarla
+```
+
+`StartWhenAvailable` recupera la ejecución si el PC estaba apagado a esa hora. Como las notas de `01 Proyectos/` **no están en Git**, no hay conflictos con Obsidian Git; el único roce posible es editar una nota en Obsidian en el mismo instante, y por eso el script solo cambia esas dos líneas.
+
 ---
 
 ## 🗓️ Uso diario
@@ -251,7 +277,7 @@ Abre Claude Code en la carpeta del vault. El subagente `gestor-proyectos` (`.cla
 
 | Comando | Qué hace |
 |---|---|
-| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Solo escribe `ultimo_push`. |
+| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Solo escribe `ultimo_push` e `issues_abiertos`, mediante `repos.mjs`. |
 | `/revision` | Crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla, con los datos del día. No sobrescribe y no marca el checklist. |
 | `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs abiertos y una propuesta de siguiente paso. Solo lectura. |
 | `/fase <nombre>` | Lee el repo del proyecto (su `CLAUDE.md`, `ROADMAP.md`, tests y CI) y propone el plan de su fase siguiente. No escribe nada. |
@@ -277,7 +303,10 @@ progreso: 40               # 0–100
 fecha_limite: 2026-11-30   # aparece en la agenda
 ultima_revision: 2026-11-18  # +14 días → estancado
 proxima_accion: "Una acción concreta"
+entregable: "Un libro"     # opcional: qué produce al terminar (personal/creativo)
 repo: "https://github.com/…"
+ultimo_push: 2026-11-10    # lo escribe repos.mjs; +30 días en un activo → sin push
+issues_abiertos: 3         # lo escribe repos.mjs
 ```
 
 ```mermaid
@@ -308,6 +337,7 @@ cerebrojm/
 ├── Guía rápida.md            Rutina diaria/semanal y señales de alarma
 ├── ROADMAP.md                Evolución del propio sistema
 ├── escanear.bat              Carga o actualiza tus proyectos y herramientas
+├── repos.bat                 Actualiza el último push y los issues de tus repos de GitHub
 ├── respaldar.bat · restaurar.bat   Copia cifrada de tus datos personales
 ├── 01 Proyectos/             Una nota por proyecto, generada en tu PC (+ índice)
 ├── 02 Notas/                 Ideas y bandeja de entrada (+ índice)
@@ -319,6 +349,7 @@ cerebrojm/
 │   ├── scripts/agenda.js     Lector iCal + fechas límite
 │   ├── scripts/escanear.mjs  Escáner de proyectos y herramientas
 │   ├── scripts/estado.mjs    Resumen de estado y alertas (solo lectura)
+│   ├── scripts/repos.mjs     Último push e issues abiertos de los repos (usa `gh`)
 │   ├── config/               Configuración local del escáner (*.local.json fuera de Git)
 │   ├── tests/                Tests de la agenda y del escáner, validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema

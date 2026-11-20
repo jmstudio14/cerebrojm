@@ -2,6 +2,7 @@
 description: Ficha de un proyecto, sus últimos cambios en el repo y una propuesta de siguiente paso
 argument-hint: <nombre del proyecto>
 allowed-tools: Bash(git -C:*), Bash(gh:*), Read, Glob, Grep
+model: sonnet
 ---
 
 Proyecto: $ARGUMENTS

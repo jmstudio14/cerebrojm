@@ -1,6 +1,7 @@
 ---
 description: Crea la nota de la revisión semanal de hoy con datos reales
 allowed-tools: Bash(node:*), Bash(git status:*), Bash(git pull --ff-only), Read, Write, Glob
+model: sonnet
 ---
 
 Usa el subagente `gestor-proyectos` o sigue estos pasos tú mismo, con las reglas de `CLAUDE.md`.

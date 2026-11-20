@@ -5,7 +5,8 @@
 // Uso:  node _sistema/scripts/estado.mjs [--vault <ruta>] [--hoy AAAA-MM-DD]
 // Salida: JSON con el recuento por estado y las listas de proyectos activos o bloqueados
 // que están vencidos, bloqueados, sin próxima acción, estancados (más de 14 días sin
-// revisión) o con el límite cerca (menos de 14 días).
+// revisión), sin push (activos con `ultimo_push` de hace más de 30 días) o con el límite
+// cerca (menos de 14 días).
 
 import fs from "node:fs";
 import path from "node:path";
@@ -31,7 +32,7 @@ function frontmatter(texto) {
 const carpeta = path.join(VAULT, "01 Proyectos");
 const nombres = fs.existsSync(carpeta) ? fs.readdirSync(carpeta).filter((f) => f.endsWith(".md")).sort() : [];
 const porEstado = {};
-const listas = { vencidos: [], bloqueados: [], sin_proxima_accion: [], estancados: [], limite_cercano: [] };
+const listas = { vencidos: [], bloqueados: [], sin_proxima_accion: [], estancados: [], sin_push: [], limite_cercano: [] };
 const atencion = new Set();
 
 for (const f of nombres) {
@@ -46,6 +47,7 @@ for (const f of nombres) {
   if (fm.estado === "bloqueado") motivos.push("bloqueados");
   if (!fm.proxima_accion) motivos.push("sin_proxima_accion");
   if (!fm.ultima_revision || DIAS(HOY, fm.ultima_revision) > 14) motivos.push("estancados");
+  if (fm.estado === "activo" && fm.ultimo_push && DIAS(HOY, fm.ultimo_push) > 30) motivos.push("sin_push");
   if (fm.fecha_limite && !vencido && DIAS(fm.fecha_limite, HOY) < 14) motivos.push("limite_cercano");
   for (const m of motivos) listas[m].push(nombre);
   if (motivos.length) atencion.add(nombre);

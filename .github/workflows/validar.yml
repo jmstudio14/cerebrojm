@@ -20,6 +20,8 @@ jobs:
         run: node --test _sistema/tests/respaldo.test.mjs
       - name: Tests del resumen de estado de proyectos
         run: node --test _sistema/tests/estado.test.mjs
+      - name: Tests del estado de los repos
+        run: node --test _sistema/tests/repos.test.mjs
       - name: Coherencia de .gitignore con la política de datos
         run: node --test _sistema/tests/coherencia.test.mjs
       - name: Frontmatter de las notas del repo

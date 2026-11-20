@@ -2,6 +2,7 @@
 description: Lee un repo y propone el plan de su fase siguiente, sin escribir nada
 argument-hint: <nombre del proyecto>
 allowed-tools: Read, Glob, Grep, Bash(git -C:*), Bash(gh:*)
+model: opus
 ---
 
 Proyecto: $ARGUMENTS

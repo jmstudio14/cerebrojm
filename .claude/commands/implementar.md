@@ -2,6 +2,7 @@
 description: Implementa la fase siguiente de un repo en una rama nueva y abre un PR en borrador, sin fusionar nunca
 argument-hint: <nombre del proyecto>
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git:*), Bash(gh:*), Bash(node:*), Bash(npm:*), Bash(python:*), Bash(pytest:*), Bash(ruff:*)
+model: sonnet
 ---
 
 Proyecto: $ARGUMENTS

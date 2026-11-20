@@ -2,6 +2,7 @@
 description: Vigila los PRs de fase abiertos (CI y comentarios), corrige lo que pida el propietario y refleja en el vault los PRs fusionados
 argument-hint: [nombre del proyecto]
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash(git:*), Bash(gh:*), Bash(node:*), Bash(npm:*), Bash(python:*), Bash(pytest:*), Bash(ruff:*)
+model: sonnet
 ---
 
 Proyecto (opcional; sin él, todos los que tengan `repo`): $ARGUMENTS

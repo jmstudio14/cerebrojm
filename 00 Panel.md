@@ -47,7 +47,8 @@ TABLE WITHOUT ID
     choice(estado = "bloqueado", "⛔ bloqueado",
     choice(!proxima_accion, "❓ sin próxima acción",
     choice(!ultima_revision OR date(today) - ultima_revision > dur(14 days), "💤 estancado (+14 días)",
-    "📆 límite cercano")))) AS "Motivo",
+    choice(estado = "activo" AND ultimo_push AND date(today) - ultimo_push > dur(30 days), "🧊 sin push (+30 días)",
+    "📆 límite cercano"))))) AS "Motivo",
   ultima_revision AS "Últ. revisión",
   fecha_limite AS "Límite"
 FROM "01 Proyectos"
@@ -55,6 +56,7 @@ WHERE tipo = "proyecto" AND contains(list("activo", "bloqueado"), estado) AND (
   estado = "bloqueado"
   OR !proxima_accion
   OR !ultima_revision OR date(today) - ultima_revision > dur(14 days)
+  OR (estado = "activo" AND ultimo_push AND date(today) - ultimo_push > dur(30 days))
   OR (fecha_limite AND fecha_limite - date(today) < dur(14 days))
 )
 SORT fecha_limite ASC
@@ -87,6 +89,7 @@ SORT choice(estado = "activo", 1, choice(estado = "bloqueado", 2, choice(estado 
 TABLE WITHOUT ID
   file.link AS "Proyecto",
   estado AS "Estado",
+  entregable AS "Entregable",
   ("<progress value='" + default(progreso, 0) + "' max='100'></progress>") AS "Progreso",
   ultima_revision AS "Últ. revisión"
 FROM "01 Proyectos"
