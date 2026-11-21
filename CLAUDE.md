@@ -15,6 +15,7 @@ Este repositorio es el sistema de un vault de Obsidian («cerebro digital»), si
 - Antes de editar, comprueba el estado de Git y actualiza con `git pull --ff-only`. No descartes cambios existentes; si afectan al trabajo o hay conflictos, detente y pide indicaciones.
 - Lee la plantilla, el README y las pruebas pertinentes antes de cambiar el formato o el comportamiento del sistema. Sigue los patrones existentes y limita el cambio a lo solicitado.
 - Tras editar, revisa `git diff` para confirmar el alcance y que no haya datos personales. Ejecuta las pruebas pertinentes; si no puedes ejecutarlas, indícalo. No hagas commit ni push salvo que te lo pidan.
+- No abras Obsidian, ni con depuración remota, mientras haya cambios sin commitear: Obsidian Git hace commit y push solo, al arrancar y cada 10 minutos, y sube lo pendiente sin que nadie lo apruebe. Descargar el plugin después de abrir llega tarde. Comprueba que `git status` está limpio antes de abrirlo.
 - No inventes información. Si un dato no puede verificarse, márcalo como «por confirmar».
 - Usa fechas `AAAA-MM-DD` y enlaces internos `[[Nombre de nota]]` en lugar de rutas cuando escribas notas.
 
