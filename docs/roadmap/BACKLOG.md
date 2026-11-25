@@ -14,6 +14,7 @@
 | FEAT-003 | **Hecho de otra forma** (2026-11-19) | `repos.mjs` guarda `ultimo_push` e `issues_abiertos` en el frontmatter; sin releases ni estado de la CI |
 | FEAT-004 | **Implementado, sin cerrar** | Subagente y comandos en `.claude/`; ver la Fase 2 en [ROADMAP](../../ROADMAP.md) |
 | FEAT-013 | **Implementado, sin cerrar** | App en el repo `cerebrojm-app`; ver la Fase 3 en [ROADMAP](../../ROADMAP.md) |
+| FEAT-007 | **Preparado, sin probar** (2026-11-25) | Obsidian Sync solo para capturar desde Android ([ADR-0008](../architecture/ADR/0008-sincronizacion-movil.md)) |
 | AUD-027 | **Superado** (2026-11-19) | `ultimo_push` es ahora un campo real, escrito por `repos.mjs` |
 | AUD-021 | **Parcial** | El Panel separa «estancado» y «sin push»; no hay una señal de actividad local (FEAT-001) |
 | AUD-022 | **Parcial** | `validar-vault.mjs` valida las herramientas; el Diagnóstico no. El acotado de estrellas en el índice está por confirmar |

@@ -11,5 +11,6 @@ Cada ADR documenta una decisión con su contexto, las alternativas y sus consecu
 | [0005](0005-modelo-temporal-del-proyecto.md) | Modelo temporal: commit, actividad y revisión | Propuesta (pendiente de decisión) | AUD-020, 021, 024 |
 | [0006](0006-esquema-unico-de-metadatos.md) | Esquema único de metadatos | Propuesta (pendiente de decisión) | AUD-022, 029, 030 |
 | [0007](0007-integracion-github-local.md) | Integración con GitHub local y bajo demanda | **Sustituida** por `repos.mjs` | AUD-027, FEAT-003 |
+| [0008](0008-sincronizacion-movil.md) | Captura desde el móvil con Obsidian Sync | **Aceptada** | Fase 6, FEAT-007 |
 
 Plantilla: Contexto → Decisión propuesta → Alternativas → Consecuencias.

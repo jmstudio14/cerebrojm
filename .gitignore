@@ -1,6 +1,9 @@
 # --- Secretos: contiene la URL privada de Google Calendar ---
 .obsidian/plugins/obsidian-full-calendar/data.json
 
+# --- Obsidian Sync (ADR-0008): estado local de la conexión, por si lo crea dentro del vault ---
+.obsidian/sync.json
+
 # --- Estado local de Obsidian (cambia constantemente y genera conflictos) ---
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json

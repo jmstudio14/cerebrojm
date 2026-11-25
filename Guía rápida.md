@@ -14,6 +14,7 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 |---|---|---|
 | Cada día (2 min) | Abrir la nota diaria, mirar la agenda y elegir máximo 3 focos | `Ctrl+P` → *Daily notes: Open today's daily note* |
 | Al tocar un proyecto | Actualizar `estado`, `progreso`, `proxima_accion` y `ultima_revision`, y añadir una línea al Registro | Nota del proyecto |
+| Idea fuera de casa | Apuntarla en el móvil (requiere Obsidian Sync, ver `README.md`, paso 8) | Línea nueva en [[Bandeja de entrada]] |
 | Cada semana (30 min) | Revisión semanal: vaciar la bandeja, revisar los estancados y limitar los activos | Nota nueva en `04 Revisiones/` con la plantilla **Revisión semanal** |
 | Antes de la revisión | Actualizar último push e issues de tus repos (necesita `gh` con sesión) | Doble clic en **`repos.bat`** |
 | Al terminar la revisión | Copia de seguridad cifrada de tus notas (no están en GitHub) | Doble clic en **`respaldar.bat`** |

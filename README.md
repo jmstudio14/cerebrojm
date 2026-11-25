@@ -260,6 +260,44 @@ Unregister-ScheduledTask -TaskName "cerebrojm - estado de repos" -Confirm:$false
 
 `StartWhenAvailable` recupera la ejecución si el PC estaba apagado a esa hora. Como las notas de `01 Proyectos/` **no están en Git**, no hay conflictos con Obsidian Git; el único roce posible es editar una nota en Obsidian en el mismo instante, y por eso el script solo cambia esas dos líneas.
 
+### 8 · Capturar desde el móvil (opcional)
+
+Requiere una suscripción a [Obsidian Sync](https://obsidian.md/sync) (de pago) y está pensado para Android: apuntas una idea en el móvil y llega a la [bandeja de entrada](02%20Notas/) del PC. Decisión y límites en el [ADR-0008](docs/architecture/ADR/0008-sincronizacion-movil.md).
+
+<details>
+<summary>Configurar el PC y el móvil</summary>
+
+<br>
+
+**Ajustes de Sync, iguales en los dos dispositivos** (no se copian de uno a otro):
+
+- **Excluded folders:** `01 Proyectos`, `03 Diario`, `04 Revisiones`, `05 Herramientas`, `_sistema` y `docs`.
+- **Vault configuration sync:** todo desactivado.
+- **Images, Audio, Videos, PDFs** y **Sync all other types:** desactivados. Solo viaja texto.
+
+**En el PC**
+
+1. **Antes de nada**, para que Obsidian Git no suba nada sin revisar: `Ctrl+P` → *Obsidian Git: Pause/Resume automatic routines* (o *Disable on this device* en sus ajustes).
+2. Suscríbete, inicia sesión en *Ajustes → General → Account*, activa *Core plugins → Sync* y crea un vault remoto con **contraseña de cifrado**. Si la olvidas, no se puede recuperar. **No pulses todavía *Start syncing*.**
+3. Aplica los ajustes de arriba, reinicia Obsidian y pulsa *Resume* en Sync.
+4. Cierra Obsidian y ejecuta `git status`: debe estar limpio. Si aparece algún archivo nuevo de `.obsidian/`, añádelo a `.gitignore` antes de reactivar Obsidian Git.
+5. Reactiva Obsidian Git.
+
+**En Android**
+
+1. Instala Obsidian y elige **Setup Obsidian Sync** (no abras antes otro vault). Conecta con el vault remoto.
+2. Cierra la ventana que propone empezar a sincronizar, aplica los ajustes de arriba, reinicia la app y pulsa *Resume* en Sync.
+3. Cuando termine la primera sincronización, en *Ajustes → Files and links*, pon `02 Notas` como carpeta por defecto para notas nuevas y para adjuntos. El móvil no recibe esta opción del PC.
+4. Prueba: añade una línea a **Bandeja de entrada** en el móvil y comprueba que aparece en el PC.
+
+</details>
+
+> [!WARNING]
+> Desde el móvil, escribe solo en la Bandeja de entrada o dentro de `02 Notas/`. Un archivo creado en la raíz del vault no está en `.gitignore`: llegaría al PC y Obsidian Git lo subiría a GitHub.
+
+> [!IMPORTANT]
+> Las capturas llegan al PC cuando Obsidian está abierto allí. Los `.md` de la raíz del vault (Panel, README, ROADMAP, `CLAUDE.md` y Guía rápida) no se pueden excluir por carpeta y también se sincronizan. Sync **no** sustituye a `respaldar.bat`.
+
 ---
 
 ## 🗓️ Uso diario
@@ -275,6 +313,7 @@ Unregister-ScheduledTask -TaskName "cerebrojm - estado de repos" -Confirm:$false
 | Actualizar último push e issues de GitHub | Doble clic en **`repos.bat`** (necesita `gh`) |
 | Copia cifrada de mis notas | Doble clic en **`respaldar.bat`**, cada semana al terminar la revisión |
 | Recuperar una copia | Doble clic en **`restaurar.bat`** (no pisa lo modificado después; en un PC nuevo, con `--archivo <copia.cjmbak>`) |
+| Apuntar una idea desde el móvil | Línea nueva en **Bandeja de entrada** (necesita Obsidian Sync, paso 8) |
 
 La rutina completa y el significado de cada alerta están en **[Guía rápida](Guía%20rápida.md)**.
 
@@ -389,7 +428,7 @@ cerebrojm/
 | **3** | 🟡 Implementada, sin cerrar | App de escritorio minimalista y profesional (Tauri + React), con sistema de diseño propio |
 | **4** | 🟡 Implementada, sin cerrar | Estado de los repos actualizado automáticamente desde GitHub (`repos.mjs`) |
 | **5** | 🔄 Parcial | Proyectos personales y creativos: la plantilla ya sirve; falta dar de alta los proyectos |
-| **6** | ⏳ | Captura desde el móvil (opcional) |
+| **6** | 🟡 Preparada, sin cerrar | Captura desde el móvil con Obsidian Sync (opcional): falta configurarlo y probarlo |
 
 «Sin cerrar» significa que el código está hecho, pero la condición de entrada o el criterio de terminado del roadmap aún no se han marcado. Detalle en **[ROADMAP.md](ROADMAP.md)**. Regla: no se empieza una fase hasta cerrar la anterior.
 
@@ -397,7 +436,8 @@ cerebrojm/
 
 ## 🔒 Privacidad
 
-- **Tus datos no salen de tu PC** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat --archivo <copia.cjmbak>`.
+- **Tus datos no van a GitHub** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat --archivo <copia.cjmbak>`.
+- Los datos personales solo salen de tu PC si tú lo activas: las copias cifradas que guardes en la nube y, si configuras la captura móvil (paso 8), `02 Notas/`, que Obsidian Sync envía a sus servidores con cifrado de extremo a extremo.
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
 - Cada push ejecuta un CI (`.github/workflows/validar.yml`) en Ubuntu y Windows, con Node 22 y 24. Corre todos los tests de `_sistema/tests/` (lector iCal, escáner, escritura atómica, copia de seguridad, resumen de estado, repos y validador, con datos ficticios), entre ellos la comprobación de que la zona personal sigue fuera de Git, y valida las notas del repo. Un test nuevo entra solo, sin tocar el workflow.

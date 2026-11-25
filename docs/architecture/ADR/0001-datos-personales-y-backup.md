@@ -46,7 +46,7 @@
 
 - `.gitignore` crece; Obsidian Git solo sube el sistema.
 - El historial de las carpetas personales que ya se hayan subido seguirá en Git hasta otra limpieza. A día de hoy, `02`, `03` y `04` solo contienen índices y la bandeja vacía.
-- Para trabajar en varios equipos hará falta otro mecanismo (copia/restauración u Obsidian Sync). Se decide en la Fase 6 (móvil).
+- Para trabajar en varios equipos hará falta otro mecanismo (copia/restauración u Obsidian Sync). Se decide en la Fase 6 (móvil): ver [ADR-0008](0008-sincronizacion-movil.md), que cubre solo la captura desde el móvil.
 
 ## Criterios de aceptación
 
