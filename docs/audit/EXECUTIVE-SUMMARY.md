@@ -1,5 +1,7 @@
 # Resumen ejecutivo · Auditoría de CerebroJM (2026-11-18)
 
+> **Foto del 2026-11-18.** No se actualiza: el estado vigente está en [ROADMAP](../../ROADMAP.md) y [BACKLOG](../roadmap/BACKLOG.md).
+
 ## Estado actual en una frase
 
 El sistema está bien planteado: vault de Markdown, scripts locales sin dependencias, CI con pruebas y datos personales fuera de Git. Pero **no está listo para empezar a usarse en real**: hay defectos que pueden corromper o perder lo que el usuario escriba a mano, y el historial de GitHub todavía contiene datos personales.

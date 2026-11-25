@@ -11,6 +11,15 @@
 | AUD-017 | **Parcial** (2026-11-20) | Las series `DAILY` saltan a la ventana pedida y ya no desaparecen por el tope de 5000 pasos. El resto de frecuencias conserva el tope |
 | AUD-024 | **Hecho** (2026-11-20) | «Hoy» en fecha local en `escanear.mjs` y `estado.mjs` (tests con `TZ` UTC+14 y UTC-11) |
 | AUD-029 | **Hecho** (2026-11-20) | La plantilla de revisión usa 14 días, como el Panel y `estado.mjs` |
+| FEAT-003 | **Hecho de otra forma** (2026-11-19) | `repos.mjs` guarda `ultimo_push` e `issues_abiertos` en el frontmatter; sin releases ni estado de la CI |
+| FEAT-004 | **Implementado, sin cerrar** | Subagente y comandos en `.claude/`; ver la Fase 2 en [ROADMAP](../../ROADMAP.md) |
+| FEAT-013 | **Implementado, sin cerrar** | App en el repo `cerebrojm-app`; ver la Fase 3 en [ROADMAP](../../ROADMAP.md) |
+| AUD-027 | **Superado** (2026-11-19) | `ultimo_push` es ahora un campo real, escrito por `repos.mjs` |
+| AUD-021 | **Parcial** | El Panel separa «estancado» y «sin push»; no hay una señal de actividad local (FEAT-001) |
+| AUD-022 | **Parcial** | `validar-vault.mjs` valida las herramientas; el Diagnóstico no. El acotado de estrellas en el índice está por confirmar |
+| AUD-028 | **Parcial** (2026-11-25) | El README indica límites de recurrencia; no enumera los de AUD-012 y AUD-013 |
+| AUD-033 | **Parcial** (2026-11-20) | CI con matriz Ubuntu y Windows; faltan `permissions` y acciones fijadas por SHA |
+| AUD-039 | **Parcial** (2026-11-20) | CI en Windows hecha; faltan fixtures de algunos defectos |
 | AUD-005 | **Parcial: riesgo aceptado** | Repo nuevo `cerebrojm` limpio y verificado (todas sus referencias). El repo antiguo `cerebrojm-antiguo` (privado, con el historial previo) no se ha borrado por decisión del usuario; riesgo bajo mientras siga siendo privado |
 
 ## Prioridades
@@ -274,6 +283,8 @@
 | AUD-036 | Repetir los eventos de varios días en cada día que cubren | Un evento de 3 días aparece en los 3 | Unitaria de agrupación (función extraída) |
 
 ### FEAT-003 · Integración GitHub local (`gh`)
+> Implementado de otra forma (2026-11-19): script aparte `repos.mjs`, que escribe en el frontmatter y, sin `gh` o sin sesión, termina con código 1. Lo que sigue es la propuesta original.
+
 - **Solución:** ADR-0007. Opción `--github` del escáner; datos solo en el bloque automático.
 - **Criterios de aceptación:**
   - Con `gh` disponible, el bloque muestra PRs e issues abiertos, último release y estado de la CI.

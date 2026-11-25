@@ -31,7 +31,7 @@ Sigue los pasos 1 a 6 de `/fase` (localizar la nota, leer las reglas del repo, i
 ## 4. PR en borrador
 1. `git -C "<ruta>" push -u origin fase/<id>-<slug>` (push normal).
 2. `gh pr create --draft --repo <dueño>/<repo>` con título breve y un cuerpo con: resumen, **verificación ejecutada** (comando y resultado real, no supuesto), y riesgos o puntos pendientes. Termina el cuerpo con el pie de atribución que indique la sesión, si lo hay.
-3. Anota la URL del PR. No esperes a la CI ni la corrijas: eso es el seguimiento (2d), que aún no existe; si la CI falla, dilo.
+3. Anota la URL del PR. No esperes a la CI ni la corrijas: de eso se encarga `/seguimiento`; si la CI falla, dilo.
 
 ## 5. Vault
 Solo en `01 Proyectos/<nombre>.md`, según las reglas de `CLAUDE.md` del vault:

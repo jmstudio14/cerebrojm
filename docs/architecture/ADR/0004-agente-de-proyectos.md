@@ -41,3 +41,8 @@ El usuario quiere un agente que consulte el estado de sus proyectos, analice sus
 
 - Depende de FEAT-001 (fechas fiables) y de que la Fase 1 esté cerrada, para no planificar sobre datos deducidos.
 - El registro local de acciones requiere la copia de seguridad (FEAT-002).
+
+## Enmienda (2026-11-25)
+
+- El agente se construyó por petición expresa sin cumplir las dependencias anteriores: FEAT-001 no está hecho y la Fase 1 sigue abierta.
+- Regla 5: `/seguimiento` anota en `## Registro` los PRs fusionados, pero no los push de corrección ni sus comentarios en el PR.

@@ -1,5 +1,7 @@
 # Roadmap maestro de evolución
 
+> **Foto del 2026-11-18.** No se actualiza: el estado vigente está en [ROADMAP](../../ROADMAP.md) y [BACKLOG](../roadmap/BACKLOG.md).
+
 > Propuesta derivada de la auditoría del 2026-11-18. **No sustituye a `ROADMAP.md` hasta que se apruebe.** La sección 3 resume los cambios que habría que aplicar a `ROADMAP.md` una vez aprobada.
 
 ## 1. Principios

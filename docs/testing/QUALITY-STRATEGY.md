@@ -10,6 +10,8 @@
 
 **Lección:** el escáner tiene un 95 % de cobertura y aun así tiene tres defectos reproducibles (AUD-001, 002, 020). **La cobertura no se usará como objetivo.** El objetivo es que **cada requisito y cada defecto tengan un test que fallaría si se rompe**.
 
+**Estado actual (2026-11-25):** 82 pruebas en 8 archivos de `_sistema/tests/`, todas en verde en Windows. La CI ejecuta `node --test "_sistema/tests/*.test.*"` y `validar-vault.mjs` en Ubuntu y Windows con Node 22 y 24.
+
 ## 2. Ciclo TDD obligatorio
 
 1. **RED:** escribir el test que reproduce el defecto o el criterio de aceptación. Ejecutarlo y **pegar la salida en rojo en el PR**.
@@ -25,7 +27,7 @@
 | Unitarias | `partir`/`serializar` del frontmatter, detectores (git, stack, tests, herramientas), parser y expansión iCal, función de estrellas, agrupación de la agenda, cálculo de fechas | `node:test` | Sí |
 | Integración | Escáner sobre carpetas temporales con repos git reales; copia y restauración de ida y vuelta; `gh` simulado | `node:test` y procesos hijo | Sí |
 | Regresión | Un fixture por cada AUD-xxx corregido | `node:test` | Sí |
-| Coherencia | Esquema frente a umbrales del Panel; esquema frente a documentación; `git check-ignore` de la zona personal | Script de Node | Sí |
+| Coherencia | Hoy `coherencia.test.mjs`: `.gitignore`, archivos versionados y mensajes de commit. Pendiente (sin esquema): umbrales del Panel y documentación | `node:test` | Sí |
 | Compatibilidad | Rutas Windows, mayúsculas, `.bat`, CRLF, BOM | CI `windows-latest` más una lista manual | Parcial |
 | Recuperación | Restaurar copia en un vault vacío; restaurar sobre uno existente sin pisar archivos recientes; escaneo interrumpido (se mata el proceso a mitad) sin archivos corruptos ni `.tmp` huérfanos que afecten | Integración | Sí |
 | Seguridad | Ningún secreto ni dato personal en el repo; `permissions` mínimos en la CI; acciones fijadas por SHA; verificación de todas las referencias remotas (AUD-005) | Script más revisión del workflow | Sí (salvo `refs/pull`, que es una comprobación manual con `git ls-remote`) |
@@ -59,7 +61,7 @@ Lista de comprobación manual, que se firma en el PR correspondiente:
 
 **Obsidian (escritorio)**
 - [ ] `Diagnóstico.md`: todo en ✅, incluida la disponibilidad de `requestUrl`.
-- [ ] El Panel renderiza sus 7 bloques sin error, con 0 proyectos y con 15 proyectos.
+- [ ] El Panel renderiza sus 9 bloques sin error, con 0 proyectos y con 15 proyectos.
 - [ ] La agenda muestra los eventos de un calendario real y coincide con Google Calendar durante una semana.
 - [ ] Sin red: la agenda muestra la copia en caché con el aviso.
 - [ ] El índice de herramientas renderiza con valores límite.
@@ -68,7 +70,7 @@ Lista de comprobación manual, que se firma en el PR correspondiente:
 **Windows**
 - [ ] `escanear.bat` con doble clic: la primera ejecución pregunta las carpetas y las guarda.
 - [ ] Rutas con espacios, acentos y unidades distintas (C:, D:).
-- [ ] Node no instalado o con versión menor de 18 → mensaje claro (AUD-032).
+- [ ] Node no instalado o con versión menor de 22 → mensaje claro (AUD-032).
 - [ ] `respaldar.bat` y `restaurar.bat` (FEAT-002).
 
 **Agente (FEAT-004), en un repo de prueba**
@@ -86,7 +88,9 @@ Lista de comprobación manual, que se firma en el PR correspondiente:
 | G3 · Adopción (antes de la Fase 1) | Ningún P0 abierto; simulacro de restauración hecho | Fase A |
 | G4 · Agente | FEAT-004 solo se activa con G3 cumplida y la Fase 1 cerrada | — |
 
-## 7. Cambios propuestos en la CI (no aplicados)
+## 7. Cambios propuestos en la CI (aplicados en parte)
+
+Aplicados: matriz Ubuntu y Windows, Node 22 y 24, y todos los tests por patrón. Pendientes: `permissions`, acciones fijadas por SHA y la coherencia contra un esquema. Lo que sigue es la propuesta original.
 
 ```yaml
 permissions:

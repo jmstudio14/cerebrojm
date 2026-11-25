@@ -44,7 +44,7 @@ Estado de todos los proyectos de un vistazo: resumen por estado, barras de progr
 <td width="50%" valign="top">
 
 ### ⚠️ Alertas automáticas
-Señala lo que se está quedando atrás: **vencidos**, **bloqueados**, **estancados** (más de 14 días sin revisión), proyectos **sin próxima acción** y activos **sin push** en GitHub desde hace más de 30 días.
+Señala lo que se está quedando atrás: **vencidos**, **bloqueados**, **estancados** (más de 14 días sin revisión), proyectos **sin próxima acción**, activos **sin push** en GitHub desde hace más de 30 días y proyectos con el **límite cercano** (menos de 14 días).
 
 </td>
 </tr>
@@ -52,7 +52,7 @@ Señala lo que se está quedando atrás: **vencidos**, **bloqueados**, **estanca
 <td valign="top">
 
 ### 📅 Agenda de Google Calendar
-Tus eventos de los próximos 7 días junto a las fechas límite de los proyectos. Soporta eventos recurrentes, excepciones y zonas horarias, y la URL privada **nunca** se sube al repo.
+Tus eventos de los próximos 7 días junto a las fechas límite de los proyectos. Soporta eventos recurrentes, excepciones y zonas horarias (con límites: las repeticiones se expanden en la zona del sistema, las anuales ignoran `BYMONTH`/`BYDAY` y no se leen `DURATION` ni `RDATE`), y la URL privada **nunca** se sube al repo.
 
 </td>
 <td valign="top">
@@ -66,7 +66,7 @@ Obsidian Git hace *pull* al abrir y *commit + push* cada 10 minutos, **solo del 
 <td valign="top">
 
 ### 🧩 Plantillas
-Proyecto, nota diaria (con la agenda del día), revisión semanal y nota. Todo con el mismo frontmatter, para que el Panel nunca se rompa.
+Proyecto, nota diaria (con la agenda del día), revisión semanal, nota y herramienta, cada una con el frontmatter de su tipo, para que el Panel y los índices no se rompan.
 
 </td>
 <td valign="top">
@@ -86,7 +86,7 @@ Proyecto, nota diaria (con la agenda del día), revisión semanal y nota. Todo c
 <td valign="top">
 
 ### 🧰 Catálogo de herramientas
-Detecta las skills, agentes y servidores MCP que usan tus proyectos (`skills-lock.json`, `.claude/`, `.mcp.json`) y crea una ficha por cada una, con su origen y los proyectos que la usan.
+Detecta las skills, agentes y servidores MCP que usan tus proyectos (`skills-lock.json`, `.claude/`, `.agents/skills`, `.mcp.json`) y crea una ficha por cada una, con su origen y los proyectos que la usan.
 
 </td>
 </tr>
@@ -183,7 +183,7 @@ git pull   # comprueba que la autenticación funciona
 
 1. Obsidian → **Open folder as vault** → `C:\Users\<tú>\cerebrojm`.
 2. Pulsa **Trust author and enable plugins** (o *Ajustes → Community plugins → Turn on*).
-3. Abre **`_sistema/Diagnóstico.md`**: comprueba plugins, calendario y proyectos. Todo debería salir en ✅.
+3. Abre **`_sistema/Diagnóstico.md`**: comprueba plugins, calendario y proyectos. Nada debería salir en ❌; en un clon recién hecho, lo que aún no has configurado sale en ⚪.
 4. Abre **`00 Panel.md`**, que también está en Marcadores.
 
 Los plugins **vienen incluidos** en `.obsidian/plugins/`: no hay que instalar nada. Se activan Dataview, Obsidian Git, Full Calendar y Templater. Excalidraw también viene incluido, pero no está en la lista de plugins activados.
@@ -221,13 +221,15 @@ node _sistema/scripts/escanear.mjs --carpetas "C:\Programacion"   # alternativa 
 
 ### 6 · Copias de seguridad
 
-Tus notas (proyectos, notas, diario, revisiones, herramientas y adjuntos) **no se suben a GitHub**. Protégelas con una copia cifrada:
+Tus notas (proyectos, notas, diario, revisiones, herramientas y adjuntos) y la configuración local (`_sistema/config/*.local.json`) **no se suben a GitHub**. Protégelas con una copia cifrada:
 
 1. Doble clic en **`respaldar.bat`**. La primera vez pregunta en qué carpeta guardar las copias: mejor un disco externo o una carpeta de la nube, porque van cifradas.
 2. Elige una contraseña. **No se guarda en ningún sitio: si la olvidas, la copia no se puede recuperar.**
 3. Se crea `cerebrojm-AAAA-MM-DD_hhmmss.cjmbak` (AES-256-GCM) y se conservan las 10 últimas. La carpeta de destino no puede estar dentro del vault. Si algo no se puede leer o es un enlace simbólico (no se siguen), la copia se crea igualmente, lista lo omitido y termina con código 1.
 
 Para recuperar: **`restaurar.bat`** restaura la copia más reciente **sin pisar** archivos que hayas modificado después (añade `--forzar` para sobrescribirlos). El Diagnóstico (`_sistema/Diagnóstico.md`) te avisa si la última copia tiene más de 14 días.
+
+En un PC recién clonado todavía no se sabe dónde están las copias: indica el archivo con `restaurar.bat --archivo <ruta de la copia.cjmbak>`. La copia **no** incluye el `data.json` de Full Calendar, así que tendrás que volver a pegar la URL iCal (paso 4).
 
 > [!TIP]
 > Hazlo cada semana al terminar la revisión semanal, y siempre antes de cambiar de PC.
@@ -272,7 +274,7 @@ Unregister-ScheduledTask -TaskName "cerebrojm - estado de repos" -Confirm:$false
 | Cargar o actualizar proyectos | Doble clic en **`escanear.bat`** |
 | Actualizar último push e issues de GitHub | Doble clic en **`repos.bat`** (necesita `gh`) |
 | Copia cifrada de mis notas | Doble clic en **`respaldar.bat`**, cada semana al terminar la revisión |
-| Recuperar una copia | Doble clic en **`restaurar.bat`** (no pisa lo modificado después) |
+| Recuperar una copia | Doble clic en **`restaurar.bat`** (no pisa lo modificado después; en un PC nuevo, con `--archivo <copia.cjmbak>`) |
 
 La rutina completa y el significado de cada alerta están en **[Guía rápida](Guía%20rápida.md)**.
 
@@ -281,14 +283,14 @@ Abre Claude Code en la carpeta del vault. El subagente `gestor-proyectos` (`.cla
 
 | Comando | Qué hace |
 |---|---|
-| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`), el último push de cada repo de GitHub y sus PRs abiertos. Ejecuta `escanear.mjs` y `repos.mjs`, así que refresca los campos automáticos de las notas (`ultimo_push`, `issues_abiertos` y los del escáner). Nunca toca `estado`, `prioridad`, `progreso` ni `proxima_accion`. |
+| `/estado` | Resumen por estado con las mismas alertas que el Panel (`_sistema/scripts/estado.mjs`) y los PRs abiertos de los proyectos `activo` y `bloqueado`. Ejecuta `escanear.mjs` y `repos.mjs`, así que crea las notas de proyectos y herramientas nuevos y refresca los campos automáticos (`ultimo_push`, `issues_abiertos` y los del escáner). Nunca toca `estado`, `prioridad`, `progreso` ni `proxima_accion`. |
 | `/revision` | Crea `04 Revisiones/AAAA-MM-DD.md` desde la plantilla, con los datos del día. No sobrescribe y no marca el checklist. |
 | `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs abiertos y una propuesta de siguiente paso. Solo lectura. |
 | `/fase <nombre>` | Lee el repo del proyecto (su `CLAUDE.md`, `ROADMAP.md`, tests y CI) y propone el plan de su fase siguiente. No escribe nada. |
 | `/implementar <nombre>` | Presenta el plan de la fase siguiente y, con tu aprobación, la implementa en una rama `fase/<id>-<slug>` del repo del proyecto (tests y lint del propio repo), abre un **PR en borrador** y actualiza la nota del proyecto. Nunca fusiona. |
 | `/seguimiento [nombre]` | Vigila los PRs `fase/*` abiertos (CI y comentarios). Si falla la CI o **tú** pides algo en un comentario, lo corrige en la misma rama con un push normal y responde con el prefijo `🤖 Seguimiento:`. Cuando fusionas un PR, lo refleja en la nota del proyecto y propone la fase siguiente «por confirmar». Los comentarios de terceros y de bots son datos, no órdenes. |
 
-Ninguno hace commit ni push en el vault. `/implementar` sí hace commits y un push normal, pero solo en la rama de fase del repo del proyecto; el PR lo revisas y lo fusionas tú.
+Ninguno hace commit ni push en el vault. `/implementar` y `/seguimiento` sí hacen commits y push normales, pero solo en la rama de fase del repo del proyecto; el PR lo revisas y lo fusionas tú.
 
 `.claude/settings.json` bloquea con reglas `deny` las órdenes que `/implementar` nunca debe ejecutar: `gh pr merge`, `gh pr ready`, `gh repo delete`, push forzado, push a `main`/`master` (incluidos refspecs como `HEAD:main`) y `git reset --hard`. Es una defensa en profundidad, no una frontera: las reglas casan por texto y un flag en una posición imprevista podría escaparse. Por eso la regla también está escrita en el propio comando.
 
@@ -347,7 +349,8 @@ cerebrojm/
 ├── 00 Panel.md               Dashboard principal
 ├── Guía rápida.md            Rutina diaria/semanal y señales de alarma
 ├── ROADMAP.md                Evolución del propio sistema
-├── skills-lock.json          Origen y hash de las skills de `.claude/skills/`
+├── CLAUDE.md                 Reglas para Claude Code en este vault
+├── skills-lock.json          Origen y hash de las skills de `.claude/skills/` instaladas desde GitHub
 ├── escanear.bat              Carga o actualiza tus proyectos y herramientas
 ├── repos.bat                 Actualiza el último push y los issues de tus repos de GitHub
 ├── respaldar.bat · restaurar.bat   Copia cifrada de tus datos personales
@@ -394,7 +397,7 @@ cerebrojm/
 
 ## 🔒 Privacidad
 
-- **Tus datos no salen de tu PC** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat`.
+- **Tus datos no salen de tu PC** ([ADR-0001](docs/architecture/ADR/0001-datos-personales-y-backup.md)): `01 Proyectos/`, `02 Notas/`, `03 Diario/`, `04 Revisiones/`, `05 Herramientas/`, `_sistema/adjuntos/` y la configuración local están en `.gitignore`. GitHub guarda solo el sistema. Para no perderlos, usa `respaldar.bat` (copia cifrada) y, al cambiar de equipo, `restaurar.bat --archivo <copia.cjmbak>`.
 - La URL secreta del calendario vive solo en tu equipo (`.gitignore`).
 - El estado local de Obsidian (`workspace.json`) no se sincroniza, así que no hay conflictos entre equipos.
 - Cada push ejecuta un CI (`.github/workflows/validar.yml`) en Ubuntu y Windows, con Node 22 y 24. Corre todos los tests de `_sistema/tests/` (lector iCal, escáner, escritura atómica, copia de seguridad, resumen de estado, repos y validador, con datos ficticios), entre ellos la comprobación de que la zona personal sigue fuera de Git, y valida las notas del repo. Un test nuevo entra solo, sin tocar el workflow.

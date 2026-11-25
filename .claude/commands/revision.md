@@ -1,12 +1,12 @@
 ---
 description: Crea la nota de la revisión semanal de hoy con datos reales
-allowed-tools: Bash(node:*), Bash(git status:*), Bash(git pull --ff-only), Read, Write, Glob
+allowed-tools: Bash(node:*), Bash(git status:*), Bash(git branch --show-current), Bash(git fetch:*), Bash(git pull --ff-only), Read, Write, Glob
 model: sonnet
 ---
 
 Usa el subagente `gestor-proyectos` o sigue estos pasos tú mismo, con las reglas de `CLAUDE.md`.
 
-1. `git status` y `git pull --ff-only`. Si hay conflictos, detente.
+1. `git status`, `git branch --show-current` y `git fetch`. Ejecuta `git pull --ff-only` solo si no hay cambios locales incompatibles. Si hay conflictos o cambios ajenos, detente.
 2. Calcula la fecha de hoy (`AAAA-MM-DD`). Si `04 Revisiones/AAAA-MM-DD.md` ya existe, **no la sobrescribas**: dilo y detente.
 3. Crea `04 Revisiones/AAAA-MM-DD.md` copiando `_sistema/plantillas/Revisión semanal.md` y sustituyendo `{{date}}` por la fecha de hoy.
 4. Ejecuta `node _sistema/scripts/estado.mjs` y añade al final de la nota una sección `## 5. Datos del día` con, solo lo que devuelve el script: recuento por estado y los proyectos vencidos, bloqueados, estancados, sin push (+30 días), sin próxima acción y con límite cercano. Enlázalos con `[[Nombre del proyecto]]`.

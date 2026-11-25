@@ -11,8 +11,8 @@ flowchart TB
         direction TB
         subgraph SIS["Zona sistema · en Git"]
             PANEL["00 Panel.md<br/>índices · plantillas"]
-            ESQ["_sistema/esquema.json<br/>(fuente única)"]
-            SCR["_sistema/scripts<br/>escanear · agenda · respaldar"]
+            ESQ["_sistema/esquema.json<br/>(fuente única · pendiente)"]
+            SCR["_sistema/scripts<br/>escanear · agenda · estado · repos<br/>respaldar · restaurar · atomico"]
             DIAG["Diagnóstico.md"]
         end
         subgraph PER["Zona personal · fuera de Git"]
@@ -40,7 +40,7 @@ flowchart TB
 ### 2.1 Obsidian (interfaz y almacenamiento)
 - **Responsabilidad:** edición, navegación, vistas (Dataview, Bases) y almacenamiento en Markdown.
 - **Tecnología:** Obsidian, Dataview 0.5.68 (ya incluido) y Bases (núcleo).
-- **Alternativas:** app Tauri ([ADR-0003](ADR/0003-interfaz-obsidian-frente-a-app.md)).
+- **Complemento:** app Tauri en el repo `cerebrojm-app`, ya construida ([ADR-0003](ADR/0003-interfaz-obsidian-frente-a-app.md)).
 - **Dependencias:** plugins de la comunidad.
 - **Riesgos:** cambios en la API de Dataview; plugins sin mantenimiento (AUD-034).
 - **Mantenimiento:** bajo.
@@ -55,20 +55,20 @@ flowchart TB
 
 ### 2.3 Copia de seguridad y restauración
 - **Responsabilidad:** recuperar la zona personal ante pérdida o cambio de equipo.
-- **Tecnología:** script de Node más un cifrador externo con formato estándar (7-Zip AES-256 o `age`, a decidir en un spike).
+- **Tecnología:** scripts de Node sin dependencias: `node:crypto` (AES-256-GCM con clave derivada por scrypt) y `node:zlib`.
 - **Alternativas:** Obsidian Sync; copia manual.
-- **Dependencias:** el cifrador en Windows.
+- **Dependencias:** Node.
 - **Riesgos:** pérdida de la contraseña; copias no programadas. Lo mitiga el aviso de antigüedad en el Diagnóstico.
 - **Mantenimiento:** bajo.
 - **Justificación:** es la única opción que cumple "nada personal en GitHub" sin coste recurrente.
 
 ### 2.4 Escáner de proyectos
-- **Responsabilidad:** derivar datos **automáticos** (repositorio, fechas, stack, herramientas y GitHub opcional) sin tocar los datos manuales.
-- **Tecnología:** Node ≥ 18 sin dependencias, `git` y `gh` (opcional).
-- **Diseño interno (SRP):** hoy es un solo archivo de 443 líneas. Se recomienda separarlo en módulos con responsabilidades únicas:
-  - `detectores/` (git, stack, tests, herramientas, github);
+- **Responsabilidad:** derivar datos **automáticos** (repositorio, fechas, stack y herramientas; los datos de GitHub los escribe `repos.mjs`) sin tocar los datos manuales.
+- **Tecnología:** Node ≥ 22 sin dependencias y `git`.
+- **Diseño interno (SRP):** hoy es un solo archivo de 470 líneas; la escritura atómica ya está en `atomico.mjs`. Se recomienda separarlo en módulos con responsabilidades únicas:
+  - `detectores/` (git, stack, tests, herramientas);
   - `frontmatter.js` (parse/serialize tolerante, AUD-001);
-  - `escritura.js` (atómica y con detección de conflictos, AUD-026);
+  - detección de conflictos al escribir (AUD-026, pendiente);
   - `esquema.js`;
   - `cli.js`.
 
@@ -90,7 +90,7 @@ flowchart TB
 - **Mantenimiento:** muy bajo.
 
 ### 2.7 Integración con GitHub
-- **Responsabilidad:** PRs, issues, releases y estado de la CI por proyecto.
+- **Responsabilidad:** último push e issues abiertos por proyecto (`repos.mjs`). Los PRs los consultan los comandos con `gh`; releases y estado de la CI no se recogen.
 - **Tecnología:** `gh` CLI, local y bajo demanda ([ADR-0007](ADR/0007-integracion-github-local.md)).
 - **Alternativas:** Action programada (incompatible con ADR-0001); API REST con token en disco.
 - **Riesgos:** límites de la API, que hay que contemplar en la paginación.
@@ -114,7 +114,7 @@ flowchart TB
 ## 3. Lo que esta arquitectura evita a propósito
 
 - Servidores, bases de datos y microservicios.
-- Una segunda interfaz mientras no se demuestre que hace falta.
+- Una segunda fuente de verdad: la app lee y escribe los mismos `.md`.
 - Dependencias npm en el código propio: cada una exige un ADR o una justificación en el backlog.
 - Automatizaciones remotas sobre datos personales.
 

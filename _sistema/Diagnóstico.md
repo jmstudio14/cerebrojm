@@ -4,7 +4,7 @@ tipo: sistema
 
 # Diagnóstico
 
-Ábrela después de clonar o si algo del [[00 Panel|Panel]] no se ve bien. Todo debería salir en ✅.
+Ábrela después de clonar o si algo del [[00 Panel|Panel]] no se ve bien. Nada debería salir en ❌; ⚪ indica algo aún sin configurar u opcional.
 
 ```dataviewjs
 const filas = [];
@@ -85,7 +85,7 @@ try {
 const mayorNode = versionNode ? parseInt(versionNode.replace(/^v/, ""), 10) : NaN;
 ok("Node.js para los scripts", Number.isNaN(mayorNode) ? null : mayorNode >= 22, Number.isNaN(mayorNode) ? "no se pudo comprobar: instálalo desde nodejs.org (22 o superior)" : mayorNode >= 22 ? versionNode : `${versionNode}: hace falta la 22 o superior`);
 
-// 9. CLI de GitHub (opcional: solo la usan repos.bat y la tarea programada)
+// 9. CLI de GitHub (opcional: la usan repos.bat, la tarea programada y los comandos /estado, /proyecto, /fase, /implementar y /seguimiento)
 const ghEstado = await new Promise((resolver) => {
   try {
     require("child_process").execFile("gh", ["auth", "status"], { timeout: 8000, windowsHide: true }, (e) => resolver(e ? (e.code === "ENOENT" ? "no instalado" : "sin sesión") : "ok"));

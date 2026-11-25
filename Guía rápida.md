@@ -17,7 +17,7 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 | Cada semana (30 min) | Revisión semanal: vaciar la bandeja, revisar los estancados y limitar los activos | Nota nueva en `04 Revisiones/` con la plantilla **Revisión semanal** |
 | Antes de la revisión | Actualizar último push e issues de tus repos (necesita `gh` con sesión) | Doble clic en **`repos.bat`** |
 | Al terminar la revisión | Copia de seguridad cifrada de tus notas (no están en GitHub) | Doble clic en **`respaldar.bat`** |
-| Al cambiar de PC o tras perder datos | Recuperar la copia más reciente sin pisar lo modificado después | Doble clic en **`restaurar.bat`** |
+| Al cambiar de PC o tras perder datos | Recuperar la copia más reciente sin pisar lo modificado después | Doble clic en **`restaurar.bat`** (en un PC nuevo: `restaurar.bat --archivo <copia.cjmbak>`) |
 
 ## Dónde va cada cosa
 - **Proyecto** (tiene un final): lo crea el escáner; si no está en una carpeta escaneada, nota en `01 Proyectos/` con la plantilla **Proyecto**. Ver [[_Índice de proyectos]].
@@ -30,6 +30,8 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 `idea` → `activo` → `completado`. En cualquier momento puede pasar a `pausado` o `bloqueado`, y `archivado` es para lo que abandonas. Pausar o archivar **a propósito** es mejor que dejar un proyecto "activo" sin tocarlo.
 
 ## Señales de alarma del Panel
+Solo se aplican a proyectos `activo` y `bloqueado`.
+
 - ⏰ **vencido**: la `fecha_limite` ya pasó.
 - ⛔ **bloqueado**: escribe el motivo en *Bloqueos / riesgos*.
 - ❓ **sin próxima acción**: no sabes cuál es el siguiente paso, y por eso no avanza.
@@ -43,7 +45,7 @@ Abre Claude Code en la carpeta del vault. Ninguno de estos comandos hace commit 
 
 | Comando | Qué hace |
 |---|---|
-| `/estado` | Resumen por estado con las mismas alertas que el Panel, último push y PRs abiertos |
+| `/estado` | Resumen por estado con las mismas alertas que el Panel y PRs abiertos |
 | `/revision` | Crea la nota de la revisión semanal de hoy con los datos del día |
 | `/proyecto <nombre>` | Ficha del proyecto, últimos commits, PRs y propuesta de siguiente paso (solo lectura) |
 | `/fase <nombre>` | Propone el plan de la fase siguiente de un repo, sin escribir nada |

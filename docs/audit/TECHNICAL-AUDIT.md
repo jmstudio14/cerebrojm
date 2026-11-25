@@ -1,5 +1,7 @@
 # Auditoría técnica de CerebroJM
 
+> **Foto del 2026-11-18.** No se actualiza: el estado vigente está en [ROADMAP](../../ROADMAP.md) y [BACKLOG](../roadmap/BACKLOG.md).
+
 > Estado auditado: rama `main`, commit `b5d0b84` (2026-11-18).
 > Alcance: todo el contenido versionado del repositorio, sus ramas y referencias en GitHub, la CI y los plugins incluidos.
 > Fuera de alcance: los datos personales del usuario (`01 Proyectos/`, `05 Herramientas/`), que no están en el repositorio por diseño.

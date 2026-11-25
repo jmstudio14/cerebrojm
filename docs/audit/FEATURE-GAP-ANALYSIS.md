@@ -1,5 +1,7 @@
 # Análisis de funcionalidades: existentes, parciales y ausentes
 
+> **Foto del 2026-11-18.** No se actualiza: el estado vigente está en [ROADMAP](../../ROADMAP.md) y [BACKLOG](../roadmap/BACKLOG.md).
+
 > Base: inspección de `main` (`b5d0b84`). "Existe" significa que el código o la configuración lo implementan. **No** implica que se haya verificado en Obsidian o en Windows: ver la columna "Verificado".
 
 ## Leyenda

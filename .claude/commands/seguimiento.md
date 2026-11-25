@@ -17,7 +17,7 @@ Límites que no se negocian:
 - Nunca uses `--no-verify` ni debilites, borres o saltes tests para que pasen.
 
 ## 1. Preparar
-`git status` y `git pull --ff-only` en el vault; si hay conflictos, detente. Propietario: `gh api user --jq .login`.
+En el vault, `git status`, `git branch --show-current` y `git fetch`; `git pull --ff-only` solo si no hay cambios locales incompatibles. Si hay conflictos o cambios ajenos, detente. Propietario: `gh api user --jq .login`.
 
 ## 2. Inventario
 Para cada `01 Proyectos/*.md` con `repo` de GitHub (o solo el indicado): `gh pr list --repo <dueño>/<repo> --state all --json number,title,url,headRefName,state,isDraft,mergedAt,reviewDecision,statusCheckRollup` y quédate con los de rama `fase/*`. Resume en una tabla: proyecto, PR, estado, CI, decisión de revisión y comentarios pendientes. Si `gh` falla en un repo, dilo («por confirmar») y sigue con los demás.
@@ -38,7 +38,7 @@ Para cada `01 Proyectos/*.md` con `repo` de GitHub (o solo el indicado): `gh pr 
 
 ## 4. PR fusionado y aún no reflejado
 Un PR `fase/*` con `mergedAt` cuya nota del proyecto **no** tenga ya una línea «PR #<n> fusionado» en `## Registro`:
-1. `git -C "<ruta>" fetch`, y lee el `ROADMAP.md` de la rama principal con `git -C "<ruta>" show origin/<principal>:ROADMAP.md` sin cambiar nada en el repo. Si no hay `ruta_local`, usa `gh api repos/<dueño>/<repo>/contents/ROADMAP.md`.
+1. `git -C "<ruta>" fetch`, y lee el `ROADMAP.md` de la rama principal (la rama por defecto del repo: `git -C "<ruta>" symbolic-ref --short refs/remotes/origin/HEAD`) con `git -C "<ruta>" show origin/<principal>:ROADMAP.md` sin cambiar nada en el repo. Si no hay `ruta_local`, usa `gh api repos/<dueño>/<repo>/contents/ROADMAP.md`.
 2. Identifica la siguiente fase o tarea abierta.
 3. En `01 Proyectos/<nombre>.md`, según las reglas de `CLAUDE.md` del vault: línea breve en `## Registro` con «PR #<n> fusionado» y su enlace; `ultima_revision` con la fecha de hoy; `proxima_accion` con la siguiente fase, terminada en «(por confirmar)». No toques `estado`, `progreso` ni nada escrito a mano. Si no hay ROADMAP o no hay siguiente fase clara, dilo en la línea de Registro y deja `proxima_accion` como estaba.
 4. `node _sistema/tests/validar-vault.mjs` debe pasar.

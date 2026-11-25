@@ -1,6 +1,6 @@
 ---
 tipo: roadmap
-actualizado: 2026-11-20
+actualizado: 2026-11-25
 ---
 
 # Roadmap del cerebro digital
@@ -255,9 +255,18 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
   - [x] 0004 «Aceptada», con la tabla de los 6 comandos reales;
   - [x] 0007 «Sustituida» por `repos.mjs`;
   - [x] el índice `docs/architecture/ADR/README.md` está al día;
-  - [ ] 0005 (`ultima_actividad`) y 0006 (`esquema.json`) siguen «Propuesta»: son decisiones del usuario y quedan marcadas como pendientes de decisión en el índice.
+  - [ ] 0002 (motor iCalendar), 0005 (`ultima_actividad`) y 0006 (`esquema.json`) siguen «Propuesta»: son decisiones del usuario.
+- [ ] AUD-002 (P0, [BACKLOG](docs/roadmap/BACKLOG.md)): dos herramientas con el mismo nombre escriben en la misma ficha. `escanear.mjs` solo evita colisiones entre proyectos.
 
 ## Ideas sin priorizar
+- **Claude Code desde la app de escritorio**: seleccionar un proyecto y abrir una conversación contextual para analizar mejoras o implementar una fase elegida.
+  - **Modos:** consultar, preparar un plan e implementar solo tras aprobarlo.
+  - **Contexto visible:** proyecto y repositorio seleccionados, reglas (`CLAUDE.md`), roadmap, rama actual y cambios locales antes de ejecutar.
+  - **Cambios aislados y revisables:** avisar si hay cambios locales; valorar una rama o *worktree* separado y mostrar el diff antes de aceptar cambios.
+  - **Control de ejecución:** pedir autorización para acciones sensibles y permitir pausar o cancelar la sesión.
+  - **Verificación y entrega:** mostrar las pruebas ejecutadas y sus resultados; preparar un PR para revisión. Nunca fusionar ni escribir directamente en `main`.
+  - **Historial y privacidad:** permitir retomar sesiones, sin guardar transcripciones en el vault o Git por defecto; el usuario decide si conservarlas o borrarlas.
+  - **Viabilidad:** viable en principio; antes de convertirlo en fase, hacer un *spike* en `cerebrojm-app` para validar la integración local, el streaming, los permisos, la recuperación de sesiones y el aislamiento de cambios.
 - Vistas con **Bases** (núcleo de Obsidian), por ejemplo tarjetas por estado
 - **Templater** (ya incluido y activado): plantilla de proyecto que pregunte los campos en vez de editar el frontmatter
 - Calendario bidireccional (crear eventos desde Obsidian): solo con una necesidad clara; exige credenciales OAuth y mantenimiento
@@ -372,3 +381,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-20: el Diagnóstico comprueba también `gh` con sesión (opcional: ⚪ si falta). Verificado: `gh auth status` sale con 0 en este PC, y el bloque se ejecutó fuera de Obsidian con `gh` y sin él en el `PATH` (filas ✅ y ⚪ esperadas). **Sin verificar:** dentro de Obsidian (no hay puerto de depuración abierto) ni la rama «sin sesión». **Pendiente:** la tarea programada y su última ejecución, porque la sesión denegó probar `Get-ScheduledTaskInfo`.
 - 2026-11-20: Diagnóstico y plantilla de revisión semanal verificados dentro de Obsidian (abierto con depuración remota; la tabla se ejecutó con la API de Dataview en un contenedor suelto, sin abrir notas ni crear ninguna). Diagnóstico: 16 filas, todas ✅, con Templater, Node (`v26.13.1`) y `gh` («sesión iniciada»). Plantilla: consulta correcta con la columna «Motivo» y 1 fila, igual que `estado.mjs`. **Incidente:** al abrir Obsidian, Obsidian Git hizo solo un commit y un push de los 22 archivos pendientes (`vault: 2026-11-20 19:48`, ya en `origin/main`). No tienen datos personales (se había comprobado antes), pero no estaban aprobados como commit. Se descargó el plugin en memoria (tarde: el commit ya estaba hecho) y Obsidian se cerró. Decisión del usuario: el commit `2ffb87b` se deja tal cual, sin reescribir el historial ni push forzado, y no se toca la configuración de Obsidian Git. Para evitar que se repita se añadió una regla a `CLAUDE.md`: no abrir Obsidian, ni con depuración remota, con cambios sin commitear.
 - 2026-11-21: `cerebrojm-app` implementa los bloques «Conflictos y escritura» y «Pantallas y agenda» de su ROADMAP (sin commit en el repo de la app): diálogo de conflicto con diferencias por campo y cola por nota, tareas editables, aviso de más de 4 activos, edición de `uso` y `valoracion` en herramientas, estado de la última copia en Ajustes (solo lee `ultimo` de `respaldo.local.json`), captura rápida a `02 Notas/Bandeja de entrada.md` y `DURATION`/`RDATE` en la agenda. Verificado sobre fixtures: `tsc`, 82 tests Vitest y 3 de Node, 16 de Rust, `e2e` (95), `e2e:app` (49, con axe), `uia` (5) y `perf` (dentro de los límites). **Sin verificar:** el clic en «Captura rápida…» de la bandeja real. **Divergencia conocida:** `agenda.js` de este vault no lee `DURATION` ni `RDATE`. No se ha tocado nada más en este repo.
+- 2026-11-25: documentación alineada con el código (README, Guía rápida, Diagnóstico, `CLAUDE.md`, comandos, agente `gestor-proyectos` y `docs/`). La auditoría y el roadmap maestro quedan marcados como fotos históricas. Creada la rama `develop`. Sin cambios en scripts, tests ni configuración.
