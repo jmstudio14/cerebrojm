@@ -35,7 +35,8 @@ Los pasos están en el `README.md` (paso 8).
 - `02 Notas/` sale del PC, cifrada, hacia los servidores de Obsidian.
 - Los `.md` de la raíz del vault no se pueden excluir por carpeta: se sincronizan, además de estar en Git.
 - Las capturas llegan al PC cuando Obsidian está abierto allí.
-- Riesgo que queda: un archivo creado en el móvil en la raíz del vault no está en `.gitignore` y Obsidian Git lo subiría. Hoy solo lo evita la forma de usar el móvil.
+- `.gitignore` excluye los `.md` nuevos de la raíz; solo se versionan los cinco del sistema. Un `.md` de sistema nuevo en la raíz hay que exceptuarlo.
+- Riesgo que queda: otros archivos de la raíz y las carpetas nuevas creadas en el móvil no están en `.gitignore` y Obsidian Git los subiría. Hoy solo lo evita la forma de usar el móvil.
 - Sync no es una copia de seguridad: `respaldar.bat` sigue siendo necesario.
 - `.obsidian/sync.json` se excluye de Git de forma preventiva. **Por confirmar** qué archivos de estado crea Sync: se comprueba con `git status` al configurarlo.
 

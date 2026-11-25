@@ -36,3 +36,11 @@ desktop.ini
 !05 Herramientas/_Índice de herramientas.md
 _sistema/adjuntos/
 _sistema/config/*.local.json
+
+# Notas sueltas en la raíz (p. ej. creadas desde el móvil, ADR-0008): solo se versionan las del sistema.
+/*.md
+!/00 Panel.md
+!/CLAUDE.md
+!/Guía rápida.md
+!/README.md
+!/ROADMAP.md

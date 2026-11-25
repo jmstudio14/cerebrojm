@@ -293,7 +293,7 @@ Requiere una suscripción a [Obsidian Sync](https://obsidian.md/sync) (de pago) 
 </details>
 
 > [!WARNING]
-> Desde el móvil, escribe solo en la Bandeja de entrada o dentro de `02 Notas/`. Un archivo creado en la raíz del vault no está en `.gitignore`: llegaría al PC y Obsidian Git lo subiría a GitHub.
+> Desde el móvil, escribe solo en la Bandeja de entrada o dentro de `02 Notas/`. Git ignora las notas `.md` nuevas de la raíz, pero no otros archivos de la raíz ni las carpetas nuevas: llegarían al PC y Obsidian Git los subiría a GitHub.
 
 > [!IMPORTANT]
 > Las capturas llegan al PC cuando Obsidian está abierto allí. Los `.md` de la raíz del vault (Panel, README, ROADMAP, `CLAUDE.md` y Guía rápida) no se pueden excluir por carpeta y también se sincronizan. Sync **no** sustituye a `respaldar.bat`.

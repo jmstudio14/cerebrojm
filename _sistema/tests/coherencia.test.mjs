@@ -25,11 +25,16 @@ const PERSONALES = [
   "_sistema/config/respaldo.local.json",
   ".obsidian/plugins/obsidian-full-calendar/data.json",
   ".obsidian/sync.json",
+  "Sin título.md", // nota creada en la raíz, p. ej. desde el móvil (ADR-0008)
   "cerebrojm-2026-11-20_120000.cjmbak", // copia cifrada guardada por error en el vault
   "00 Panel.md.tmp", // restos de una escritura atómica interrumpida
 ];
 const SISTEMA = [
   "00 Panel.md",
+  "CLAUDE.md",
+  "Guía rápida.md",
+  "README.md",
+  "ROADMAP.md",
   "01 Proyectos/_Índice de proyectos.md",
   "02 Notas/_Índice de notas.md",
   "03 Diario/_Índice del diario.md",
