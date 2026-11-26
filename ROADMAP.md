@@ -1,6 +1,6 @@
 ---
 tipo: roadmap
-actualizado: 2026-11-25
+actualizado: 2026-11-26
 ---
 
 # Roadmap del cerebro digital
@@ -267,6 +267,7 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
   - **Verificación y entrega:** mostrar las pruebas ejecutadas y sus resultados; preparar un PR para revisión. Nunca fusionar ni escribir directamente en `main`.
   - **Historial y privacidad:** permitir retomar sesiones, sin guardar transcripciones en el vault o Git por defecto; el usuario decide si conservarlas o borrarlas.
   - **Viabilidad:** viable en principio; antes de convertirlo en fase, hacer un *spike* en `cerebrojm-app` para validar la integración local, el streaming, los permisos, la recuperación de sesiones y el aislamiento de cambios.
+  - **Spike hecho (2026-11-26):** viable con el CLI sin modificar. Informe en `cerebrojm-app`, `spikes/claude-code/`. **Antes de convertirlo en fase:** decidir la vía de permisos, anular los hooks del repo abierto y fijar la rama base del *worktree*. «Pausar» no existe: solo cancelar y reanudar.
 - ✅ Vistas con **Bases** (núcleo de Obsidian), por ejemplo tarjetas por estado → `_sistema/vistas/Proyectos.base` (2026-11-26). **Por confirmar:** cómo se ve dentro de Obsidian
 - ✅ **Templater** (ya incluido y activado): plantilla de proyecto que pregunte los campos en vez de editar el frontmatter → `_sistema/plantillas/Proyecto con preguntas.md` (2026-11-26). **Por confirmar:** probarla dentro de Obsidian
 - Calendario bidireccional (crear eventos desde Obsidian): solo con una necesidad clara; exige credenciales OAuth y mantenimiento
@@ -386,3 +387,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-25: `.gitignore` excluye los `.md` nuevos de la raíz (salvo Panel, `CLAUDE.md`, Guía rápida, README y ROADMAP), para que una nota creada ahí desde el móvil no llegue a GitHub. Caso añadido a `coherencia.test.mjs`. Quedan sin cubrir otros archivos de la raíz y las carpetas nuevas.
 - 2026-11-26: vista de Bases `_sistema/vistas/Proyectos.base` (tarjetas por estado), enlazada desde el índice de proyectos, con su prueba `vistas.test.mjs`. Hecha por petición expresa con la Fase 1 abierta. **Sin verificar:** la vista renderizada en Obsidian.
 - 2026-11-26: plantilla de Templater `Proyecto con preguntas` (pregunta nombre, categoría, estado, prioridad y próxima acción, y mueve la nota a `01 Proyectos/`). Rellena `Proyecto.md`, que no cambia. Prueba `plantilla-preguntas.test.mjs`, con `tp` simulado y el validador real. Hecha por petición expresa con la Fase 1 abierta. **Sin verificar:** ejecutada dentro de Obsidian.
+- 2026-11-26: spike de «Claude Code desde la app» en una rama de `cerebrojm-app` (script e informe; sin cambios en la app). Probado sobre un repo temporal: streaming, permisos, plan y aprobación, cancelar, recuperar y *worktree*. Sin probar: integración con Tauri y las vías de permisos documentadas.
