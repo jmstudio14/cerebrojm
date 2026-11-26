@@ -305,6 +305,7 @@ Requiere una suscripción a [Obsidian Sync](https://obsidian.md/sync) (de pago) 
 | Quiero… | Cómo |
 |---|---|
 | Crear un proyecto | Nota nueva en `01 Proyectos/` → `Ctrl+P` → *Templates: Insert template* → **Proyecto** |
+| Crear un proyecto respondiendo preguntas | `Ctrl+P` → *Templater: Create new note from template* → **Proyecto con preguntas** (la nota acaba en `01 Proyectos/`). No la insertes con *Templates* del núcleo: pegaría el código |
 | Ver los proyectos en tarjetas por estado | Abrir `_sistema/vistas/Proyectos.base` (Bases, incluido en Obsidian) |
 | Ver el día | `Ctrl+P` → *Daily notes: Open today's daily note* |
 | Hacer la revisión semanal | Nota nueva en `04 Revisiones/` → plantilla **Revisión semanal** |
@@ -400,7 +401,7 @@ cerebrojm/
 ├── 04 Revisiones/            Revisiones semanales (+ índice)
 ├── 05 Herramientas/          Skills, agentes y MCP detectados, en tu PC (+ índice)
 ├── _sistema/
-│   ├── plantillas/           Proyecto · Nota diaria · Revisión semanal · Nota · Herramienta
+│   ├── plantillas/           Proyecto (y con preguntas) · Nota diaria · Revisión semanal · Nota · Herramienta
 │   ├── vistas/Proyectos.base Tarjetas de proyectos por estado (Bases)
 │   ├── scripts/agenda.js     Lector iCal + fechas límite
 │   ├── scripts/escanear.mjs  Escáner de proyectos y herramientas
@@ -409,7 +410,7 @@ cerebrojm/
 │   ├── scripts/respaldar.mjs · restaurar.mjs · respaldo-lib.mjs   Copia cifrada y restauración
 │   ├── scripts/atomico.mjs   Escritura atómica con reintento ante bloqueos de Windows
 │   ├── config/               Configuración local del escáner (*.local.json fuera de Git)
-│   ├── tests/                Tests de agenda, escáner, escritura atómica, respaldo, estado y repos, coherencia con .gitignore, vista de Bases y validador del vault (CI)
+│   ├── tests/                Tests de agenda, escáner, escritura atómica, respaldo, estado y repos, coherencia con .gitignore, vista de Bases, plantilla con preguntas y validador del vault (CI)
 │   ├── Diagnóstico.md        Autocomprobación del sistema
 │   └── assets/               Imágenes del README
 ├── docs/                     Decisiones (architecture/ADR), roadmap, auditoría y estrategia de pruebas

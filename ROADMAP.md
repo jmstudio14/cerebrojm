@@ -268,7 +268,7 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
   - **Historial y privacidad:** permitir retomar sesiones, sin guardar transcripciones en el vault o Git por defecto; el usuario decide si conservarlas o borrarlas.
   - **Viabilidad:** viable en principio; antes de convertirlo en fase, hacer un *spike* en `cerebrojm-app` para validar la integración local, el streaming, los permisos, la recuperación de sesiones y el aislamiento de cambios.
 - ✅ Vistas con **Bases** (núcleo de Obsidian), por ejemplo tarjetas por estado → `_sistema/vistas/Proyectos.base` (2026-11-26). **Por confirmar:** cómo se ve dentro de Obsidian
-- **Templater** (ya incluido y activado): plantilla de proyecto que pregunte los campos en vez de editar el frontmatter
+- ✅ **Templater** (ya incluido y activado): plantilla de proyecto que pregunte los campos en vez de editar el frontmatter → `_sistema/plantillas/Proyecto con preguntas.md` (2026-11-26). **Por confirmar:** probarla dentro de Obsidian
 - Calendario bidireccional (crear eventos desde Obsidian): solo con una necesidad clara; exige credenciales OAuth y mantenimiento
 
 ## Registro de cambios del sistema
@@ -385,3 +385,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-25: Fase 6 preparada por petición expresa con la Fase 1 abierta: Obsidian Sync solo para capturar desde Android (ADR-0008), pasos en el README y `.obsidian/sync.json` excluido de Git de forma preventiva, con su caso en `coherencia.test.mjs`. **Sin hacer:** suscripción, configuración en PC y móvil y prueba de captura; la segunda casilla y el «Terminado si» siguen abiertos. **Por confirmar:** si Sync crea archivos de estado dentro de `.obsidian/`.
 - 2026-11-25: `.gitignore` excluye los `.md` nuevos de la raíz (salvo Panel, `CLAUDE.md`, Guía rápida, README y ROADMAP), para que una nota creada ahí desde el móvil no llegue a GitHub. Caso añadido a `coherencia.test.mjs`. Quedan sin cubrir otros archivos de la raíz y las carpetas nuevas.
 - 2026-11-26: vista de Bases `_sistema/vistas/Proyectos.base` (tarjetas por estado), enlazada desde el índice de proyectos, con su prueba `vistas.test.mjs`. Hecha por petición expresa con la Fase 1 abierta. **Sin verificar:** la vista renderizada en Obsidian.
+- 2026-11-26: plantilla de Templater `Proyecto con preguntas` (pregunta nombre, categoría, estado, prioridad y próxima acción, y mueve la nota a `01 Proyectos/`). Rellena `Proyecto.md`, que no cambia. Prueba `plantilla-preguntas.test.mjs`, con `tp` simulado y el validador real. Hecha por petición expresa con la Fase 1 abierta. **Sin verificar:** ejecutada dentro de Obsidian.

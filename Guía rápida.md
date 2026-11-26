@@ -21,7 +21,7 @@ Doble clic en **`escanear.bat`** (carpeta del vault). La primera vez pregunta qu
 | Al cambiar de PC o tras perder datos | Recuperar la copia más reciente sin pisar lo modificado después | Doble clic en **`restaurar.bat`** (en un PC nuevo: `restaurar.bat --archivo <copia.cjmbak>`) |
 
 ## Dónde va cada cosa
-- **Proyecto** (tiene un final): lo crea el escáner; si no está en una carpeta escaneada, nota en `01 Proyectos/` con la plantilla **Proyecto**. Ver [[_Índice de proyectos]].
+- **Proyecto** (tiene un final): lo crea el escáner; si no está en una carpeta escaneada, nota en `01 Proyectos/` con la plantilla **Proyecto** (o **Proyecto con preguntas**, de Templater). Ver [[_Índice de proyectos]].
 - **Idea o nota suelta**: [[Bandeja de entrada]] o una nota en `02 Notas/`. Ver [[_Índice de notas]].
 - **Día a día**: `03 Diario/`. Ver [[_Índice del diario]].
 - **Revisiones**: `04 Revisiones/`. Ver [[_Índice de revisiones]].
