@@ -202,19 +202,19 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 ### Media: robustez y pendientes de fases ya implementadas
 - [ ] Fase 4:
   - registrar la tarea programada de Windows (sigue sin crear; la registra el usuario con el comando del README);
-  - comprobar en Obsidian la alerta «🧊 sin push»;
+  - ~~comprobar en Obsidian la alerta «🧊 sin push»~~ (hecho el 2026-11-26, en Obsidian 1.15.1 con datos ficticios);
   - ~~mostrar «sin push» en `cerebrojm-app`~~ (hecho el 2026-11-20).
-- [ ] Fase 5:
+- [x] Fase 5:
   - [x] `escanear.mjs` añade `entregable` a las notas nuevas. `creativo` no se asigna solo, por diseño: una carpeta no dice si el proyecto es creativo, así que se cambia a mano;
-  - [ ] comprobar en Obsidian la columna `entregable`.
-- [ ] Enrutamiento de modelos (`opusplan` y `model:` por comando): sigue sin verificarse en una sesión interactiva. `/estado` pasa de `haiku` a `sonnet` porque encadena varios pasos y edita notas.
+  - [x] comprobar en Obsidian la columna `entregable` (2026-11-26, Obsidian 1.15.1 con datos ficticios).
+- [x] Enrutamiento de modelos (`opusplan` y `model:` por comando): verificado el 2026-11-26 en headless (`claude -p`, 2.1.327), no en una sesión interactiva y solo con `/estado` y `/fase`. `opusplan` usa Opus en modo plan y Sonnet fuera; `/fase` usa Opus y `/estado` Sonnet (también en una sesión pedida con Opus). **Excepción:** en modo plan, `/estado` usó Opus aunque declara `sonnet` (causa por confirmar). `/estado` pasó de `haiku` a `sonnet` porque encadena varios pasos y edita notas.
 - [x] «Hoy» en UTC en `estado.mjs` y `escanear.mjs` (incluida la fecha de los archivos): ahora es la fecha local, comprobado con `TZ` en UTC+14 y UTC-11.
 - [x] Notas con BOM UTF-8 (reproducido): `estado.mjs` las ignoraba, `validar-vault.mjs` las daba por «sin frontmatter», `repos.mjs` las saltaba y `escanear.mjs` duplicaba su frontmatter. Y valores `null`, `~`, `''` que se tomaban por rellenos (reproducido en `estado.mjs`): ahora valen como vacío, y las comillas simples se aceptan.
 - [x] `escanear.mjs` mezclaba LF y CRLF al editar notas CRLF (reproducido): ahora conserva el final de línea y el BOM.
 - [x] `renameSync` sin reintento ante EPERM/EBUSY/EACCES: nuevo `atomico.mjs` (reintenta con espera creciente y borra el `.tmp` si falla), usado en `escanear.mjs`, `repos.mjs`, `respaldo-lib.mjs` y `respaldar.mjs`. Probado con un `rename` simulado; el bloqueo real de Windows no se ha reproducido.
 - [x] `repos.mjs`: `gh` con `timeout` de 30 s; si se cuelga, avisa con la causa y sigue con el resto (reproducido: el test se quedaba colgado).
 - [x] `respaldo-lib.mjs`: las carpetas ilegibles y los enlaces simbólicos se listan como omitidos; `respaldar.mjs` crea la copia, avisa y sale con 1.
-- [ ] `agenda.js`:
+- [ ] `agenda.js` (las dos casillas abiertas esperan al spike FEAT-014, [ADR-0002](docs/architecture/ADR/0002-motor-icalendar.md); decisión del usuario, 2026-11-26):
   - [ ] las repeticiones se expanden en la zona horaria del sistema, no en la `TZID` del evento (limitación conocida: no afecta con calendario y PC en Europe/Madrid; el motor de recurrencias no se ha tocado);
   - [x] `EXDATE;VALUE=DATE` no excluía nada en series con hora (reproducido);
   - [ ] YEARLY ignora `BYMONTH` y `BYDAY` (limitación conocida, igual que la anterior);
@@ -393,3 +393,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-26: verificado lo que quedaba pendiente, en `cerebrojm-app` (`spikes/claude-code/`; la app no cambia): mini-app de Tauri (eventos hasta el webview, permisos, interrumpir y matar el árbol desde Rust), ninguna ventana de consola en pantalla (con control positivo), Agent SDK y límite de cuota contra una API simulada, y una sesión larga real con haiku (compacta y reanuda). **Hallazgo:** en un primer intento la API rechazó el relleno inventado tras compactar y la sesión quedó bloqueada. Con una copia de las notas reales (originales sin cambios y copia borrada): el validador no da errores, las tarjetas de Bases coinciden con el frontmatter y la plantilla crea una nota de prueba y rechaza un nombre existente. **Sin verificar:** eventos hacia React, agotar la cuota real, el Agent SDK con un modelo real, sesiones de horas y las reglas y hooks del `settings.json` del usuario. **Fase 6:** sin cambios.
 - 2026-11-26: AUD-002 corregido en `escanear.mjs`: sufijo con el dueño a todas las fichas de herramienta que chocan, sin distinguir mayúsculas, con test en `escanear.test.mjs`. **Sin verificar:** un escaneo con las carpetas reales; lo escrito a mano en una ficha que pase a llevar sufijo hay que moverlo a mano.
 - 2026-11-26: ADR-0002, 0005 y 0006 aceptados tal como se proponían. Solo documentación: FEAT-014, FEAT-001 y FEAT-012 siguen sin hacer (Fase 1 congelada).
+- 2026-11-26: pendientes de «Media: robustez». Verificados en Obsidian 1.15.1, sobre una copia de los archivos versionados con notas ficticias y sin Obsidian Git: la alerta «🧊 sin push» (sale en un activo con push de hace 45 días y no en uno reciente ni en un pausado) y la columna `entregable`. Enrutamiento de modelos verificado en headless. **Sin hacer:** la tarea programada de Windows (el permiso de la sesión de Claude Code denegó consultarla; la registra el usuario) y TZID y YEARLY de `agenda.js` (esperan a FEAT-014).
