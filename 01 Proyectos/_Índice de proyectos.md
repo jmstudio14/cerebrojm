@@ -6,6 +6,8 @@ tipo: indice
 
 Vuelve al [[00 Panel|Panel]] · Nuevo proyecto: crea una nota aquí y aplica la plantilla **Proyecto**.
 
+En tarjetas, por estado: [[Proyectos.base]]
+
 ## Por estado
 ```dataview
 TABLE WITHOUT ID key AS "Estado", length(rows) AS "Nº", rows.file.link AS "Proyectos"

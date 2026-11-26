@@ -1,0 +1,36 @@
+filters:
+  and:
+    - 'file.inFolder("01 Proyectos")'
+    - 'tipo == "proyecto"'
+formulas:
+  # El número ordena los grupos igual que el índice de proyectos.
+  grupo: 'if(estado == "activo", "1 · activo", if(estado == "bloqueado", "2 · bloqueado", if(estado == "pausado", "3 · pausado", if(estado == "idea", "4 · idea", if(estado == "completado", "5 · completado", if(estado == "archivado", "6 · archivado", "7 · sin estado válido"))))))'
+properties:
+  formula.grupo:
+    displayName: "Estado"
+  note.categoria:
+    displayName: "Categoría"
+  note.prioridad:
+    displayName: "Prioridad"
+  note.progreso:
+    displayName: "Progreso (%)"
+  note.proxima_accion:
+    displayName: "Próxima acción"
+  note.fecha_limite:
+    displayName: "Fecha límite"
+views:
+  - type: cards
+    name: "Por estado"
+    groupBy:
+      property: formula.grupo
+      direction: ASC
+    order:
+      - file.name
+      - categoria
+      - prioridad
+      - progreso
+      - proxima_accion
+      - fecha_limite
+    sort:
+      - property: file.name
+        direction: ASC
