@@ -426,7 +426,7 @@ cerebrojm/
 | Fase | Estado | Objetivo |
 |:---:|:---:|---|
 | **0** | ✅ Hecha | Vault, Panel, agenda, plantillas y escáner de proyectos |
-| **1** | 🔄 En curso | Adopción: 2 semanas de uso real y máximo 3-4 proyectos activos |
+| **1** | ✅ Hecha | Adopción: 2 semanas de uso real y máximo 3-4 proyectos activos |
 | **2** | 🟡 Implementada, sin cerrar | Agente de Claude Code que gestiona los proyectos e implementa la siguiente fase de cada repo vía PR |
 | **3** | 🟡 Implementada, sin cerrar | App de escritorio minimalista y profesional (Tauri + React), con sistema de diseño propio |
 | **4** | 🟡 Implementada, sin cerrar | Estado de los repos actualizado automáticamente desde GitHub (`repos.mjs`) |

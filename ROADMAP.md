@@ -21,7 +21,7 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 - [x] Escáner de proyectos y herramientas (`escanear.bat`): los datos se generan en el PC y no se suben al repo
 - [x] Índices por carpeta, [[Guía rápida]], [[Diagnóstico]], tests y CI
 
-## 🔄 Fase 1: Adopción (ahora)
+## ✅ Fase 1: Adopción (hecha, 2026-11-26)
 - [x] Clonar en el PC Windows (fuera de OneDrive) y abrir como vault
 - [x] Instalar Node.js si no lo tienes y ejecutar `escanear.bat` con tus carpetas de proyectos
 - [x] Activar los plugins y abrir [[Diagnóstico]]: todo en ✅ (en especial `requestUrl` y la descarga del calendario)
@@ -44,7 +44,7 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **ejecuta la siguiente fase del roadmap de cualquiera de tus repos**, terminando siempre en un PR que revisas y fusionas tú.
 
 ### Condición de entrada
-- [ ] Fase 1 cerrada: 3-4 proyectos activos con próxima acción real y ninguno con `revisar`. El agente debe trabajar sobre datos fiables, no sobre los importados.
+- [x] Fase 1 cerrada: 3-4 proyectos activos con próxima acción real y ninguno con `revisar`. El agente debe trabajar sobre datos fiables, no sobre los importados.
 - [x] Lista de tareas repetitivas que delegarías, sacada de la Fase 1.
   - revisar el estado de los proyectos y sus alertas;
   - preparar la revisión semanal;
@@ -99,7 +99,7 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 App de escritorio para Windows, **minimalista, profesional y cuidada al detalle**, que muestra y edita el cerebro digital sin abrir Obsidian. No es un tema ni un retoque: es un producto con su propio sistema de diseño.
 
 ### Condición de entrada (go / no-go)
-- [ ] Fase 1 cerrada.
+- [x] Fase 1 cerrada.
 - [x] Lista escrita de lo que le falta al Panel de Obsidian, sacada de la Fase 1. (Deducida de las pantallas de la app, no del uso.)
   - editar estado, progreso y próxima acción con controles, sin tocar el frontmatter;
   - Kanban por estado con arrastre;
@@ -409,3 +409,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-26: tarea programada de `repos.mjs` creada por el usuario (diaria, 10:00); ejecución manual con `LastTaskResult 0`, comprobada con su salida de PowerShell. El usuario confirmó que ese código es el de node. **Sin verificar:** la primera ejecución automática. El «Terminado si» de la Fase 4 (una semana) sigue abierto.
 - 2026-11-26: Fase 1: la casilla «Usarlo 2 semanas» se marca por decisión del usuario. La fase no se da por cerrada: su «Terminado si» no se ha comprobado.
 - 2026-11-26: condiciones de entrada de las Fases 2 y 3: anotadas las dos listas y la decisión «construir», a posteriori y aprobadas por el usuario. **Sin marcar:** «Fase 1 cerrada», a la espera de que el usuario haga la segunda revisión semanal.
+- 2026-11-26: Fase 1 cerrada por decisión del usuario, tras la segunda revisión semanal (hecha por Claude por encargo): 4 activos, todos con próxima acción, y ningún proyecto con `revisar`. Se levanta la congelación. Quedan fichas de herramienta con `revisar` y el progreso de varios proyectos sin estimar.
