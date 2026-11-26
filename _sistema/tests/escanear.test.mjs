@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -204,6 +204,35 @@ test("una carpeta sin stack ni repositorio se registra como proyecto personal", 
   const v = vaultNuevo();
   escanearEn(v, m, ["--hoy", "2026-11-18"]);
   assert.match(fs.readFileSync(path.join(v, "01 Proyectos", "reforma-casa.md"), "utf8"), /^categoria: personal$/m);
+});
+
+test("dos paquetes con el mismo nombre final no comparten ficha, en cualquier orden", () => {
+  const raiz = fs.mkdtempSync(path.join(tmp, "colision-"));
+  const [x, y] = ["a", "b"].map((dueño) => {
+    const m = path.join(raiz, dueño);
+    fs.mkdirSync(path.join(m, `app-${dueño}`), { recursive: true });
+    fs.writeFileSync(path.join(m, `app-${dueño}`, "skills-lock.json"), JSON.stringify({ skills: { [`skill-${dueño}`]: { source: `${dueño}/skills` } } }));
+    return m;
+  });
+  for (const orden of [`${x};${y}`, `${y};${x}`]) {
+    const v = vaultNuevo();
+    const dir = path.join(v, "05 Herramientas");
+    for (let vez = 0; vez < 2; vez++) {
+      assert.match(escanearEn(v, orden), /2 herramientas/);
+      assert.deepEqual(fs.readdirSync(dir).sort(), ["skills (a).md", "skills (b).md"], orden);
+      for (const d of ["a", "b"]) {
+        const ficha = fs.readFileSync(path.join(dir, `skills (${d}).md`), "utf8");
+        assert.match(ficha, new RegExp(`^origen: "https://github.com/${d}/skills"$`, "m"), orden);
+        assert.match(ficha, new RegExp(`^uso_en: \\["\\[\\[app-${d}\\]\\]"\\]$`, "m"), orden);
+      }
+    }
+    // La ficha mezclada que dejó el escáner anterior no se toca: se avisa.
+    const antigua = path.join(dir, "skills.md");
+    fs.writeFileSync(antigua, "escrita a mano\n");
+    const r = spawnSync(process.execPath, [ESCANER, "--vault", v, "--carpetas", orden], { encoding: "utf8" });
+    assert.match(r.stderr, /skills\.md/);
+    assert.equal(fs.readFileSync(antigua, "utf8"), "escrita a mano\n");
+  }
 });
 
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));

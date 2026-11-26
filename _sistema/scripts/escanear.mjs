@@ -440,6 +440,22 @@ async function main() {
       if (h.detalle.agentes) t.agentes = h.detalle.agentes;
     }
   }
+  // Herramientas distintas con el mismo nombre (a/skills y b/skills): todas llevan su dueño,
+  // para que el nombre de la ficha no dependa del orden de escaneo.
+  const grupos = [...Map.groupBy(herr.values(), (h) => h.nombre.toLowerCase())].sort(([a], [b]) => a.localeCompare(b));
+  const usados = new Set(grupos.filter(([, g]) => g.length === 1).map(([n]) => n));
+  for (const [, g] of grupos.filter(([, g]) => g.length > 1)) {
+    const base = g[0].nombre;
+    if (existe(path.join(DIR_HERR, `${base}.md`))) console.warn(`⚠ Ya no se actualiza «${base}.md»: hay varias herramientas con ese nombre. Revísala a mano.`);
+    for (const h of g.sort((a, b) => a.clave.localeCompare(b.clave))) {
+      const id = h.clave.slice(h.clave.indexOf(":") + 1);
+      const dueño = id.includes("/") ? id.slice(0, id.lastIndexOf("/")) : h.clase;
+      h.nombre = nombreNota(`${base} (${dueño})`);
+      for (let i = 2; usados.has(h.nombre.toLowerCase()); i++) h.nombre = nombreNota(`${base} (${dueño} ${i})`);
+      usados.add(h.nombre.toLowerCase());
+    }
+  }
+
   // Nombres de las fichas de herramienta que usa cada proyecto
   for (const p of proyectos) p.herramientas = [...new Set(p.herrRaw.map((h) => herr.get(h.clave).nombre))].sort();
 
