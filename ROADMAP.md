@@ -45,7 +45,13 @@ Un agente de Claude Code que, desde este vault, **gestiona tus proyectos** y **e
 
 ### Condición de entrada
 - [ ] Fase 1 cerrada: 3-4 proyectos activos con próxima acción real y ninguno con `revisar`. El agente debe trabajar sobre datos fiables, no sobre los importados.
-- [ ] Lista de tareas repetitivas que delegarías, sacada de la Fase 1.
+- [x] Lista de tareas repetitivas que delegarías, sacada de la Fase 1.
+  - revisar el estado de los proyectos y sus alertas;
+  - preparar la revisión semanal;
+  - poner al día la ficha de un proyecto y proponer el siguiente paso;
+  - identificar y planificar la fase siguiente de un repo;
+  - implementar la fase y abrir un PR en borrador;
+  - vigilar los PR abiertos y reflejar las fusiones en el vault.
 
 ### Principios no negociables
 - **Las reglas de cada repo mandan.** El agente lee y obedece el `CLAUDE.md` del repo en el que trabaja, aunque contradiga sus propias costumbres. Ejemplos típicos: un repo que prohíbe `git push` sin permiso, otro que no deja avanzar de fase si fallan los tests obligatorios, otro que exige actualizar su ROADMAP o uno sin tests.
@@ -94,8 +100,14 @@ App de escritorio para Windows, **minimalista, profesional y cuidada al detalle*
 
 ### Condición de entrada (go / no-go)
 - [ ] Fase 1 cerrada.
-- [ ] Lista escrita de lo que le falta al Panel de Obsidian, sacada de la Fase 1.
-- [ ] Decisión explícita: **construir** o **aplazar** (y por qué). Si el Panel de Obsidian ya basta, esta fase se aplaza: es la más cara del roadmap.
+- [x] Lista escrita de lo que le falta al Panel de Obsidian, sacada de la Fase 1. (Deducida de las pantallas de la app, no del uso.)
+  - editar estado, progreso y próxima acción con controles, sin tocar el frontmatter;
+  - Kanban por estado con arrastre;
+  - foco del día (máximo 3);
+  - revisión semanal guiada paso a paso;
+  - agenda de semana y día que incluya las fechas límite de los proyectos.
+- [x] Decisión explícita: **construir** o **aplazar** (y por qué). Si el Panel de Obsidian ya basta, esta fase se aplaza: es la más cara del roadmap.
+  - **Construir** (decidido el 2026-11-26, a posteriori: la app ya estaba construida). Motivo: edición rápida, Kanban con arrastre y revisión guiada que el Panel no tiene. Obsidian sigue siendo la interfaz principal ([ADR-0003](docs/architecture/ADR/0003-interfaz-obsidian-frente-a-app.md)).
 
 ### Principios no negociables
 - Los `.md` del vault son la **única fuente de verdad**. La app no tiene base de datos propia ni guarda copia de los datos: lee y escribe los mismos archivos que Obsidian.
@@ -396,3 +408,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-26: pendientes de «Media: robustez». Verificados en Obsidian 1.15.1, sobre una copia de los archivos versionados con notas ficticias y sin Obsidian Git: la alerta «🧊 sin push» (sale en un activo con push de hace 45 días y no en uno reciente ni en un pausado) y la columna `entregable`. Enrutamiento de modelos verificado en headless. **Sin hacer:** la tarea programada de Windows (el permiso de la sesión de Claude Code denegó consultarla; la registra el usuario) y TZID y YEARLY de `agenda.js` (esperan a FEAT-014).
 - 2026-11-26: tarea programada de `repos.mjs` creada por el usuario (diaria, 10:00); ejecución manual con `LastTaskResult 0`, comprobada con su salida de PowerShell. El usuario confirmó que ese código es el de node. **Sin verificar:** la primera ejecución automática. El «Terminado si» de la Fase 4 (una semana) sigue abierto.
 - 2026-11-26: Fase 1: la casilla «Usarlo 2 semanas» se marca por decisión del usuario. La fase no se da por cerrada: su «Terminado si» no se ha comprobado.
+- 2026-11-26: condiciones de entrada de las Fases 2 y 3: anotadas las dos listas y la decisión «construir», a posteriori y aprobadas por el usuario. **Sin marcar:** «Fase 1 cerrada», a la espera de que el usuario haga la segunda revisión semanal.
