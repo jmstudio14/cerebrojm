@@ -28,7 +28,7 @@ Evolución del **sistema**, no de tus proyectos (el estado de cada proyecto est�
 - [x] Comprobar que el Panel y los índices se ven sin errores
 - [x] Conectar Google Calendar (dirección secreta iCal) y ver los eventos en la agenda
 - [x] Primera revisión (nota nueva en `04 Revisiones/` con la plantilla): dejar **máximo 3-4 activos**, cada uno con una próxima acción real, y quitar `revisar` (hasta entonces salen en *Necesitan atención*, es intencionado)
-- [ ] Usarlo 2 semanas: nota diaria cuando aporte y revisión semanal sin falta
+- [x] Usarlo 2 semanas: nota diaria cuando aporte y revisión semanal sin falta
 - [x] Sustituir el esquema del Panel del README (`_sistema/assets/panel-esquema.svg`) por una captura real
 
 **Terminado si:** hay 2 revisiones semanales hechas, ningún proyecto tiene la etiqueta `revisar` y el Panel refleja lo que de verdad estás haciendo.
@@ -395,3 +395,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-26: ADR-0002, 0005 y 0006 aceptados tal como se proponían. Solo documentación: FEAT-014, FEAT-001 y FEAT-012 siguen sin hacer (Fase 1 congelada).
 - 2026-11-26: pendientes de «Media: robustez». Verificados en Obsidian 1.15.1, sobre una copia de los archivos versionados con notas ficticias y sin Obsidian Git: la alerta «🧊 sin push» (sale en un activo con push de hace 45 días y no en uno reciente ni en un pausado) y la columna `entregable`. Enrutamiento de modelos verificado en headless. **Sin hacer:** la tarea programada de Windows (el permiso de la sesión de Claude Code denegó consultarla; la registra el usuario) y TZID y YEARLY de `agenda.js` (esperan a FEAT-014).
 - 2026-11-26: tarea programada de `repos.mjs` creada por el usuario (diaria, 10:00); ejecución manual con `LastTaskResult 0`, comprobada con su salida de PowerShell. El usuario confirmó que ese código es el de node. **Sin verificar:** la primera ejecución automática. El «Terminado si» de la Fase 4 (una semana) sigue abierto.
+- 2026-11-26: Fase 1: la casilla «Usarlo 2 semanas» se marca por decisión del usuario. La fase no se da por cerrada: su «Terminado si» no se ha comprobado.
