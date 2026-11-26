@@ -1,6 +1,6 @@
 # ADR-0002 · Motor iCalendar: parser propio frente a biblioteca mantenida
 
-- **Estado:** Propuesta, condicionada a un spike
+- **Estado:** **Aceptada** (2026-11-26), tal como se propone: primero el spike y el motor se elige según su resultado; pendiente en FEAT-014 (Fase 1 congelada).
 - **Fecha:** 2026-11-18
 - **Relacionado:** AUD-010 a AUD-018, AUD-036
 

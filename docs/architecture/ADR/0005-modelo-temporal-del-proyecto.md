@@ -1,6 +1,6 @@
 # ADR-0005 · Modelo temporal de un proyecto: commit, actividad y revisión humana
 
-- **Estado:** Propuesta
+- **Estado:** **Aceptada** (2026-11-26), tal como se propone; sin implementar, pendiente en FEAT-001 (Fase 1 congelada).
 - **Fecha:** 2026-11-18
 - **Relacionado:** AUD-020, AUD-021, AUD-024, FEAT-001
 

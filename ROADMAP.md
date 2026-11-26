@@ -250,12 +250,12 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
   - [ ] tarea programada y última ejecución de `repos.mjs`: decidido comprobar solo la tarea programada (`Get-ScheduledTaskInfo`), sin que `repos.mjs` deje rastro, pero **no está añadido**: el permiso de la sesión de Claude Code denegó probar esa orden de PowerShell y no lo he esquivado. Un diagnóstico sin probar puede dar resultados falsos. No cubriría las ejecuciones manuales con `repos.bat`;
   - [x] el «13/13»: **no reproducido**. Ya no aparece en el README; solo queda en una entrada fechada del registro de cambios, que es histórica.
 - [x] Comandos, agente y `CLAUDE.md`: `/revision` incluye `sin_push` en «Datos del día»; `gestor-proyectos.md` y `CLAUDE.md` dicen que `ultimo_push` e `issues_abiertos` los escribe solo `repos.mjs`; `CLAUDE.md` añade «sin push» a «Estado de mis proyectos».
-- [ ] ADR:
+- [x] ADR:
   - [x] 0003 «Aceptada, con enmienda»: la app se construyó por petición expresa y sin go/no-go previo;
   - [x] 0004 «Aceptada», con la tabla de los 6 comandos reales;
   - [x] 0007 «Sustituida» por `repos.mjs`;
   - [x] el índice `docs/architecture/ADR/README.md` está al día;
-  - [ ] 0002 (motor iCalendar), 0005 (`ultima_actividad`) y 0006 (`esquema.json`) siguen «Propuesta»: son decisiones del usuario.
+  - [x] 0002 (motor iCalendar), 0005 (`ultima_actividad`) y 0006 (`esquema.json`) «Aceptadas» por decisión del usuario, sin implementar (FEAT-014, FEAT-001 y FEAT-012).
 - [x] AUD-002 (P0, [BACKLOG](docs/roadmap/BACKLOG.md)): dos herramientas con el mismo nombre ya no comparten ficha. Las dos llevan su dueño (`skills (a)`, `skills (b)`), en cualquier orden de escaneo. Una ficha antigua con el nombre sin sufijo no se toca y el escáner avisa.
 
 ## Ideas sin priorizar
@@ -392,3 +392,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-26: segunda tanda del spike de Claude Code, en `cerebrojm-app`: permisos de `Bash` y por herramienta MCP, procesos huérfanos, reglas `deny`, carga del `CLAUDE.md` del usuario, fallo de red y lanzamiento desde Rust sin consola. **Siguen sin probar:** integración con Tauri, Agent SDK, límites de cuota y sesiones largas. **Fase 6:** sin cambios; necesita la suscripción a Sync y el móvil.
 - 2026-11-26: verificado lo que quedaba pendiente, en `cerebrojm-app` (`spikes/claude-code/`; la app no cambia): mini-app de Tauri (eventos hasta el webview, permisos, interrumpir y matar el árbol desde Rust), ninguna ventana de consola en pantalla (con control positivo), Agent SDK y límite de cuota contra una API simulada, y una sesión larga real con haiku (compacta y reanuda). **Hallazgo:** en un primer intento la API rechazó el relleno inventado tras compactar y la sesión quedó bloqueada. Con una copia de las notas reales (originales sin cambios y copia borrada): el validador no da errores, las tarjetas de Bases coinciden con el frontmatter y la plantilla crea una nota de prueba y rechaza un nombre existente. **Sin verificar:** eventos hacia React, agotar la cuota real, el Agent SDK con un modelo real, sesiones de horas y las reglas y hooks del `settings.json` del usuario. **Fase 6:** sin cambios.
 - 2026-11-26: AUD-002 corregido en `escanear.mjs`: sufijo con el dueño a todas las fichas de herramienta que chocan, sin distinguir mayúsculas, con test en `escanear.test.mjs`. **Sin verificar:** un escaneo con las carpetas reales; lo escrito a mano en una ficha que pase a llevar sufijo hay que moverlo a mano.
+- 2026-11-26: ADR-0002, 0005 y 0006 aceptados tal como se proponían. Solo documentación: FEAT-014, FEAT-001 y FEAT-012 siguen sin hacer (Fase 1 congelada).

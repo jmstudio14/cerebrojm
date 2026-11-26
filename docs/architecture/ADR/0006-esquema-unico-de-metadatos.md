@@ -1,6 +1,6 @@
 # ADR-0006 · Esquema único de metadatos
 
-- **Estado:** Propuesta
+- **Estado:** **Aceptada** (2026-11-26), tal como se propone; sin implementar, pendiente en FEAT-012 (Fase 1 congelada).
 - **Fecha:** 2026-11-18
 - **Relacionado:** AUD-022, AUD-029, AUD-030
 
