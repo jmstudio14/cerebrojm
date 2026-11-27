@@ -233,6 +233,7 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
   - [x] un UNTIL mal formado rompía toda la agenda (reproducido);
   - [x] el tope de 5000 pasos hacía desaparecer series DAILY de hace más de 13 años (reproducido);
   - [x] un JSON de Full Calendar corrupto se mostraba como «sin conectar» (ahora avisa de que es ilegible; solo probado con un `dv` simulado, no en Obsidian).
+  - [x] `DURATION` y `RDATE` (también `VALUE=PERIOD`) no se leían: portados del lector de `cerebrojm-app` el 2026-11-27, sin esperar al spike (decisión del usuario). Lo que no se entiende se ignora sin avisar en el Panel.
   - `cerebrojm-app` tiene su propio port del iCal y no recibe estos arreglos.
 - [x] `repo` sin validar: `repos.mjs` avisa y sale con 1 si una URL de GitHub está mal escrita (`http://`, `www.`, sin esquema, `/tree/main`), y `validar-vault.mjs` también la rechaza. Una URL de otro host sigue siendo válida.
 - [x] Los `.bat` «siempre salen con código 0»: **no reproducido**. `pause` no cambia `ERRORLEVEL` y el código de node llega (comprobado con `respaldar.bat`, sale con 1). Sin cambios.
@@ -410,3 +411,4 @@ Fallos y desajustes encontrados en la auditoría del 2026-11-20 (scripts, tests,
 - 2026-11-26: Fase 1: la casilla «Usarlo 2 semanas» se marca por decisión del usuario. La fase no se da por cerrada: su «Terminado si» no se ha comprobado.
 - 2026-11-26: condiciones de entrada de las Fases 2 y 3: anotadas las dos listas y la decisión «construir», a posteriori y aprobadas por el usuario. **Sin marcar:** «Fase 1 cerrada», a la espera de que el usuario haga la segunda revisión semanal.
 - 2026-11-26: Fase 1 cerrada por decisión del usuario, tras la segunda revisión semanal (hecha por Claude por encargo): 4 activos, todos con próxima acción, y ningún proyecto con `revisar`. Se levanta la congelación. Quedan fichas de herramienta con `revisar` y el progreso de varios proyectos sin estimar.
+- 2026-11-27: `agenda.js` lee `DURATION` (solo sin `DTEND`) y `RDATE` (fechas y `PERIOD`), con el mismo comportamiento que `cerebrojm-app` (AUD-014 y AUD-015, adelantados a FEAT-014 por decisión del usuario). Verificado: 6 tests nuevos (5 en rojo antes del cambio; el sexto protege que `DTEND` mande), mismas ocurrencias que el lector de la app en 7 casos y el bloque del Panel ejecutado con un `dv` simulado. **Sin verificar:** dentro de Obsidian.

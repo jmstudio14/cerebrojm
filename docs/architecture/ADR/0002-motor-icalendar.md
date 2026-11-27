@@ -1,6 +1,7 @@
 # ADR-0002 · Motor iCalendar: parser propio frente a biblioteca mantenida
 
 - **Estado:** **Aceptada** (2026-11-26), tal como se propone: primero el spike y el motor se elige según su resultado; pendiente en FEAT-014 (Fase 1 congelada).
+- **Nota (2026-11-27):** por decisión del usuario, `DURATION` y `RDATE` (AUD-014 y AUD-015) se portan ya al parser propio desde `cerebrojm-app`. El spike FEAT-014 sigue pendiente; si se adopta `ical.js`, ese código se sustituye.
 - **Fecha:** 2026-11-18
 - **Relacionado:** AUD-010 a AUD-018, AUD-036
 

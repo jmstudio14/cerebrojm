@@ -9,6 +9,7 @@
 | AUD-001 | **Parcial** (2026-11-20) | El escáner conserva el BOM y el final de línea y ya no duplica el frontmatter (test en `escanear.test.mjs`). Falta la línea en blanco o los espacios iniciales, y el modo *fail-safe* para notas sin frontmatter |
 | AUD-010 | **Parcial** (2026-11-20) | Un `UNTIL` mal formado ya no rompe la agenda (se ignora el límite). Falta aislar cada evento con `try/catch` y avisar del número de eventos ignorados; `BYDAY` y `DTSTART` inválidos sin comprobar |
 | AUD-017 | **Parcial** (2026-11-20) | Las series `DAILY` saltan a la ventana pedida y ya no desaparecen por el tope de 5000 pasos. El resto de frecuencias conserva el tope |
+| AUD-014, AUD-015 | **Hecho** (2026-11-27) | `DURATION` y `RDATE` en el parser propio, sin esperar a FEAT-014 (tests en `agenda.test.js`) |
 | AUD-024 | **Hecho** (2026-11-20) | «Hoy» en fecha local en `escanear.mjs` y `estado.mjs` (tests con `TZ` UTC+14 y UTC-11) |
 | AUD-029 | **Hecho** (2026-11-20) | La plantilla de revisión usa 14 días, como el Panel y `estado.mjs` |
 | FEAT-003 | **Hecho de otra forma** (2026-11-19) | `repos.mjs` guarda `ultimo_push` e `issues_abiertos` en el frontmatter; sin releases ni estado de la CI |

@@ -68,11 +68,20 @@ function parsearFecha(prop) {
 
 const claveDia = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 
+// `P1W`, `P1DT2H30M`, `PT45M`… en ms. Null si no es una duración válida y positiva.
+function parsearDuracion(v) {
+  const m = v.trim().match(/^\+?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
+  if (!m || m.slice(1).every((x) => x === undefined)) return null;
+  const [w, d, h, mi, sg] = m.slice(1).map((x) => Number(x ?? 0));
+  const ms = (((w * 7 + d) * 24 + h) * 60 + mi) * 60e3 + sg * 1e3;
+  return ms > 0 ? ms : null;
+}
+
 function parsearICS(texto) {
   const eventos = [];
   let actual = null;
   for (const linea of desplegarLineas(texto)) {
-    if (linea === "BEGIN:VEVENT") { actual = { exdates: [], exdias: [] }; continue; }
+    if (linea === "BEGIN:VEVENT") { actual = { exdates: [], exdias: [], rdates: [] }; continue; }
     if (linea === "END:VEVENT") { if (actual) eventos.push(actual); actual = null; continue; }
     if (!actual) continue;
     const p = parsearPropiedad(linea);
@@ -84,6 +93,25 @@ function parsearICS(texto) {
       case "STATUS": actual.estado = p.valor.toUpperCase(); break;
       case "DTSTART": actual.inicio = parsearFecha(p); break;
       case "DTEND": actual.fin = parsearFecha(p); break;
+      case "DURATION": actual.duracionMs = parsearDuracion(p.valor); break;
+      case "RDATE": {
+        // Un PERIOD es `inicio/fin` o `inicio/duración`; sin él, cada valor es solo un inicio.
+        const periodo = p.params.VALUE?.toUpperCase() === "PERIOD";
+        for (const v of p.valor.split(",")) {
+          const [desde, hasta = ""] = periodo ? v.split("/") : [v];
+          const f = parsearFecha({ params: p.params, valor: desde });
+          if (!f) continue;
+          const t = f.fecha.getTime();
+          if (periodo) {
+            const fin = parsearFecha({ params: p.params, valor: hasta });
+            const dura = fin ? fin.fecha.getTime() - t : parsearDuracion(hasta);
+            if (dura === null || dura <= 0) continue;
+            (actual.periodos ??= new Map()).set(t, dura);
+          }
+          actual.rdates.push(t);
+        }
+        break;
+      }
       case "RRULE": actual.rrule = p.valor; break;
       case "RECURRENCE-ID": actual.recurrenceId = parsearFecha(p); break;
       case "EXDATE":
@@ -119,8 +147,18 @@ function nEsimoDiaSemana(anio, mes, diaSemana, n) {
   return d.getMonth() === mes ? d : null;
 }
 
-// Devuelve los inicios (Date) de las ocurrencias que caen en [desde, hasta).
+const sinExcluidos = (ev, xs) => xs.filter((d) => !ev.exdates.includes(d.getTime()) && !ev.exdias.includes(claveDia(d)));
+
+// Inicios de las ocurrencias: los de la regla (RRULE) más los RDATE, sin los EXDATE.
 function expandir(ev, desde, hasta) {
+  const base = expandirRegla(ev, desde, hasta);
+  if (!ev.rdates.length) return base;
+  const todos = [...base.map(Number), ...ev.rdates.filter((t) => t < hasta.getTime())];
+  return sinExcluidos(ev, [...new Set(todos)].sort((a, b) => a - b).map((t) => new Date(t)));
+}
+
+// Devuelve los inicios (Date) de las ocurrencias de la regla que caen en [desde, hasta).
+function expandirRegla(ev, desde, hasta) {
   const inicio = ev.inicio.fecha;
   if (!ev.rrule) return inicio < hasta ? [inicio] : [];
   const r = Object.fromEntries(ev.rrule.split(";").map((x) => x.split("=")));
@@ -142,7 +180,6 @@ function expandir(ev, desde, hasta) {
     return true;
   };
 
-  const sinExcluidos = (xs) => xs.filter((d) => !ev.exdates.includes(d.getTime()) && !ev.exdias.includes(claveDia(d)));
   // DAILY sin COUNT: se salta a cerca de `desde` (con el tope de pasos, una serie de hace años desaparecería).
   const pasoIni = freq === "DAILY" && cuenta === Infinity ? Math.max(0, Math.floor((desde - inicio) / (86400000 * intervalo)) - 2) : 0;
   for (let paso = pasoIni; paso < pasoIni + 5000; paso++) {
@@ -177,9 +214,9 @@ function expandir(ev, desde, hasta) {
     } else {
       return inicio >= desde && inicio < hasta ? [inicio] : [];
     }
-    for (const c of candidatos) if (!empujar(c)) return sinExcluidos(out);
+    for (const c of candidatos) if (!empujar(c)) return sinExcluidos(ev, out);
   }
-  return sinExcluidos(out);
+  return sinExcluidos(ev, out);
 }
 
 function ocurrencias(eventos, desde, hasta) {
@@ -189,11 +226,11 @@ function ocurrencias(eventos, desde, hasta) {
   const res = [];
   for (const ev of eventos) {
     if (ev.estado === "CANCELLED") continue;
-    const dur = ev.fin ? ev.fin.fecha - ev.inicio.fecha : (ev.inicio.todoElDia ? 86400000 : 0);
+    const dur = ev.fin ? ev.fin.fecha - ev.inicio.fecha : ev.duracionMs ?? (ev.inicio.todoElDia ? 86400000 : 0);
     const inicios = ev.recurrenceId ? [ev.inicio.fecha] : expandir(ev, new Date(desde.getTime() - dur), hasta);
     for (const ini of inicios) {
       if (!ev.recurrenceId && ev.rrule && reemplazos.has(`${ev.uid}|${ini.getTime()}`)) continue;
-      const fin = new Date(ini.getTime() + dur);
+      const fin = new Date(ini.getTime() + (ev.periodos?.get(ini.getTime()) ?? dur));
       const solapa = ev.inicio.todoElDia ? fin > desde && ini < hasta : (fin > desde || ini >= desde) && ini < hasta;
       if (solapa) res.push({ titulo: ev.titulo || "(sin título)", lugar: ev.lugar, inicio: ini, fin, todoElDia: ev.inicio.todoElDia });
     }

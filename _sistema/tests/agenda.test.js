@@ -101,6 +101,55 @@ test("una serie DAILY de hace más de 5000 días sigue apareciendo", () => {
   assert.deepEqual(dias(ics, new Date(2026, 10, 18), new Date(2026, 10, 21)), ["2026-11-18", "2026-11-19", "2026-11-20"]);
 });
 
+// --- DURATION y RDATE: mismo comportamiento que el lector de la app (cerebrojm-app) ---
+const tramos = (ics, desde = new Date(2026, 10, 16), hasta = new Date(2026, 11, 16)) =>
+  ocurrencias(parsearICS(ics), desde, hasta).map((o) => `${o.inicio.toISOString()}/${o.fin.toISOString()}`);
+
+test("DURATION da el fin cuando no hay DTEND", () => {
+  assert.deepEqual(tramos(evento("DTSTART:20261118T100000Z", "DURATION:PT90M")), ["2026-11-18T10:00:00.000Z/2026-11-18T11:30:00.000Z"]);
+  assert.deepEqual(tramos(evento("DTSTART:20261118T100000Z", "DURATION:+P1DT2H30M15S")), ["2026-11-18T10:00:00.000Z/2026-11-19T12:30:15.000Z"]);
+  assert.deepEqual(tramos(evento("DTSTART;VALUE=DATE:20261118", "DURATION:P1W")), ["2026-11-17T23:00:00.000Z/2026-11-24T23:00:00.000Z"]);
+  assert.deepEqual(tramos(evento("DTSTART;VALUE=DATE:20261118", "DURATION:P1D")), ["2026-11-17T23:00:00.000Z/2026-11-18T23:00:00.000Z"]);
+});
+
+test("DTEND manda sobre DURATION, y una duración que no se entiende se ignora", () => {
+  assert.deepEqual(tramos(evento("DTSTART:20261118T100000Z", "DTEND:20261118T101500Z", "DURATION:PT5H")), ["2026-11-18T10:00:00.000Z/2026-11-18T10:15:00.000Z"]);
+  for (const mala of ["basura", "P", "PT", "-PT1H", "PT0M"]) {
+    assert.deepEqual(tramos(evento("DTSTART:20261118T100000Z", `DURATION:${mala}`)), ["2026-11-18T10:00:00.000Z/2026-11-18T10:00:00.000Z"], mala);
+  }
+});
+
+test("un evento con DURATION que empezó antes del rango y sigue en él aparece", () => {
+  const ics = evento("DTSTART:20261117T230000Z", "DURATION:PT4H", "RRULE:FREQ=DAILY;COUNT=1");
+  assert.deepEqual(tramos(ics, new Date(2026, 10, 18, 1), new Date(2026, 10, 19)), ["2026-11-17T23:00:00.000Z/2026-11-18T03:00:00.000Z"]);
+});
+
+test("RDATE añade repeticiones, con o sin RRULE, sin duplicar", () => {
+  const sin = evento("DTSTART:20261118T100000Z", "RDATE:20261125T100000Z,20261120T100000Z", "RDATE:20261120T100000Z");
+  assert.deepEqual(dias(sin, new Date(2026, 10, 16), new Date(2026, 11, 16)), ["2026-11-18", "2026-11-20", "2026-11-25"]);
+  const con = evento("DTSTART;TZID=Europe/Madrid:20261118T100000", "RRULE:FREQ=WEEKLY;COUNT=2", "RDATE;TZID=Europe/Madrid:20261125T100000,20261127T100000", "RDATE:basura");
+  assert.deepEqual(dias(con, new Date(2026, 10, 16), new Date(2026, 11, 16)), ["2026-11-18", "2026-11-25", "2026-11-27"]);
+});
+
+test("EXDATE excluye también repeticiones de RDATE, por instante o por día", () => {
+  const ics = evento("DTSTART:20261118T100000Z", "RDATE:20261120T100000Z,20261121T100000Z,20261122T100000Z", "EXDATE:20261120T100000Z", "EXDATE;VALUE=DATE:20261122");
+  assert.deepEqual(dias(ics, new Date(2026, 10, 16), new Date(2026, 11, 16)), ["2026-11-18", "2026-11-21"]);
+});
+
+test("RDATE con VALUE=PERIOD: cada periodo tiene su duración, y uno roto se ignora", () => {
+  const ics = evento(
+    "DTSTART:20261118T100000Z",
+    "DTEND:20261118T103000Z",
+    "RDATE;VALUE=PERIOD:20261119T100000Z/20261119T120000Z,20261120T100000Z/PT45M",
+    "RDATE;VALUE=PERIOD:20261121T100000Z,20261122T100000Z/20261122T090000Z,basura/PT1H",
+  );
+  assert.deepEqual(tramos(ics), [
+    "2026-11-18T10:00:00.000Z/2026-11-18T10:30:00.000Z",
+    "2026-11-19T10:00:00.000Z/2026-11-19T12:00:00.000Z",
+    "2026-11-20T10:00:00.000Z/2026-11-20T10:45:00.000Z",
+  ]);
+});
+
 test("DAILY con INTERVAL desde hace años cae en los días que tocan", () => {
   const ics = evento("DTSTART:20100101T090000Z", "RRULE:FREQ=DAILY;INTERVAL=3");
   const esperado = [];

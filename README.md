@@ -52,7 +52,7 @@ Señala lo que se está quedando atrás: **vencidos**, **bloqueados**, **estanca
 <td valign="top">
 
 ### 📅 Agenda de Google Calendar
-Tus eventos de los próximos 7 días junto a las fechas límite de los proyectos. Soporta eventos recurrentes, excepciones y zonas horarias (con límites: las repeticiones se expanden en la zona del sistema, las anuales ignoran `BYMONTH`/`BYDAY` y no se leen `DURATION` ni `RDATE`), y la URL privada **nunca** se sube al repo.
+Tus eventos de los próximos 7 días junto a las fechas límite de los proyectos. Soporta eventos recurrentes, excepciones y zonas horarias (con límites: las repeticiones se expanden en la zona del sistema, y las anuales ignoran `BYMONTH`/`BYDAY`), y la URL privada **nunca** se sube al repo.
 
 </td>
 <td valign="top">
