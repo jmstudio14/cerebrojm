@@ -278,7 +278,7 @@ if (typeof dv !== "undefined") {
     // Dataview vuelve a ejecutar el bloque sobre el mismo contenedor sin cancelar la ejecución anterior.
     const turno = {};
     dv.container.cerebroTurno = turno;
-    const dias =(typeof input !== "undefined" && input && input.dias) || 7;
+    const dias = (typeof input !== "undefined" && input && input.dias) || 7;
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
     const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + dias);
 
