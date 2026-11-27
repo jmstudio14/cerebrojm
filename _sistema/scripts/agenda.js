@@ -275,7 +275,10 @@ if (typeof module !== "undefined" && typeof dv === "undefined") {
 // ---------- Render en Obsidian ----------
 if (typeof dv !== "undefined") {
   return (async () => {
-    const dias = (typeof input !== "undefined" && input && input.dias) || 7;
+    // Dataview vuelve a ejecutar el bloque sobre el mismo contenedor sin cancelar la ejecución anterior.
+    const turno = {};
+    dv.container.cerebroTurno = turno;
+    const dias =(typeof input !== "undefined" && input && input.dias) || 7;
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
     const hasta = new Date(hoy); hasta.setDate(hasta.getDate() + dias);
 
@@ -322,6 +325,8 @@ if (typeof dv !== "undefined") {
         for (const o of ocurrencias(parsearICS(texto), hoy, hasta)) items.push({ ...o, color: f.color, tipo: "evento" });
       }
     }
+    // Mientras se descargaba, otra ejecución ha tomado el bloque: pinta ella.
+    if (dv.container.cerebroTurno !== turno) return;
 
     // 2) Fechas límite de proyectos abiertos
     for (const p of dv.pages(`"${CARPETA_PROYECTOS}"`).where((p) => p.tipo === "proyecto" && p.fecha_limite && !["completado", "archivado"].includes(p.estado))) {

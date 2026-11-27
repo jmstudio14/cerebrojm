@@ -169,3 +169,39 @@ test("DAILY con INTERVAL desde hace años cae en los días que tocan", () => {
   }
   assert.deepEqual(dias(ics, new Date(2026, 10, 18), new Date(2026, 10, 25)), esperado);
 });
+
+// --- Render con un `dv` simulado ---
+// Dataview vuelve a ejecutar el bloque sobre el mismo contenedor cuando cambia una nota,
+// sin cancelar la ejecución anterior: si esta sigue esperando la descarga, no debe pintar.
+test("al repetirse el bloque con la descarga pendiente, la agenda se pinta una vez por contenedor", async (t) => {
+  const previas = ["requestUrl", "localStorage"].map((k) => [k, Object.getOwnPropertyDescriptor(globalThis, k)]);
+  t.after(() => previas.forEach(([k, d]) => (d ? Object.defineProperty(globalThis, k, d) : delete globalThis[k])));
+  const pendientes = [];
+  Object.defineProperty(globalThis, "requestUrl", { configurable: true, value: () => new Promise((ok) => pendientes.push(ok)) });
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: { getItem: () => null, setItem: () => {} } });
+
+  const script = fs.readFileSync(path.join(__dirname, "..", "scripts", "agenda.js"), "utf8");
+  const ejecutar = Object.getPrototypeOf(async () => {}).constructor("dv", "input", script);
+  const hoy = new Date();
+  const dia = `${hoy.getFullYear()}${String(hoy.getMonth() + 1).padStart(2, "0")}${String(hoy.getDate()).padStart(2, "0")}`;
+  const config = JSON.stringify({ calendarSources: [{ type: "ical", url: "https://ejemplo.test/a.ics" }] });
+  const pintar = (container, salida) =>
+    ejecutar({
+      container,
+      app: { vault: { adapter: { read: async () => config } } },
+      pages: () => ({ where: () => [] }),
+      paragraph: (x) => salida.push(x),
+      header: (_, x) => salida.push(x),
+      list: (xs) => salida.push(...xs),
+    }, { dias: 1 });
+
+  const bloque = {}, otro = {};
+  const enBloque = [], enOtro = [];
+  const todas = [pintar(bloque, enBloque), pintar(bloque, enBloque), pintar(otro, enOtro)];
+  while (pendientes.length < 3) await new Promise((ok) => setImmediate(ok));
+  pendientes.forEach((ok) => ok({ text: evento(`DTSTART;VALUE=DATE:${dia}`) }));
+  await Promise.all(todas);
+
+  assert.deepEqual(enBloque, ["Hoy", "📅 Todo el día · **Prueba**"]);
+  assert.deepEqual(enOtro, ["Hoy", "📅 Todo el día · **Prueba**"]);
+});
