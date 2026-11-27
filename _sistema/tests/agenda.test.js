@@ -136,6 +136,17 @@ test("EXDATE excluye también repeticiones de RDATE, por instante o por día", (
   assert.deepEqual(dias(ics, new Date(2026, 10, 16), new Date(2026, 11, 16)), ["2026-11-18", "2026-11-21"]);
 });
 
+test("una repetición de RDATE modificada con RECURRENCE-ID no sale dos veces, aunque no haya RRULE", () => {
+  const ics = [
+    evento("DTSTART:20261118T100000Z", "RDATE:20261120T100000Z"),
+    evento("RECURRENCE-ID:20261120T100000Z", "DTSTART:20261120T150000Z"),
+  ].join("\r\n");
+  assert.deepEqual(tramos(ics), [
+    "2026-11-18T10:00:00.000Z/2026-11-18T10:00:00.000Z",
+    "2026-11-20T15:00:00.000Z/2026-11-20T15:00:00.000Z",
+  ]);
+});
+
 test("RDATE con VALUE=PERIOD: cada periodo tiene su duración, y uno roto se ignora", () => {
   const ics = evento(
     "DTSTART:20261118T100000Z",

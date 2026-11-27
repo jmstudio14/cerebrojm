@@ -229,7 +229,7 @@ function ocurrencias(eventos, desde, hasta) {
     const dur = ev.fin ? ev.fin.fecha - ev.inicio.fecha : ev.duracionMs ?? (ev.inicio.todoElDia ? 86400000 : 0);
     const inicios = ev.recurrenceId ? [ev.inicio.fecha] : expandir(ev, new Date(desde.getTime() - dur), hasta);
     for (const ini of inicios) {
-      if (!ev.recurrenceId && ev.rrule && reemplazos.has(`${ev.uid}|${ini.getTime()}`)) continue;
+      if (!ev.recurrenceId && (ev.rrule || ev.rdates.length) && reemplazos.has(`${ev.uid}|${ini.getTime()}`)) continue;
       const fin = new Date(ini.getTime() + (ev.periodos?.get(ini.getTime()) ?? dur));
       const solapa = ev.inicio.todoElDia ? fin > desde && ini < hasta : (fin > desde || ini >= desde) && ini < hasta;
       if (solapa) res.push({ titulo: ev.titulo || "(sin título)", lugar: ev.lugar, inicio: ini, fin, todoElDia: ev.inicio.todoElDia });
